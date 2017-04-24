@@ -49,7 +49,7 @@ public class TestContainer extends FrameLayout {
    * @param ids from top to root
    */
   public void assertChildren(int... ids) {
-    assertEquals(getChildCount(), ids.length);
+    assertEquals(ids.length, getChildCount());
 
     int index = ids.length;
     while (--index >= 0) {
