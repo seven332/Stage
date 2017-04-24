@@ -17,3 +17,6 @@ cache:
     - $HOME/.gradle
 
 sudo: false
+
+before_install:
+  - chmod +x gradlew
