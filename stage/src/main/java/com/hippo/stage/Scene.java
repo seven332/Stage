@@ -339,9 +339,8 @@ public abstract class Scene {
   // detachView() will be called
   // Handle lifecycle to fit detachView()
   void prepareForViewDetach() {
-    if (state == STATE_RESUMED) {
-      pause();
-    }
+    // No need to check calling pause()
+    // It must be called just after the top Scene popped from the stack
     if (state == STATE_STARTED || state == STATE_PAUSED) {
       stop();
     }
