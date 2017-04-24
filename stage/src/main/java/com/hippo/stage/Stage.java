@@ -403,6 +403,13 @@ public abstract class Stage {
   }
 
   /**
+   * Returns the number of {@link Scene}s in {@code Stage}.
+   */
+  public int getSceneCount() {
+    return stack.size();
+  }
+
+  /**
    * Sets the curtain suppler for this {@code Stage}.
    */
   public void setCurtainSuppler(CurtainSuppler suppler) {

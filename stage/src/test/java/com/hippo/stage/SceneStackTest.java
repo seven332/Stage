@@ -74,6 +74,94 @@ public class SceneStackTest {
   }
 
   @Test
+  public void testSize() {
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+    Scene scene3 = new TestScene();
+
+    assertEquals(0, stack.size());
+
+    stack.push(scene1);
+    assertEquals(1, stack.size());
+
+    stack.pop(scene1);
+    assertEquals(0, stack.size());
+
+    stack.push(scene2);
+    stack.push(scene3);
+    assertEquals(2, stack.size());
+
+    stack.pop(scene2);
+    assertEquals(1, stack.size());
+
+    stack.pop(scene3);
+    assertEquals(0, stack.size());
+
+    stack.pop(scene1);
+    assertEquals(0, stack.size());
+  }
+
+  @Test
+  public void testPeek() {
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+    Scene scene3 = new TestScene();
+
+    assertEquals(null, stack.peek());
+
+    stack.push(scene1);
+    assertEquals(scene1, stack.peek());
+
+    stack.push(scene2);
+    assertEquals(scene2, stack.peek());
+
+    stack.push(scene3);
+    assertEquals(scene3, stack.peek());
+
+    stack.pop(scene2);
+    assertEquals(scene3, stack.peek());
+
+    stack.pop(scene3);
+    assertEquals(scene1, stack.peek());
+
+    stack.pop(scene1);
+    assertEquals(null, stack.peek());
+
+    stack.pop(scene3);
+    assertEquals(null, stack.peek());
+  }
+
+  @Test
+  public void testTail() {
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+    Scene scene3 = new TestScene();
+
+    assertEquals(null, stack.tail());
+
+    stack.push(scene1);
+    assertEquals(scene1, stack.tail());
+
+    stack.push(scene2);
+    assertEquals(scene1, stack.tail());
+
+    stack.push(scene3);
+    assertEquals(scene1, stack.tail());
+
+    stack.pop(scene2);
+    assertEquals(scene1, stack.tail());
+
+    stack.pop(scene1);
+    assertEquals(scene3, stack.tail());
+
+    stack.pop(scene3);
+    assertEquals(null, stack.tail());
+
+    stack.pop(scene2);
+    assertEquals(null, stack.tail());
+  }
+
+  @Test
   public void testPushPop() {
     assertNull(stack.pop());
 

@@ -72,5 +72,21 @@ public class StageTest {
     assertEquals(scene1, stage.getRootScene());
   }
 
+  public void testGetSceneCount() {
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+
+    assertEquals(0, stage.getSceneCount());
+
+    stage.pushScene(scene1);
+    assertEquals(1, stage.getSceneCount());
+
+    stage.pushScene(scene2);
+    assertEquals(2, stage.getSceneCount());
+
+    stage.popScene(scene1);
+    assertEquals(1, stage.getSceneCount());
+  }
+
   private static class TestStage extends Stage {}
 }

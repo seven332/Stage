@@ -44,6 +44,10 @@ class SceneStack implements Iterable<Scene> {
     return stack.isEmpty();
   }
 
+  int size() {
+    return stack.size();
+  }
+
   @Nullable
   Scene peek() {
     return stack.peekFirst();
