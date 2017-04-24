@@ -55,7 +55,7 @@ public class StagePushTest {
       boolean started = starteds[i];
       boolean resumed = resumeds[i];
       for (boolean retainView : retainViews) {
-        for (List<Integer> opacities : new HomogeniousPermutator<>(Arrays.asList(Scene.TRANSPARENT, Scene.TRANSPARENT, Scene.OPAQUE), SCENE_COUNT)) {
+        for (List<Integer> opacities : new HomogeniousPermutator<>(Arrays.asList(Scene.TRANSPARENT, Scene.TRANSLUCENT, Scene.OPAQUE), SCENE_COUNT)) {
           parameters.add(new Object[] {
               started,
               resumed,
