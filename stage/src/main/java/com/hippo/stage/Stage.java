@@ -198,8 +198,79 @@ public abstract class Stage {
     changeScenes(upper, lower);
   }
 
+  /**
+   * Replace the top {@link Scene} with a {@code Scene}.
+   * If the stack is empty, just push the {@code Scene}.
+   */
   public void replaceTopScene(@NonNull Scene scene) {
-    // TODO
+    Scene oldTopScene = stack.peek();
+    if (oldTopScene == null) {
+      // The stack is empty, just push the Scene
+      pushScene(scene);
+      return;
+    }
+
+    completeRunningCurtain();
+
+    ArrayList<Scene> oldScenes = getVisibleScenes();
+    stack.pop();
+    stack.push(scene);
+    ArrayList<Scene> newScenes = getVisibleScenes();
+
+    scene.attachView(container);
+    if (isStarted) {
+      scene.start();
+    }
+    // It's top
+    if (isResumed) {
+      scene.resume();
+    }
+    //noinspection ConstantConditions Let SceneInfo check in debug mode
+    SceneInfo upperInfo = new SceneInfo(scene, scene.getView(), true, false);
+    List<SceneInfo> upper = Collections.singletonList(upperInfo);
+
+    int lowerSize = Math.max(oldScenes.size(), newScenes.size());
+    List<SceneInfo> lower = new ArrayList<>(lowerSize);
+    // Add old top scenes
+    if (isResumed) {
+      oldTopScene.pause();
+    }
+    //noinspection ConstantConditions Let SceneInfo check in debug mode
+    SceneInfo lowerInfo = new SceneInfo(oldTopScene, oldTopScene.getView(), false, true);
+    lower.add(lowerInfo);
+    // Add the same scenes which are in both old visible scenes and new visible scenes
+    int sameSize = Math.min(oldScenes.size(), newScenes.size());
+    for (int i = 1; i < sameSize; ++i) {
+      Scene lowerScene = oldScenes.get(i);
+      //noinspection ConstantConditions Let SceneInfo check in debug mode
+      lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, false);
+      lower.add(lowerInfo);
+    }
+    // Add scenes which will be detached
+    if (oldScenes.size() > sameSize) {
+      for (int i = sameSize; i < oldScenes.size(); ++i) {
+        Scene lowerScene = oldScenes.get(i);
+        //noinspection ConstantConditions Let SceneInfo check in debug mode
+        lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, true);
+        lower.add(lowerInfo);
+      }
+    }
+    // Add scenes which should be attached
+    if (newScenes.size() > sameSize) {
+      for (int i = sameSize; i < newScenes.size(); ++i) {
+        Scene lowerScene = newScenes.get(i);
+        // Always attach view to tail
+        lowerScene.attachView(container, 0);
+        if (isStarted) {
+          lowerScene.start();
+        }
+        //noinspection ConstantConditions Let SceneInfo check in debug mode
+        lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), true, false);
+        lower.add(lowerInfo);
+      }
+    }
+
+    changeScenes(upper, lower);
   }
 
   public void setRoot(@NonNull List<Scene> scenes) {
