@@ -208,7 +208,7 @@ public class StagePopTest {
       int newVisibleCount = getVisibleSceneCount(opacityList, SCENE_COUNT - i - 2);
 
       ///////////////////////
-      // After pushing scene
+      // After popping scene
       ///////////////////////
 
       // If the popped scene is the top, pause it
@@ -298,6 +298,7 @@ public class StagePopTest {
     for (TestScene scene : scenes) {
       scene.assertPair();
     }
+    assertEquals(0, container.getChildCount());
   }
 
   private static class TestStage extends Stage {}
