@@ -166,7 +166,7 @@ public abstract class Stage {
     stack.push(scene);
     ArrayList<Scene> newScenes = getVisibleScenes();
 
-    scene.attachView(container, container.getChildCount());
+    scene.attachView(container);
     if (isStarted) {
       scene.start();
     }
@@ -373,7 +373,7 @@ public abstract class Stage {
         Scene scene = visibleScenes.get(index);
 
         // Always attach view to tail
-        scene.attachView(container, container.getChildCount());
+        scene.attachView(container);
 
         // Handle lifecycle
         if (isStarted) {

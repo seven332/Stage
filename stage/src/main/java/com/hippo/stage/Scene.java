@@ -268,6 +268,10 @@ public abstract class Scene {
     return view;
   }
 
+  void attachView(ViewGroup container) {
+    attachView(container, container.getChildCount());
+  }
+
   void attachView(ViewGroup container, int index) {
     updateState(STATE_ATTACHED, STATE_CREATED, STATE_DETACHED);
 
