@@ -1,0 +1,19 @@
+language: android
+
+android:
+  components:
+    - build-tools-25.0.2
+    - android-25
+    - extra-android-m2repository
+
+script:
+  - ./gradlew test
+
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.gradle
+
+sudo: false
