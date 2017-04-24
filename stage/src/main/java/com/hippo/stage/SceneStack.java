@@ -91,6 +91,13 @@ class SceneStack implements Iterable<Scene> {
     return INVALID_INDEX;
   }
 
+  void popAll() {
+    for (Scene scene : stack) {
+      callback.onPop(scene);
+    }
+    stack.clear();
+  }
+
   @Override
   public Iterator<Scene> iterator() {
     return stack.iterator();

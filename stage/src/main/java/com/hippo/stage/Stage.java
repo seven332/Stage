@@ -273,8 +273,41 @@ public abstract class Stage {
     changeScenes(upper, lower);
   }
 
-  public void setRoot(@NonNull List<Scene> scenes) {
-    // TODO
+  public void setRootScene(@NonNull Scene scene) {
+    completeRunningCurtain();
+
+    ArrayList<Scene> oldScenes = getVisibleScenes();
+    stack.popAll();
+    stack.push(scene);
+
+    scene.attachView(container);
+    if (isStarted) {
+      scene.start();
+    }
+    // It's top
+    if (isResumed) {
+      scene.resume();
+    }
+    //noinspection ConstantConditions Let SceneInfo check in debug mode
+    SceneInfo upperInfo = new SceneInfo(scene, scene.getView(), true, false);
+    List<SceneInfo> upper = Collections.singletonList(upperInfo);
+
+    List<SceneInfo> lower = new ArrayList<>(oldScenes.size());
+    boolean isTop = true;
+    for (Scene lowerScene : oldScenes) {
+      if (isResumed && isTop) {
+        lowerScene.pause();
+      }
+
+      //noinspection ConstantConditions Let SceneInfo check in debug mode
+      SceneInfo lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, true);
+      lower.add(lowerInfo);
+
+      // Not top anymore
+      isTop = false;
+    }
+
+    changeScenes(upper, lower);
   }
 
   private void completeRunningCurtain() {
