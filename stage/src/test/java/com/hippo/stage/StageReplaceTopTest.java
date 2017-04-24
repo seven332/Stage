@@ -293,6 +293,7 @@ public class StageReplaceTopTest {
     for (TestScene scene : scenes) {
       scene.assertPair();
     }
+    newScene.assertPair();
     assertEquals(0, container.getChildCount());
   }
 
