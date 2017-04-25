@@ -47,7 +47,6 @@ public abstract class Scene {
   @IntDef({TRANSPARENT, TRANSLUCENT, OPAQUE})
   @Retention(RetentionPolicy.CLASS)
   public @interface Opacity {}
-  public static final int INVALID = -1;
   /**
    * The {@code Scene} under this one is visible.
    */
@@ -82,7 +81,8 @@ public abstract class Scene {
   private String tag;
   private Bundle args;
   private boolean willRetainView;
-  private int opacity = INVALID;
+  @Opacity
+  private int opacity = OPAQUE;
 
   private View view;
   private Bundle viewState;
@@ -108,7 +108,8 @@ public abstract class Scene {
 
   /**
    * Sets tag for this {@code Scene}.
-   * It's can only be called before {@link #onCreate(Bundle)}.
+   * <p>
+   * It's can only be called before or in {@link #onCreate(Bundle)}.
    *
    * @see #getTag()
    */
@@ -118,7 +119,7 @@ public abstract class Scene {
   }
 
   /**
-   * Returns tag.
+   * Returns tag. {@code null} in default.
    *
    * @see #setTag(String)
    */
@@ -128,7 +129,8 @@ public abstract class Scene {
 
   /**
    * Sets arguments for this {@code Scene}.
-   * It's can only be called before {@link #onCreate(Bundle)}.
+   * <p>
+   * It's can only be called before or in {@link #onCreate(Bundle)}.
    *
    * @see #getArgs()
    */
@@ -138,7 +140,7 @@ public abstract class Scene {
   }
 
   /**
-   * Returns arguments.
+   * Returns arguments. {@code null} in default.
    *
    * @see #setArgs(Bundle)
    */
@@ -150,7 +152,8 @@ public abstract class Scene {
    * If the view of this {@code Scene} should be retained after detached for next attaching,
    * set this flag. This is useful when a {@code Scene}'s view hierarchy is expensive to
    * tear down and rebuild.
-   * It's can only be called before {@link #onCreate(Bundle)}.
+   * <p>
+   * It's can only be called before or in {@link #onCreate(Bundle)}.
    *
    * @see #willRetainView()
    */
@@ -167,6 +170,29 @@ public abstract class Scene {
    */
   public final boolean willRetainView() {
     return willRetainView;
+  }
+
+  /**
+   * Describes How this {@code Scene} affects the visibility of the {@code Scene} below.
+   * Must be one of {@link #TRANSPARENT}, {@link #TRANSLUCENT} and {@link #OPAQUE}.
+   * <p>
+   * It's can only be called before or in {@link #onCreate(Bundle)}.
+   *
+   * @see #getOpacity()
+   */
+  public final void setOpacity(@Opacity int opacity) {
+    assertState(STATE_NONE);
+    this.opacity = opacity;
+  }
+
+  /**
+   * Returns opacity value of this {@code Scene}. {@link #OPAQUE} in default.
+   *
+   * @see #setOpacity(int)
+   */
+  @Opacity
+  public final int getOpacity() {
+    return opacity;
   }
 
   /**
@@ -226,13 +252,6 @@ public abstract class Scene {
     state = newState;
   }
 
-  int opacity() {
-    if (opacity == INVALID) {
-      throw new IllegalStateException("Shouldn't call opacity() now");
-    }
-    return opacity;
-  }
-
   void create(@NonNull Stage stage) {
     if (this.stage != null) {
       throw new IllegalStateException("This Scene has been performed, can't perform is twice: "
@@ -245,8 +264,6 @@ public abstract class Scene {
     }
 
     onCreate(args);
-
-    opacity = onGetOpacity();
 
     // Update state here to allow getTag() and others can be called in onCreate()
     updateState(STATE_CREATED, STATE_NONE);
@@ -438,13 +455,6 @@ public abstract class Scene {
   protected void onSaveViewState(@NonNull View view, @NonNull Bundle outState) {}
 
   protected void onRestoreViewState(@NonNull View view, @NonNull Bundle savedViewState) {}
-
-  /**
-   * Describes How this {@code Scene} affects the visibility of the {@code Scene} below.
-   * Must be one of {@link #TRANSPARENT}, {@link #TRANSLUCENT} and {@link #OPAQUE}.
-   */
-  @Opacity
-  protected abstract int onGetOpacity();
 
   @Override
   public String toString() {

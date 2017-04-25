@@ -142,7 +142,7 @@ public abstract class Stage {
           .build();
       List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
-      int opacity = scene.opacity();
+      int opacity = scene.getOpacity();
       boolean newlyAttached = opacity == Scene.OPAQUE || (opacity == Scene.TRANSLUCENT && index != 0);
       boolean isTop = index == 0;
       List<Scene> lowerScenes = newScenes.subList(index, newScenes.size());
@@ -168,7 +168,7 @@ public abstract class Stage {
             .build();
         lower.add(lowerInfo);
 
-        if (isTop && lowerScene.opacity() == Scene.TRANSLUCENT) {
+        if (isTop && lowerScene.getOpacity() == Scene.TRANSLUCENT) {
           // An translucent scene become top now, the following scene must be newly attached
           newlyAttached = true;
         }
@@ -443,7 +443,7 @@ public abstract class Stage {
     boolean isTop = true;
     for (Scene scene : stack) {
       scenes.add(scene);
-      int opacity = scene.opacity();
+      int opacity = scene.getOpacity();
       if (opacity == Scene.OPAQUE || (opacity == Scene.TRANSLUCENT && !isTop)) {
         // The scenes below can't be seen
         break;

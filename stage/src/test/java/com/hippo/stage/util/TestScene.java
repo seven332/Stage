@@ -71,11 +71,11 @@ public class TestScene extends Scene {
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
     id = args != null ? args.getInt(KEY_ID) : 0;
-    //noinspection WrongConstant
-    opacity = args != null ? args.getInt(KEY_OPACITY) : OPAQUE;
     setTag(Integer.toString(id));
     //noinspection SimplifiableConditionalExpression
     setWillRetainView(args != null ? args.getBoolean(KEY_RETAIN_VIEW) : false);
+    //noinspection WrongConstant
+    setOpacity(args != null ? args.getInt(KEY_OPACITY) : OPAQUE);
     calling.onCreate++;
   }
 
@@ -134,11 +134,6 @@ public class TestScene extends Scene {
   protected void onDestroy() {
     super.onDestroy();
     calling.onDestroy++;
-  }
-
-  @Override
-  protected int onGetOpacity() {
-    return opacity;
   }
 
   public int getSavedKey() {
