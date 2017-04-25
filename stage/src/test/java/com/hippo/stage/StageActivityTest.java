@@ -107,7 +107,7 @@ public class StageActivityTest {
 
   @Test
   public void testActivityRestoreFromSavedState() {
-    proxy.create();
+    proxy.create().start().resume();
 
     Stage stage = proxy.get().installStage(0);
     TestScene scene = TestScene.create(3, Scene.OPAQUE, true);
@@ -117,11 +117,12 @@ public class StageActivityTest {
     int viewSavedKey = scene.getView().getSavedKey();
     assertNotEquals(0, viewSavedKey);
 
-    proxy.restoreFromSavedState();
+    proxy.restoreFromSavedState().start().resume();
 
     stage = proxy.get().installStage(0);
     TestScene newScene = (TestScene) stage.getTopScene();
     assertNotNull(newScene);
+    assertEquals(true, newScene.isViewAttached());
     assertEquals(scene.getArgs(), newScene.getArgs());
     assertEquals(scene.willRetainView(), newScene.willRetainView());
     assertEquals(scene.getTag(), newScene.getTag());

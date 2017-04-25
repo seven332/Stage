@@ -109,8 +109,8 @@ public abstract class Stage {
     }
   }
 
-  // TODO what if container is null
-  // TODO what if isDestroyed is true
+  // TODO what if container is null? Save the Scene, execute popScene() in setContainer()
+  // TODO what if isDestroyed is true? Just ignore it?
   /**
    * Pop a {@link Scene}.
    * It's a no-op if scene isn't in the stack.
@@ -448,7 +448,7 @@ public abstract class Stage {
     return container != null;
   }
 
-  void setContainer(ViewGroup container) {
+  void setContainer(@NonNull ViewGroup container) {
     if (DEBUG) {
       assertNull(this.container);
     }
@@ -457,7 +457,7 @@ public abstract class Stage {
 
     // Restore views
     ArrayList<Scene> visible = getVisibleScenes();
-    for (int i = visible.size() - 1; i >= 0; ++i) {
+    for (int i = visible.size() - 1; i >= 0; --i) {
       Scene scene = visible.get(i);
       scene.attachView(container);
       if (isStarted) {
@@ -481,9 +481,9 @@ public abstract class Stage {
 
     isStarted = true;
 
-    // All view-attached scene should start
-    for (Scene scene : stack) {
-      if (scene.isViewAttached()) {
+    if (container != null) {
+      // All visible scenes should start
+      for (Scene scene : getVisibleScenes()) {
         scene.start();
       }
     }
@@ -497,10 +497,12 @@ public abstract class Stage {
 
     isResumed = true;
 
-    // Only top scene should resume
-    Scene scene = getTopScene();
-    if (scene != null) {
-      scene.resume();
+    if (container != null) {
+      // Only top scene should resume
+      Scene scene = getTopScene();
+      if (scene != null) {
+        scene.resume();
+      }
     }
   }
 
@@ -512,10 +514,12 @@ public abstract class Stage {
 
     isResumed = false;
 
-    // Only top scene should pause
-    Scene scene = getTopScene();
-    if (scene != null) {
-      scene.pause();
+    if (container != null) {
+      // Only top scene should pause
+      Scene scene = getTopScene();
+      if (scene != null) {
+        scene.pause();
+      }
     }
   }
 
@@ -527,14 +531,15 @@ public abstract class Stage {
 
     isStarted = false;
 
-    // All view-attached scene should stop
-    for (Scene scene : stack) {
-      if (scene.isViewAttached()) {
+    if (container != null) {
+      // All visible scenes should stop
+      for (Scene scene : getVisibleScenes()) {
         scene.stop();
       }
     }
   }
 
+  // TODO check container == null?
   void onActivityDestroyed(boolean isFinishing) {
     if (DEBUG) {
       assertFalse(isStarted);
@@ -553,6 +558,7 @@ public abstract class Stage {
     if (isFinishing) {
       stack.popAll();
       isDestroyed = true;
+      // TODO remove from lifecycleHandler
     }
   }
 
@@ -569,25 +575,7 @@ public abstract class Stage {
     if (bundle != null) {
       // Only push Scenes to stack
       stack.restoreInstanceState(bundle);
-
-      // Add views of visible scenes and handle visible scenes lifecycle
-      ArrayList<Scene> visibleScenes = getVisibleScenes();
-      int index = visibleScenes.size();
-      // From bottom to top
-      while (--index >= 0) {
-        Scene scene = visibleScenes.get(index);
-
-        // Always attach view to tail
-        scene.attachView(container);
-
-        // Handle lifecycle
-        if (isStarted) {
-          scene.start();
-        }
-        if (isResumed && index == 0) {
-          scene.resume();
-        }
-      }
+      // setContainer() should be called soon, let it handle view attaching
     }
   }
 

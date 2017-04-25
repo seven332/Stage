@@ -84,7 +84,6 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
     ActivityStage stage = stageMap.get(stageHashKey);
     if (stage == null) {
       stage = new ActivityStage(stageHashKey);
-      stage.setContainer(container);
 
       // Restore
       if (savedInstanceState != null) {
@@ -101,6 +100,9 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
       if (isResumed) {
         stage.onActivityResumed();
       }
+
+      // setContainer() handles view re-attaching, so call it after restoring state
+      stage.setContainer(container);
 
       stageMap.put(stageHashKey, stage);
     } else {
@@ -224,6 +226,8 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
         ActivityStage stage = stageMap.valueAt(i);
         stage.onActivityDestroyed(isFinishing);
       }
+
+      // TODO unregister activity listener if isFinishing == true
     }
   }
 }
