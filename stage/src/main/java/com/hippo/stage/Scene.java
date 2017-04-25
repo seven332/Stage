@@ -334,9 +334,11 @@ public abstract class Scene {
     }
   }
 
-  // TODO need to remove view reference when activity destroyed to avoid memory leak
-
   void detachView(@NonNull ViewGroup container) {
+    detachView(container, false);
+  }
+
+  void detachView(@NonNull ViewGroup container, boolean forceDestroyView) {
     updateState(STATE_DETACHED, STATE_ATTACHED, STATE_STOPPED);
 
     // If retaining view, no need to recreate view before saveViewState() called,
@@ -355,7 +357,7 @@ public abstract class Scene {
     container.removeView(view);
     onDetachView(view);
 
-    if (!willRetainView) {
+    if (!willRetainView || forceDestroyView) {
       onDestroyView(view);
       view = null;
     }

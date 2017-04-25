@@ -211,7 +211,16 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
   @Override
   public void onActivityDestroyed(Activity activity) {
     if (activity != null && this.activity == activity) {
-      // TODO
+      if (DEBUG) {
+        assertFalse(isStarted);
+        assertFalse(isResumed);
+      }
+
+      boolean isFinishing = activity.isFinishing();
+      for (int i = 0, n = stageMap.size(); i < n; ++i) {
+        ActivityStage stage = stageMap.valueAt(i);
+        stage.onActivityDestroyed(isFinishing);
+      }
     }
   }
 }

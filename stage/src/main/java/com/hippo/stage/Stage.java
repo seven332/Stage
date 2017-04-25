@@ -514,6 +514,23 @@ public abstract class Stage {
     }
   }
 
+  void onActivityDestroyed(boolean isFinishing) {
+    if (DEBUG) {
+      assertFalse(isStarted);
+      assertFalse(isResumed);
+    }
+
+    completeRunningCurtain();
+
+    for (Scene scene : getVisibleScenes()) {
+      scene.detachView(container, true);
+    }
+
+    if (isFinishing) {
+      stack.popAll();
+    }
+  }
+
   @CallSuper
   void saveInstanceState(@NonNull Bundle outState) {
     Bundle stackState = new Bundle();

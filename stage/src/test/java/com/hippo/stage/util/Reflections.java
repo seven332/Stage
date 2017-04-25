@@ -42,4 +42,12 @@ public class Reflections {
   public static Curtain getRunningCurtain(Stage stage) {
     return (Curtain) getField(stage, Stage.class, "runningCurtain");
   }
+
+  public static boolean isStarted(Stage stage) {
+    return (boolean) getField(stage, Stage.class, "isStarted");
+  }
+
+  public static boolean isResumed(Stage stage) {
+    return (boolean) getField(stage, Stage.class, "isResumed");
+  }
 }
