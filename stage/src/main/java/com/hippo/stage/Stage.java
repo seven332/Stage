@@ -371,7 +371,17 @@ public abstract class Stage {
     changeScenes(upper, lower);
   }
 
-  private void completeRunningCurtain() {
+  /**
+   * Returns {@code true} if there is a running {@link Curtain}, or {@code false}.
+   */
+  public boolean hasCurtainRunning() {
+    return runningCurtain != null;
+  }
+
+  /**
+   * Completes running {@link Curtain}.
+   */
+  public void completeRunningCurtain() {
     if (runningCurtain != null) {
       runningCurtain.completeImmediately();
 
