@@ -42,7 +42,7 @@ import org.robolectric.annotation.Config;
 @Config(manifest = Config.NONE)
 public class StageSetRootSceneTest {
 
-  private static final int SCENE_COUNT = 5;
+  private static final int SCENE_COUNT = 3;
 
   @ParameterizedRobolectricTestRunner.Parameters(name = "{index}-setRoot-{5}")
   public static List<Object[]> data() {
