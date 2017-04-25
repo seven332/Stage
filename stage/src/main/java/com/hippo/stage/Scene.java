@@ -336,16 +336,6 @@ public abstract class Scene {
 
   // TODO need to remove view reference when activity destroyed to avoid memory leak
 
-  // detachView() will be called
-  // Handle lifecycle to fit detachView()
-  void prepareForViewDetach() {
-    // No need to check calling pause()
-    // It must be called just after the top Scene popped from the stack
-    if (state == STATE_STARTED || state == STATE_PAUSED) {
-      stop();
-    }
-  }
-
   void detachView(@NonNull ViewGroup container) {
     updateState(STATE_DETACHED, STATE_ATTACHED, STATE_STOPPED);
 

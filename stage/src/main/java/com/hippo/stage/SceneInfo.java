@@ -30,8 +30,6 @@ import android.view.View;
  */
 public final class SceneInfo {
 
-  private static final boolean DEBUG = BuildConfig.DEBUG;
-
   /**
    * The described {@link Scene}.
    */
@@ -51,14 +49,54 @@ public final class SceneInfo {
    */
   public final boolean willBeDetached;
 
-  SceneInfo(@NonNull Scene scene, @NonNull View view, boolean newlyAttached, boolean willBeDetached) {
-    if (DEBUG) {
-      assertNotNull("View of the scene is null: " + scene, view);
+  final boolean isStarted;
+
+  private SceneInfo(Builder builder) {
+    scene = builder.scene;
+    view = builder.view;
+    newlyAttached = builder.newlyAttached;
+    willBeDetached = builder.willBeDetached;
+    isStarted = builder.isStarted;
+  }
+
+  static class Builder {
+
+    private static final boolean DEBUG = BuildConfig.DEBUG;
+
+    private Scene scene;
+    private View view;
+    private boolean newlyAttached;
+    private boolean willBeDetached;
+    private boolean isStarted;
+
+    public Builder scene(@NonNull Scene scene) {
+      this.scene = scene;
+      this.view = scene.getView();
+
+      if (DEBUG) {
+        assertNotNull("View of the scene is null: " + scene, scene.getView());
+      }
+
+      return this;
     }
 
-    this.scene = scene;
-    this.view = view;
-    this.newlyAttached = newlyAttached;
-    this.willBeDetached = willBeDetached;
+    public Builder newlyAttached(boolean newlyAttached) {
+      this.newlyAttached = newlyAttached;
+      return this;
+    }
+
+    public Builder willBeDetached(boolean willBeDetached) {
+      this.willBeDetached = willBeDetached;
+      return this;
+    }
+
+    public Builder isStarted(boolean isStarted) {
+      this.isStarted = isStarted;
+      return this;
+    }
+
+    public SceneInfo build() {
+      return new SceneInfo(this);
+    }
   }
 }

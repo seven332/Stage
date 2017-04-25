@@ -117,8 +117,12 @@ public abstract class Stage {
       if (index == 0 && isResumed) {
         scene.pause();
       }
-      //noinspection ConstantConditions Let SceneInfo check in debug mode
-      SceneInfo upperInfo = new SceneInfo(scene, scene.getView(), false, true);
+      SceneInfo upperInfo = new SceneInfo.Builder()
+          .scene(scene)
+          .newlyAttached(false)
+          .willBeDetached(true)
+          .isStarted(isStarted)
+          .build();
       List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
       int opacity = scene.opacity();
@@ -139,8 +143,12 @@ public abstract class Stage {
           lowerScene.resume();
         }
 
-        //noinspection ConstantConditions Let SceneInfo check in debug mode
-        SceneInfo lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), newlyAttached, false);
+        SceneInfo lowerInfo = new SceneInfo.Builder()
+            .scene(lowerScene)
+            .newlyAttached(newlyAttached)
+            .willBeDetached(false)
+            .isStarted(isStarted)
+            .build();
         lower.add(lowerInfo);
 
         if (isTop && lowerScene.opacity() == Scene.TRANSLUCENT) {
@@ -174,8 +182,12 @@ public abstract class Stage {
     if (isResumed) {
       scene.resume();
     }
-    //noinspection ConstantConditions Let SceneInfo check in debug mode
-    SceneInfo upperInfo = new SceneInfo(scene, scene.getView(), true, false);
+    SceneInfo upperInfo = new SceneInfo.Builder()
+        .scene(scene)
+        .newlyAttached(true)
+        .willBeDetached(false)
+        .isStarted(isStarted)
+        .build();
     List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
     List<SceneInfo> lower = new ArrayList<>(oldScenes.size());
@@ -190,8 +202,12 @@ public abstract class Stage {
         lowerScene.pause();
       }
 
-      //noinspection ConstantConditions Let SceneInfo check in debug mode
-      SceneInfo lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, i >= detachIndex);
+      SceneInfo lowerInfo = new SceneInfo.Builder()
+          .scene(lowerScene)
+          .newlyAttached(false)
+          .willBeDetached(i >= detachIndex)
+          .isStarted(isStarted)
+          .build();
       lower.add(lowerInfo);
     }
 
@@ -225,8 +241,12 @@ public abstract class Stage {
     if (isResumed) {
       scene.resume();
     }
-    //noinspection ConstantConditions Let SceneInfo check in debug mode
-    SceneInfo upperInfo = new SceneInfo(scene, scene.getView(), true, false);
+    SceneInfo upperInfo = new SceneInfo.Builder()
+        .scene(scene)
+        .newlyAttached(true)
+        .willBeDetached(false)
+        .isStarted(isStarted)
+        .build();
     List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
     int lowerSize = Math.max(oldScenes.size(), newScenes.size());
@@ -235,23 +255,35 @@ public abstract class Stage {
     if (isResumed) {
       oldTopScene.pause();
     }
-    //noinspection ConstantConditions Let SceneInfo check in debug mode
-    SceneInfo lowerInfo = new SceneInfo(oldTopScene, oldTopScene.getView(), false, true);
+    SceneInfo lowerInfo = new SceneInfo.Builder()
+        .scene(oldTopScene)
+        .newlyAttached(false)
+        .willBeDetached(true)
+        .isStarted(isStarted)
+        .build();
     lower.add(lowerInfo);
     // Add the same scenes which are in both old visible scenes and new visible scenes
     int sameSize = Math.min(oldScenes.size(), newScenes.size());
     for (int i = 1; i < sameSize; ++i) {
       Scene lowerScene = oldScenes.get(i);
-      //noinspection ConstantConditions Let SceneInfo check in debug mode
-      lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, false);
+      lowerInfo = new SceneInfo.Builder()
+          .scene(lowerScene)
+          .newlyAttached(false)
+          .willBeDetached(false)
+          .isStarted(isStarted)
+          .build();
       lower.add(lowerInfo);
     }
     // Add scenes which will be detached
     if (oldScenes.size() > sameSize) {
       for (int i = sameSize; i < oldScenes.size(); ++i) {
         Scene lowerScene = oldScenes.get(i);
-        //noinspection ConstantConditions Let SceneInfo check in debug mode
-        lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, true);
+        lowerInfo = new SceneInfo.Builder()
+            .scene(lowerScene)
+            .newlyAttached(false)
+            .willBeDetached(true)
+            .isStarted(isStarted)
+            .build();
         lower.add(lowerInfo);
       }
     }
@@ -264,8 +296,12 @@ public abstract class Stage {
         if (isStarted) {
           lowerScene.start();
         }
-        //noinspection ConstantConditions Let SceneInfo check in debug mode
-        lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), true, false);
+        lowerInfo = new SceneInfo.Builder()
+            .scene(lowerScene)
+            .newlyAttached(true)
+            .willBeDetached(false)
+            .isStarted(isStarted)
+            .build();
         lower.add(lowerInfo);
       }
     }
@@ -288,8 +324,12 @@ public abstract class Stage {
     if (isResumed) {
       scene.resume();
     }
-    //noinspection ConstantConditions Let SceneInfo check in debug mode
-    SceneInfo upperInfo = new SceneInfo(scene, scene.getView(), true, false);
+    SceneInfo upperInfo = new SceneInfo.Builder()
+        .scene(scene)
+        .newlyAttached(true)
+        .willBeDetached(false)
+        .isStarted(isStarted)
+        .build();
     List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
     List<SceneInfo> lower = new ArrayList<>(oldScenes.size());
@@ -299,8 +339,12 @@ public abstract class Stage {
         lowerScene.pause();
       }
 
-      //noinspection ConstantConditions Let SceneInfo check in debug mode
-      SceneInfo lowerInfo = new SceneInfo(lowerScene, lowerScene.getView(), false, true);
+      SceneInfo lowerInfo = new SceneInfo.Builder()
+          .scene(lowerScene)
+          .newlyAttached(false)
+          .willBeDetached(true)
+          .isStarted(isStarted)
+          .build();
       lower.add(lowerInfo);
 
       // Not top anymore
@@ -350,7 +394,9 @@ public abstract class Stage {
     for (SceneInfo info : infos) {
       if (info.willBeDetached) {
         Scene scene = info.scene;
-        scene.prepareForViewDetach();
+        if (info.isStarted) {
+          scene.stop();
+        }
         scene.detachView(container);
       }
     }
