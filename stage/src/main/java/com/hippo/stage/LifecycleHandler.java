@@ -83,7 +83,7 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
     int stageHashKey = getStageHashKey(container);
     ActivityStage stage = stageMap.get(stageHashKey);
     if (stage == null) {
-      stage = new ActivityStage();
+      stage = new ActivityStage(stageHashKey);
       stage.setContainer(container);
 
       // Restore
@@ -104,13 +104,14 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
 
       stageMap.put(stageHashKey, stage);
     } else {
-      if (stage.hasContainer() && stage.getContainer() != container) {
+      if (!stage.hasContainer()) {
+        stage.setContainer(container);
+      } else if (stage.getContainer() != container) {
         throw new IllegalStateException("The Stage already has a different container. "
             + "If you want more than one Stage in a Activity, "
             + "please use different container view for each Stage, "
             + "and set different ID for each container view.");
       }
-      stage.setContainer(container);
     }
     return stage;
   }
@@ -203,7 +204,9 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
     if (activity != null && this.activity == activity) {
       for (int i = 0, n = stageMap.size(); i < n; ++i) {
         ActivityStage stage = stageMap.valueAt(i);
-        stage.saveInstanceState(outState);
+        Bundle bundle = new Bundle();
+        stage.saveInstanceState(bundle);
+        outState.putBundle(getStageStateKey(stage.hashKey), bundle);
       }
     }
   }

@@ -21,5 +21,10 @@ package com.hippo.stage;
  */
 
 class ActivityStage extends Stage {
-  // TODO
+
+  final int hashKey;
+
+  ActivityStage(int hashKey) {
+    this.hashKey = hashKey;
+  }
 }

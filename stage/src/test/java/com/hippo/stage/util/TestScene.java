@@ -43,6 +43,9 @@ public class TestScene extends Scene {
 
   private SceneCalling calling = new SceneCalling();
 
+  private static int SAVED_KEY;
+  private int savedKey;
+
   public SceneCalling copyCalling() {
     return calling.copy();
   }
@@ -60,6 +63,11 @@ public class TestScene extends Scene {
   }
 
   @Override
+  public TestView getView() {
+    return (TestView) super.getView();
+  }
+
+  @Override
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
     id = args != null ? args.getInt(KEY_ID) : 0;
@@ -74,7 +82,7 @@ public class TestScene extends Scene {
   @NonNull
   @Override
   protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-    View view = new View(inflater.getContext());
+    View view = new TestView(inflater.getContext());
     view.setId(id);
     calling.onCreateView++;
     return view;
@@ -131,6 +139,29 @@ public class TestScene extends Scene {
   @Override
   protected int onGetOpacity() {
     return opacity;
+  }
+
+  public int getSavedKey() {
+    if (savedKey == 0) {
+      savedKey = ++SAVED_KEY;
+    }
+    return savedKey;
+  }
+
+  public void setSavedKey(int savedKey) {
+    this.savedKey = savedKey;
+  }
+
+  @Override
+  protected void onSaveViewState(@NonNull View view, @NonNull Bundle outState) {
+    super.onSaveViewState(view, outState);
+    outState.putInt("saved_key", getSavedKey());
+  }
+
+  @Override
+  protected void onRestoreViewState(@NonNull View view, @NonNull Bundle savedViewState) {
+    super.onRestoreViewState(view, savedViewState);
+    setSavedKey(savedViewState.getInt("saved_key"));
   }
 
   public static TestScene create(int id, @Opacity int opacity, boolean retainView) {

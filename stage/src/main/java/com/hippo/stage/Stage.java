@@ -21,6 +21,7 @@ package com.hippo.stage;
  */
 
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import android.app.Activity;
@@ -62,6 +63,7 @@ public abstract class Stage {
 
   private boolean isStarted;
   private boolean isResumed;
+  private boolean isDestroyed;
 
   /**
    * Register a {@link Activity} to make it available for installing {@code Stage}.
@@ -107,6 +109,8 @@ public abstract class Stage {
     }
   }
 
+  // TODO what if container is null
+  // TODO what if isDestroyed is true
   /**
    * Pop a {@link Scene}.
    * It's a no-op if scene isn't in the stack.
@@ -445,7 +449,24 @@ public abstract class Stage {
   }
 
   void setContainer(ViewGroup container) {
+    if (DEBUG) {
+      assertNull(this.container);
+    }
+
     this.container = container;
+
+    // Restore views
+    ArrayList<Scene> visible = getVisibleScenes();
+    for (int i = visible.size() - 1; i >= 0; ++i) {
+      Scene scene = visible.get(i);
+      scene.attachView(container);
+      if (isStarted) {
+        scene.start();
+      }
+      if (isResumed && i == 0) {
+        scene.resume();
+      }
+    }
   }
 
   ViewGroup getContainer() {
@@ -526,8 +547,12 @@ public abstract class Stage {
       scene.detachView(container, true);
     }
 
+    // The activity is destroyed, can't attach views to this container
+    container = null;
+
     if (isFinishing) {
       stack.popAll();
+      isDestroyed = true;
     }
   }
 

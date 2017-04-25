@@ -71,7 +71,6 @@ public abstract class Scene {
   private static final int STATE_DETACHED = 7;
   private static final int STATE_DESTROYED = 8;
 
-  private static final String KEY_CLASS_NAME = "Scene:class_name";
   private static final String KEY_TAG = "Scene:tag";
   private static final String KEY_ARGS = "Scene:args";
   private static final String KEY_WILL_RETAIN_VIEW = "Scene:will_retain_view";
@@ -92,8 +91,7 @@ public abstract class Scene {
   private boolean isFinishing;
 
   @NonNull
-  static Scene newInstance(@NonNull Bundle bundle) {
-    final String className = bundle.getString(KEY_CLASS_NAME);
+  static Scene newInstance(String className, @NonNull Bundle bundle) {
     Scene scene = Utils.newInstance(className);
     scene.restoreInstanceState(bundle);
     return scene;
@@ -384,8 +382,10 @@ public abstract class Scene {
       view.restoreHierarchyState(viewState.getSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY));
 
       Bundle savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE);
-      savedViewState.setClassLoader(getClass().getClassLoader());
-      onRestoreViewState(view, savedViewState);
+      if (savedViewState != null) {
+        savedViewState.setClassLoader(getClass().getClassLoader());
+        onRestoreViewState(view, savedViewState);
+      }
     }
   }
 

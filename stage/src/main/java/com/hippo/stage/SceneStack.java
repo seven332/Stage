@@ -30,6 +30,7 @@ import java.util.Iterator;
 class SceneStack implements Iterable<Scene> {
 
   private static final String KEY_ENTRIES = "SceneStack:entries";
+  private static final String KEY_CLASS_NAME = "SceneStack:class_name";
 
   static final int INVALID_INDEX = -1;
 
@@ -106,7 +107,9 @@ class SceneStack implements Iterable<Scene> {
   void saveInstanceState(@NonNull Bundle outState) {
     ArrayList<Bundle> bundles = new ArrayList<>(stack.size());
     for (Scene scene : stack) {
-      bundles.add(scene.saveInstanceState());
+      Bundle bundle = scene.saveInstanceState();
+      bundle.putString(KEY_CLASS_NAME, scene.getClass().getName());
+      bundles.add(bundle);
     }
     outState.putParcelableArrayList(KEY_ENTRIES, bundles);
   }
@@ -117,7 +120,8 @@ class SceneStack implements Iterable<Scene> {
       int index = bundles.size();
       while (--index >= 0) {
         Bundle bundle = bundles.get(index);
-        Scene scene = Scene.newInstance(bundle);
+        String className = bundle.getString(KEY_CLASS_NAME);
+        Scene scene = Scene.newInstance(className, bundle);
         push(scene);
       }
     }

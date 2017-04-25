@@ -21,62 +21,62 @@ package com.hippo.stage;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
+import com.hippo.stage.util.ActivityProxy;
 import com.hippo.stage.util.Reflections;
-import com.hippo.stage.util.TestActivity;
 import com.hippo.stage.util.TestScene;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class StageActivityTest {
 
-  private ActivityController<TestActivity> controller;
+  private ActivityProxy proxy;
 
   @Before
   public void before() {
-    controller = Robolectric.buildActivity(TestActivity.class);
+    proxy = new ActivityProxy();
   }
 
   @Test
   public void testActivityLifecycleCatching() {
-    controller.create();
+    proxy.create();
 
-    Stage stage1 = controller.get().installStage(1);
+    Stage stage1 = proxy.get().installStage(1);
     assertEquals(false, Reflections.isStarted(stage1));
     assertEquals(false, Reflections.isResumed(stage1));
 
-    controller.start();
+    proxy.start();
     assertEquals(true, Reflections.isStarted(stage1));
     assertEquals(false, Reflections.isResumed(stage1));
 
-    controller.resume();
+    proxy.resume();
     assertEquals(true, Reflections.isStarted(stage1));
     assertEquals(true, Reflections.isResumed(stage1));
 
-    Stage stage2 = controller.get().installStage(2);
+    Stage stage2 = proxy.get().installStage(2);
     assertEquals(true, Reflections.isStarted(stage2));
     assertEquals(true, Reflections.isResumed(stage2));
 
-    controller.pause();
+    proxy.pause();
     assertEquals(true, Reflections.isStarted(stage1));
     assertEquals(false, Reflections.isResumed(stage1));
     assertEquals(true, Reflections.isStarted(stage2));
     assertEquals(false, Reflections.isResumed(stage2));
 
-    controller.stop();
+    proxy.stop();
     assertEquals(false, Reflections.isStarted(stage1));
     assertEquals(false, Reflections.isResumed(stage1));
     assertEquals(false, Reflections.isStarted(stage2));
     assertEquals(false, Reflections.isResumed(stage2));
 
-    controller.destroy();
+    proxy.destroy();
     assertEquals(false, Reflections.isStarted(stage1));
     assertEquals(false, Reflections.isResumed(stage1));
     assertEquals(false, Reflections.isStarted(stage2));
@@ -85,9 +85,9 @@ public class StageActivityTest {
 
   @Test
   public void testActivityFinish() {
-    controller.create().start().resume();
+    proxy.create().start().resume();
 
-    Stage stage = controller.get().installStage(0);
+    Stage stage = proxy.get().installStage(0);
 
     TestScene scene1 = new TestScene();
     TestScene scene2 = new TestScene();
@@ -97,12 +97,35 @@ public class StageActivityTest {
     stage.pushScene(scene3);
     assertEquals(3, stage.getSceneCount());
 
-    controller.get().finish();
-    controller.pause().stop().destroy();
+    proxy.finish();
 
     assertEquals(0, stage.getSceneCount());
     assertEquals(true, scene1.isDestroyed());
     assertEquals(true, scene2.isDestroyed());
     assertEquals(true, scene3.isDestroyed());
+  }
+
+  @Test
+  public void testActivityRestoreFromSavedState() {
+    proxy.create();
+
+    Stage stage = proxy.get().installStage(0);
+    TestScene scene = TestScene.create(3, Scene.OPAQUE, true);
+    stage.pushScene(scene);
+    int sceneSavedKey = scene.getSavedKey();
+    assertNotEquals(0, sceneSavedKey);
+    int viewSavedKey = scene.getView().getSavedKey();
+    assertNotEquals(0, viewSavedKey);
+
+    proxy.restoreFromSavedState();
+
+    stage = proxy.get().installStage(0);
+    TestScene newScene = (TestScene) stage.getTopScene();
+    assertNotNull(newScene);
+    assertEquals(scene.getArgs(), newScene.getArgs());
+    assertEquals(scene.willRetainView(), newScene.willRetainView());
+    assertEquals(scene.getTag(), newScene.getTag());
+    assertEquals(sceneSavedKey, newScene.getSavedKey());
+    assertEquals(viewSavedKey, newScene.getView().getSavedKey());
   }
 }
