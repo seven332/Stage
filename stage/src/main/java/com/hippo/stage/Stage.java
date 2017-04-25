@@ -64,14 +64,27 @@ public abstract class Stage {
   private boolean isResumed;
 
   /**
+   * Register a {@link Activity} to make it available for installing {@code Stage}.
+   * This is useful when no {@code Stage} need to be created at beginning.
+   *
+   * @see #install(Activity, ViewGroup, Bundle)
+   */
+  public static void register(@NonNull Activity activity) {
+    LifecycleHandler.install(activity);
+  }
+
+  /**
    * Install a {@code Stage} to a {@link Activity}.
    * <p>
-   * At least, it must be called once before {@link Activity#onResume()} called,
+   * At least, this method or {@link #register(Activity)} must be called once
+   * before {@link Activity#onResume()} called,
    * to ensure activity lifecycle record work fine.
    * <p>
    * Multiple {@code Stage}s can be installed to the same {@link Activity}.
    * Use different container view for each {@code Stage}.
    * Set different ID for each container view.
+   *
+   * @see #register(Activity)
    */
   @NonNull
   public static Stage install(
