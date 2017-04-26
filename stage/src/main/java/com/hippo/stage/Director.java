@@ -20,6 +20,7 @@ package com.hippo.stage;
  * Created by Hippo on 4/22/2017.
  */
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
@@ -49,6 +50,8 @@ public class Director extends Fragment {
   private boolean isResumed;
   private boolean isDestroy;
 
+  private Activity activity;
+
   private final SparseArray<ActivityStage> stageMap = new SparseArray<>();
 
   private final ActivityCallbacks activityCallbacks =
@@ -70,12 +73,30 @@ public class Director extends Fragment {
       activity.getFragmentManager().beginTransaction().add(director, FRAGMENT_TAG).commit();
     }
 
+    // Fragment.getActivity() returns null before Fragment.onCreate() called.
+    // So store Activity here for Stage and Scene.
+    director.setActivityForStage(activity);
+
     return director;
   }
 
   public Director() {
     setRetainInstance(true);
     setHasOptionsMenu(true);
+  }
+
+  private void setActivityForStage(Activity activity) {
+    if (this.activity == null) {
+      this.activity = activity;
+    } else {
+      if (DEBUG) {
+        assertEquals(this.activity, activity);
+      }
+    }
+  }
+
+  Activity getActivityForStage() {
+    return activity;
   }
 
   @NonNull
@@ -87,7 +108,7 @@ public class Director extends Fragment {
     int stageHashKey = getStageHashKey(container);
     ActivityStage stage = stageMap.get(stageHashKey);
     if (stage == null) {
-      stage = new ActivityStage(stageHashKey);
+      stage = new ActivityStage(stageHashKey, this);
 
       // Restore
       if (savedInstanceState != null) {
@@ -221,6 +242,9 @@ public class Director extends Fragment {
         ActivityStage stage = stageMap.valueAt(i);
         stage.detach();
       }
+
+      // The activity will be destroyed soon
+      activity = null;
     }
   }
 
@@ -244,6 +268,9 @@ public class Director extends Fragment {
       stage.destroy();
     }
     stageMap.clear();
+
+    // The activity will be destroyed soon
+    activity = null;
   }
 
   private void saveStageState(Bundle outState) {
@@ -251,7 +278,7 @@ public class Director extends Fragment {
       ActivityStage stage = stageMap.valueAt(i);
       Bundle bundle = new Bundle();
       stage.saveInstanceState(bundle);
-      outState.putBundle(getStageStateKey(stage.hashKey), bundle);
+      outState.putBundle(getStageStateKey(stage.getHashKey()), bundle);
     }
   }
 }

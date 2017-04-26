@@ -20,11 +20,30 @@ package com.hippo.stage;
  * Created by Hippo on 4/20/2017.
  */
 
+import android.app.Activity;
+
 class ActivityStage extends Stage {
 
-  final int hashKey;
+  private final int hashKey;
+  private Director director;
 
-  ActivityStage(int hashKey) {
+  ActivityStage(int hashKey, Director director) {
     this.hashKey = hashKey;
+    this.director = director;
+  }
+
+  public int getHashKey() {
+    return hashKey;
+  }
+
+  @Override
+  Activity getActivity() {
+    return director != null ? director.getActivityForStage() : null;
+  }
+
+  @Override
+  void destroy() {
+    super.destroy();
+    director = null;
   }
 }

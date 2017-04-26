@@ -631,6 +631,9 @@ public abstract class Stage {
     this.curtainSuppler = suppler;
   }
 
+  @Nullable
+  abstract Activity getActivity();
+
   /**
    * A {@code CurtainSuppler} supplies {@link Curtain} for {@link Stage}.
    */

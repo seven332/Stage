@@ -23,6 +23,8 @@ package com.hippo.stage;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
+import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
@@ -226,6 +228,23 @@ public abstract class Scene {
    */
   public boolean isDestroyed() {
     return state == STATE_DESTROYED;
+  }
+
+  /**
+   * Return the {@link Activity} this {@code Scene} is currently associated with.
+   */
+  @Nullable
+  public final Activity getActivity() {
+    return stage != null ? stage.getActivity() : null;
+  }
+
+  /**
+   * Return the {@link Application} this {@code Scene} is currently associated with.
+   */
+  @Nullable
+  public final Application getApplication() {
+    Activity activity = getActivity();
+    return activity != null ? activity.getApplication() : null;
   }
 
   private void assertState(int state) {
