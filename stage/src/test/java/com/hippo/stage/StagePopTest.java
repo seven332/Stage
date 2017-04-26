@@ -174,10 +174,10 @@ public class StagePopTest {
   @Test
   public void testPopEntry() {
     if (resumed) {
-      stage.onActivityStarted();
-      stage.onActivityResumed();
+      stage.start();
+      stage.resume();
     } else if (started) {
-      stage.onActivityStarted();
+      stage.start();
     }
 
     int size = opacities.length;

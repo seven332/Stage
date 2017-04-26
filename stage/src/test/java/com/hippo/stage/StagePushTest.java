@@ -147,10 +147,10 @@ public class StagePushTest {
   @Test
   public void testPush() {
     if (resumed) {
-      stage.onActivityStarted();
-      stage.onActivityResumed();
+      stage.start();
+      stage.resume();
     } else if (started) {
-      stage.onActivityStarted();
+      stage.start();
     }
 
     TestScene[] scenes = new TestScene[opacities.length];

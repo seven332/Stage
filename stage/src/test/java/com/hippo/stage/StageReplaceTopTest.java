@@ -174,10 +174,10 @@ public class StageReplaceTopTest {
   @Test
   public void testReplaceTop() {
     if (resumed) {
-      stage.onActivityStarted();
-      stage.onActivityResumed();
+      stage.start();
+      stage.resume();
     } else if (started) {
-      stage.onActivityStarted();
+      stage.start();
     }
 
     int size = opacities.length;

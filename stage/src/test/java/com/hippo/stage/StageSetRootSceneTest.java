@@ -156,10 +156,10 @@ public class StageSetRootSceneTest {
   @Test
   public void testSetRoot() {
     if (resumed) {
-      stage.onActivityStarted();
-      stage.onActivityResumed();
+      stage.start();
+      stage.resume();
     } else if (started) {
-      stage.onActivityStarted();
+      stage.start();
     }
 
     int size = opacities.length;

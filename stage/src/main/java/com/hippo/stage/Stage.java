@@ -68,24 +68,29 @@ public abstract class Stage {
 
   /**
    * Register a {@link Activity} to make it available for installing {@code Stage}.
+   * <p>
+   * Actually this method create a {@link Director} which is a {@link android.app.Fragment},
+   * and add it the the {@link Activity}. Call it where it's safe
+   * to add a {@link android.app.Fragment}.
+   * <p>
    * This is useful when no {@code Stage} need to be created at beginning.
    *
    * @see #install(Activity, ViewGroup, Bundle)
    */
   public static void register(@NonNull Activity activity) {
-    LifecycleHandler.install(activity);
+    Director.install(activity);
   }
 
   /**
    * Install a {@code Stage} to a {@link Activity}.
    * <p>
-   * At least, this method or {@link #register(Activity)} must be called once
-   * before {@link Activity#onResume()} called,
-   * to ensure activity lifecycle record work fine.
+   * If {@link #register(Activity)} hasn't been called before, it is called here.
    * <p>
    * Multiple {@code Stage}s can be installed to the same {@link Activity}.
    * Use different container view for each {@code Stage}.
    * Set different ID for each container view.
+   *
+   * @param savedInstanceState the {@link Bundle} passed in {@link Activity#onCreate(Bundle)}
    *
    * @see #register(Activity)
    */
@@ -93,8 +98,8 @@ public abstract class Stage {
   public static Stage install(
       @NonNull Activity activity, @NonNull ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    LifecycleHandler lifecycleHandler = LifecycleHandler.install(activity);
-    return lifecycleHandler.getStage(container, savedInstanceState);
+    Director director = Director.install(activity);
+    return director.getStage(container, savedInstanceState);
   }
 
   /**
@@ -463,6 +468,7 @@ public abstract class Stage {
     if (DEBUG) {
       assertNull(this.container);
       assertNotNull(container);
+      assertFalse(isDestroyed);
     }
 
     this.container = container;
@@ -485,7 +491,7 @@ public abstract class Stage {
     return container;
   }
 
-  void onActivityStarted() {
+  void start() {
     if (DEBUG) {
       assertFalse(isStarted);
       assertFalse(isResumed);
@@ -501,7 +507,7 @@ public abstract class Stage {
     }
   }
 
-  void onActivityResumed() {
+  void resume() {
     if (DEBUG) {
       assertTrue(isStarted);
       assertFalse(isResumed);
@@ -518,7 +524,7 @@ public abstract class Stage {
     }
   }
 
-  void onActivityPaused() {
+  void pause() {
     if (DEBUG) {
       assertTrue(isStarted);
       assertTrue(isResumed);
@@ -535,7 +541,7 @@ public abstract class Stage {
     }
   }
 
-  void onActivityStopped() {
+  void stop() {
     if (DEBUG) {
       assertTrue(isStarted);
       assertFalse(isResumed);
@@ -551,8 +557,7 @@ public abstract class Stage {
     }
   }
 
-  // TODO check container == null?
-  void onActivityDestroyed() {
+  void detach() {
     if (DEBUG) {
       assertFalse(isStarted);
       assertFalse(isResumed);
@@ -560,15 +565,21 @@ public abstract class Stage {
 
     completeRunningCurtain();
 
-    for (Scene scene : getVisibleScenes()) {
-      scene.detachView(container, true);
-    }
+    if (container != null) {
+      for (Scene scene : getVisibleScenes()) {
+        scene.detachView(container, true);
+      }
 
-    // The activity is destroyed, can't attach views to this container
-    container = null;
+      // The activity is destroyed, can't attach views to this container
+      container = null;
+    }
   }
 
   void destroy() {
+    if (DEBUG) {
+      assertNull(container);
+    }
+
     isDestroyed = true;
     stack.popAll();
   }
