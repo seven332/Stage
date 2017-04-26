@@ -23,6 +23,8 @@ package com.hippo.stage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import android.app.Activity;
+import android.support.annotation.Nullable;
 import com.hippo.stage.util.TestContainer;
 import com.hippo.stage.util.TestScene;
 import org.junit.Before;
@@ -88,5 +90,11 @@ public class StageTest {
     assertEquals(1, stage.getSceneCount());
   }
 
-  private static class TestStage extends Stage {}
+  private static class TestStage extends Stage {
+    @Nullable
+    @Override
+    Activity getActivity() {
+      return null;
+    }
+  }
 }

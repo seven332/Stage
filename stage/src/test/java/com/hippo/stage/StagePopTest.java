@@ -22,6 +22,8 @@ package com.hippo.stage;
 
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
+import android.support.annotation.Nullable;
 import com.github.dakusui.combinatoradix.Permutator;
 import com.hippo.stage.util.HomogeniousPermutator;
 import com.hippo.stage.util.Reflections;
@@ -301,5 +303,11 @@ public class StagePopTest {
     assertEquals(0, container.getChildCount());
   }
 
-  private static class TestStage extends Stage {}
+  private static class TestStage extends Stage {
+    @Nullable
+    @Override
+    Activity getActivity() {
+      return null;
+    }
+  }
 }
