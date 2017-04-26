@@ -21,6 +21,7 @@ package com.hippo.stage;
  */
 
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -461,6 +462,7 @@ public abstract class Stage {
   void setContainer(@NonNull ViewGroup container) {
     if (DEBUG) {
       assertNull(this.container);
+      assertNotNull(container);
     }
 
     this.container = container;
@@ -550,7 +552,7 @@ public abstract class Stage {
   }
 
   // TODO check container == null?
-  void onActivityDestroyed(boolean isFinishing) {
+  void onActivityDestroyed() {
     if (DEBUG) {
       assertFalse(isStarted);
       assertFalse(isResumed);
@@ -564,12 +566,11 @@ public abstract class Stage {
 
     // The activity is destroyed, can't attach views to this container
     container = null;
+  }
 
-    if (isFinishing) {
-      stack.popAll();
-      isDestroyed = true;
-      // TODO remove from lifecycleHandler
-    }
+  void destroy() {
+    isDestroyed = true;
+    stack.popAll();
   }
 
   @CallSuper

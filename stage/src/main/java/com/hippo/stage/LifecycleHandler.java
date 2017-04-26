@@ -20,6 +20,7 @@ package com.hippo.stage;
  * Created by Hippo on 4/22/2017.
  */
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
@@ -45,6 +46,7 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
 
   private boolean isStarted;
   private boolean isResumed;
+  private boolean isDestroy;
 
   private final SparseArray<ActivityStage> stageMap = new SparseArray<>();
 
@@ -68,18 +70,26 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
   }
 
   private void registerActivityListener(@NonNull Activity activity) {
-    if (this.activity != activity) {
+    if (this.activity == null) {
       this.activity = activity;
 
       if (!hasRegisteredCallbacks) {
         hasRegisteredCallbacks = true;
         activity.getApplication().registerActivityLifecycleCallbacks(this);
       }
+    } else {
+      if (DEBUG) {
+        assertEquals(activity, this.activity);
+      }
     }
   }
 
   @NonNull
-  public Stage getStage(@NonNull ViewGroup container, @Nullable Bundle savedInstanceState) {
+  Stage getStage(@NonNull ViewGroup container, @Nullable Bundle savedInstanceState) {
+    if (isDestroy) {
+      throw new IllegalStateException("Can't call getStage() on a destroyed LifecycleHandler");
+    }
+
     int stageHashKey = getStageHashKey(container);
     ActivityStage stage = stageMap.get(stageHashKey);
     if (stage == null) {
@@ -127,11 +137,7 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
   }
 
   @Override
-  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (activity != null && this.activity == activity) {
-      // TODO
-    }
-  }
+  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
   @Override
   public void onActivityStarted(Activity activity) {
@@ -221,13 +227,32 @@ public class LifecycleHandler extends Fragment implements Application.ActivityLi
         assertFalse(isResumed);
       }
 
-      boolean isFinishing = activity.isFinishing();
       for (int i = 0, n = stageMap.size(); i < n; ++i) {
         ActivityStage stage = stageMap.valueAt(i);
-        stage.onActivityDestroyed(isFinishing);
+        stage.onActivityDestroyed();
       }
 
-      // TODO unregister activity listener if isFinishing == true
+      this.activity = null;
     }
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+
+    getActivity().getApplication().unregisterActivityLifecycleCallbacks(this);
+
+    if (activity != null) {
+      // onActivityDestroyed() has not been called, call it right now
+      onActivityDestroyed(activity);
+    }
+
+    isDestroy = true;
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      ActivityStage stage = stageMap.valueAt(i);
+      stage.destroy();
+    }
+    stageMap.clear();
   }
 }
