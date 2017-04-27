@@ -49,6 +49,10 @@ class SceneStack implements Iterable<Scene> {
     return stack.size();
   }
 
+  boolean contains(@NonNull Scene scene) {
+    return stack.contains(scene);
+  }
+
   @Nullable
   Scene peek() {
     return stack.peekFirst();

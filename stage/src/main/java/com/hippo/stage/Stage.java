@@ -115,7 +115,6 @@ public abstract class Stage {
     }
   }
 
-  // TODO what if container is null? Save the Scene, execute popScene() in setContainer()
   // TODO what if isDestroyed is true? Just ignore it?
   /**
    * Pop a {@link Scene}.
@@ -124,67 +123,81 @@ public abstract class Stage {
   public void popScene(@NonNull Scene scene) {
     completeRunningCurtain();
 
-    // Only need sync views if the scene is attached
-    boolean needSyncViews = scene.isViewAttached();
-
-    int index = stack.pop(scene);
-    if (index == SceneStack.INVALID_INDEX) {
+    if (!stack.contains(scene)) {
       Log.w(LOG_TAG, "Can't pop an Scene which isn't performed on this Stage");
       return;
     }
 
-    if (needSyncViews) {
-      // Calculate the visible scenes below popped scene
-      List<Scene> newScenes = getVisibleScenes();
+    if (container != null && scene.isViewAttached()) {
+      popSceneWithViews(scene);
+    } else {
+      popSceneWithoutViews(scene);
+    }
+  }
 
-      if (index == 0 && isResumed) {
-        scene.pause();
+  private void popSceneWithViews(@NonNull Scene scene) {
+    int index = stack.pop(scene);
+
+    if (DEBUG) {
+      if (index == SceneStack.INVALID_INDEX) {
+        throw new IllegalStateException("Popped index must not be INVALID_INDEX");
       }
-      SceneInfo upperInfo = new SceneInfo.Builder()
-          .scene(scene)
-          .newlyAttached(false)
-          .willBeDetached(true)
+    }
+
+    // Calculate the visible scenes below popped scene
+    List<Scene> newScenes = getVisibleScenes();
+
+    if (index == 0 && isResumed) {
+      scene.pause();
+    }
+    SceneInfo upperInfo = new SceneInfo.Builder()
+        .scene(scene)
+        .newlyAttached(false)
+        .willBeDetached(true)
+        .isStarted(isStarted)
+        .build();
+    List<SceneInfo> upper = Collections.singletonList(upperInfo);
+
+    int opacity = scene.getOpacity();
+    boolean newlyAttached = opacity == Scene.OPAQUE || (opacity == Scene.TRANSLUCENT && index != 0);
+    boolean isTop = index == 0;
+    List<Scene> lowerScenes = newScenes.subList(index, newScenes.size());
+    List<SceneInfo> lower = new ArrayList<>(lowerScenes.size());
+    for (Scene lowerScene : lowerScenes) {
+
+      if (newlyAttached) {
+        lowerScene.attachView(container, 0);
+        if (isStarted) {
+          lowerScene.start();
+        }
+      }
+      // Only top scene can be resumed
+      if (isResumed && isTop) {
+        lowerScene.resume();
+      }
+
+      SceneInfo lowerInfo = new SceneInfo.Builder()
+          .scene(lowerScene)
+          .newlyAttached(newlyAttached)
+          .willBeDetached(false)
           .isStarted(isStarted)
           .build();
-      List<SceneInfo> upper = Collections.singletonList(upperInfo);
+      lower.add(lowerInfo);
 
-      int opacity = scene.getOpacity();
-      boolean newlyAttached = opacity == Scene.OPAQUE || (opacity == Scene.TRANSLUCENT && index != 0);
-      boolean isTop = index == 0;
-      List<Scene> lowerScenes = newScenes.subList(index, newScenes.size());
-      List<SceneInfo> lower = new ArrayList<>(lowerScenes.size());
-      for (Scene lowerScene : lowerScenes) {
-
-        if (newlyAttached) {
-          lowerScene.attachView(container, 0);
-          if (isStarted) {
-            lowerScene.start();
-          }
-        }
-        // Only top scene can be resumed
-        if (isResumed && isTop) {
-          lowerScene.resume();
-        }
-
-        SceneInfo lowerInfo = new SceneInfo.Builder()
-            .scene(lowerScene)
-            .newlyAttached(newlyAttached)
-            .willBeDetached(false)
-            .isStarted(isStarted)
-            .build();
-        lower.add(lowerInfo);
-
-        if (isTop && lowerScene.getOpacity() == Scene.TRANSLUCENT) {
-          // An translucent scene become top now, the following scene must be newly attached
-          newlyAttached = true;
-        }
-
-        // Not top anymore
-        isTop = false;
+      if (isTop && lowerScene.getOpacity() == Scene.TRANSLUCENT) {
+        // An translucent scene become top now, the following scene must be newly attached
+        newlyAttached = true;
       }
 
-      changeScenes(upper, lower);
+      // Not top anymore
+      isTop = false;
     }
+
+    changeScenes(upper, lower);
+  }
+
+  private void popSceneWithoutViews(@NonNull Scene scene) {
+    stack.pop(scene);
   }
 
   /**
@@ -193,6 +206,14 @@ public abstract class Stage {
   public void pushScene(@NonNull Scene scene) {
     completeRunningCurtain();
 
+    if (container != null) {
+      pushSceneWithViews(scene);
+    } else {
+      pushSceneWithoutViews(scene);
+    }
+  }
+
+  private void pushSceneWithViews(@NonNull Scene scene) {
     ArrayList<Scene> oldScenes = getVisibleScenes();
     stack.push(scene);
     ArrayList<Scene> newScenes = getVisibleScenes();
@@ -237,6 +258,10 @@ public abstract class Stage {
     changeScenes(upper, lower);
   }
 
+  private void pushSceneWithoutViews(@NonNull Scene scene) {
+    stack.push(scene);
+  }
+
   /**
    * Replace the top {@link Scene} with a {@code Scene}.
    * If the stack is empty, just push the {@code Scene}.
@@ -251,10 +276,22 @@ public abstract class Stage {
 
     completeRunningCurtain();
 
+    if (container != null) {
+      replaceTopSceneWithViews(scene);
+    } else {
+      replaceTopSceneWithoutViews(scene);
+    }
+  }
+
+  private void replaceTopSceneWithViews(@NonNull Scene scene) {
     ArrayList<Scene> oldScenes = getVisibleScenes();
-    stack.pop();
+    Scene oldTopScene = stack.pop();
     stack.push(scene);
     ArrayList<Scene> newScenes = getVisibleScenes();
+
+    if (DEBUG) {
+      assertNotNull(oldTopScene);
+    }
 
     scene.attachView(container);
     if (isStarted) {
@@ -276,8 +313,10 @@ public abstract class Stage {
     List<SceneInfo> lower = new ArrayList<>(lowerSize);
     // Add old top scenes
     if (isResumed) {
+      //noinspection ConstantConditions
       oldTopScene.pause();
     }
+    //noinspection ConstantConditions
     SceneInfo lowerInfo = new SceneInfo.Builder()
         .scene(oldTopScene)
         .newlyAttached(false)
@@ -332,9 +371,22 @@ public abstract class Stage {
     changeScenes(upper, lower);
   }
 
+  private void replaceTopSceneWithoutViews(@NonNull Scene scene) {
+    stack.pop();
+    stack.push(scene);
+  }
+
   public void setRootScene(@NonNull Scene scene) {
     completeRunningCurtain();
 
+    if (container != null) {
+      setRootSceneWithViews(scene);
+    } else {
+      setRootSceneWithoutViews(scene);
+    }
+  }
+
+  private void setRootSceneWithViews(@NonNull Scene scene) {
     ArrayList<Scene> oldScenes = getVisibleScenes();
     stack.popAll();
     stack.push(scene);
@@ -375,6 +427,11 @@ public abstract class Stage {
     }
 
     changeScenes(upper, lower);
+  }
+
+  private void setRootSceneWithoutViews(@NonNull Scene scene) {
+    stack.popAll();
+    stack.push(scene);
   }
 
   /**
