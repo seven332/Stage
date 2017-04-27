@@ -249,7 +249,7 @@ public abstract class Stage {
   private void detachViews(
       @NonNull final List<SceneInfo> infos) {
     for (SceneInfo info : infos) {
-      if (info.willBeDetached) {
+      if (info.viewState == SceneInfo.WILL_BE_DETACHED) {
         Scene scene = info.scene;
         if (info.isStarted) {
           scene.stop();
@@ -536,8 +536,7 @@ public abstract class Stage {
       }
       SceneInfo upperInfo = new SceneInfo.Builder()
           .scene(scene)
-          .newlyAttached(false)
-          .willBeDetached(true)
+          .viewState(SceneInfo.WILL_BE_DETACHED)
           .isStarted(isStarted)
           .build();
       List<SceneInfo> upper = Collections.singletonList(upperInfo);
@@ -562,8 +561,7 @@ public abstract class Stage {
 
         SceneInfo lowerInfo = new SceneInfo.Builder()
             .scene(lowerScene)
-            .newlyAttached(newlyAttached)
-            .willBeDetached(false)
+            .viewState(newlyAttached ? SceneInfo.NEWLY_ATTACHED : SceneInfo.NONE)
             .isStarted(isStarted)
             .build();
         lower.add(lowerInfo);
@@ -609,8 +607,7 @@ public abstract class Stage {
       }
       SceneInfo upperInfo = new SceneInfo.Builder()
           .scene(scene)
-          .newlyAttached(true)
-          .willBeDetached(false)
+          .viewState(SceneInfo.NEWLY_ATTACHED)
           .isStarted(isStarted)
           .build();
       List<SceneInfo> upper = Collections.singletonList(upperInfo);
@@ -629,8 +626,7 @@ public abstract class Stage {
 
         SceneInfo lowerInfo = new SceneInfo.Builder()
             .scene(lowerScene)
-            .newlyAttached(false)
-            .willBeDetached(i >= detachIndex)
+            .viewState(i >= detachIndex ? SceneInfo.WILL_BE_DETACHED : SceneInfo.NONE)
             .isStarted(isStarted)
             .build();
         lower.add(lowerInfo);
@@ -676,8 +672,7 @@ public abstract class Stage {
       }
       SceneInfo upperInfo = new SceneInfo.Builder()
           .scene(scene)
-          .newlyAttached(true)
-          .willBeDetached(false)
+          .viewState(SceneInfo.NEWLY_ATTACHED)
           .isStarted(isStarted)
           .build();
       List<SceneInfo> upper = Collections.singletonList(upperInfo);
@@ -695,8 +690,7 @@ public abstract class Stage {
         }
         SceneInfo lowerInfo = new SceneInfo.Builder()
             .scene(oldTopScene)
-            .newlyAttached(false)
-            .willBeDetached(true)
+            .viewState(SceneInfo.WILL_BE_DETACHED)
             .isStarted(isStarted)
             .build();
         lower.add(lowerInfo);
@@ -707,8 +701,7 @@ public abstract class Stage {
         Scene lowerScene = oldScenes.get(i);
         SceneInfo lowerInfo = new SceneInfo.Builder()
             .scene(lowerScene)
-            .newlyAttached(false)
-            .willBeDetached(false)
+            .viewState(SceneInfo.NONE)
             .isStarted(isStarted)
             .build();
         lower.add(lowerInfo);
@@ -719,8 +712,7 @@ public abstract class Stage {
           Scene lowerScene = oldScenes.get(i);
           SceneInfo lowerInfo = new SceneInfo.Builder()
               .scene(lowerScene)
-              .newlyAttached(false)
-              .willBeDetached(true)
+              .viewState(SceneInfo.WILL_BE_DETACHED)
               .isStarted(isStarted)
               .build();
           lower.add(lowerInfo);
@@ -737,8 +729,7 @@ public abstract class Stage {
           }
           SceneInfo lowerInfo = new SceneInfo.Builder()
               .scene(lowerScene)
-              .newlyAttached(true)
-              .willBeDetached(false)
+              .viewState(SceneInfo.NEWLY_ATTACHED)
               .isStarted(isStarted)
               .build();
           lower.add(lowerInfo);
@@ -778,8 +769,7 @@ public abstract class Stage {
       }
       SceneInfo upperInfo = new SceneInfo.Builder()
           .scene(scene)
-          .newlyAttached(true)
-          .willBeDetached(false)
+          .viewState(SceneInfo.NEWLY_ATTACHED)
           .isStarted(isStarted)
           .build();
       List<SceneInfo> upper = Collections.singletonList(upperInfo);
@@ -793,8 +783,7 @@ public abstract class Stage {
 
         SceneInfo lowerInfo = new SceneInfo.Builder()
             .scene(lowerScene)
-            .newlyAttached(false)
-            .willBeDetached(true)
+            .viewState(SceneInfo.WILL_BE_DETACHED)
             .isStarted(isStarted)
             .build();
         lower.add(lowerInfo);

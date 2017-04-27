@@ -22,13 +22,33 @@ package com.hippo.stage;
 
 import static junit.framework.Assert.assertNotNull;
 
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.View;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A {@code SceneInfo} describes the attaching information of {@link Scene}'s view.
  */
 public final class SceneInfo {
+
+  @IntDef({NONE, NEWLY_ATTACHED, WILL_BE_DETACHED})
+  @Retention(RetentionPolicy.CLASS)
+  public @interface ViewState {}
+
+  /**
+   * The view is still attached.
+   */
+  public static final int NONE = 0;
+  /**
+   * The view is newly attached.
+   */
+  public static final int NEWLY_ATTACHED = 1;
+  /**
+   * The view will be detached.
+   */
+  public static final int WILL_BE_DETACHED = 2;
 
   /**
    * The described {@link Scene}.
@@ -41,21 +61,17 @@ public final class SceneInfo {
   @NonNull
   public final View view;
   /**
-   * Whether the view is newly attached.
+   * One of {@link #NONE}, {@link #NEWLY_ATTACHED} or {@link #WILL_BE_DETACHED}.
    */
-  public final boolean newlyAttached;
-  /**
-   * Whether the view will be detached.
-   */
-  public final boolean willBeDetached;
+  @ViewState
+  public final int viewState;
 
   final boolean isStarted;
 
   private SceneInfo(Builder builder) {
     scene = builder.scene;
     view = builder.view;
-    newlyAttached = builder.newlyAttached;
-    willBeDetached = builder.willBeDetached;
+    viewState = builder.viewState;
     isStarted = builder.isStarted;
   }
 
@@ -65,8 +81,8 @@ public final class SceneInfo {
 
     private Scene scene;
     private View view;
-    private boolean newlyAttached;
-    private boolean willBeDetached;
+    @ViewState
+    private int viewState;
     private boolean isStarted;
 
     public Builder scene(@NonNull Scene scene) {
@@ -80,13 +96,8 @@ public final class SceneInfo {
       return this;
     }
 
-    public Builder newlyAttached(boolean newlyAttached) {
-      this.newlyAttached = newlyAttached;
-      return this;
-    }
-
-    public Builder willBeDetached(boolean willBeDetached) {
-      this.willBeDetached = willBeDetached;
+    public Builder viewState(@ViewState int viewState) {
+      this.viewState = viewState;
       return this;
     }
 
