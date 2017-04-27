@@ -31,7 +31,7 @@ public class TimingCurtain extends Curtain {
 
   @Override
   public void completeImmediately() {
-    listener.OnComplete();
+    listener.onComplete();
     listener = null;
   }
 

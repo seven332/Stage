@@ -20,6 +20,7 @@ package com.hippo.stage.util;
  * Created by Hippo on 4/23/2017.
  */
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
@@ -30,7 +31,7 @@ public class TimingCurtainSuppler implements Stage.CurtainSuppler {
 
   @Nullable
   @Override
-  public Curtain getCurtain(SceneInfo upper, List<SceneInfo> lower) {
+  public Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
     return new TimingCurtain();
   }
 }

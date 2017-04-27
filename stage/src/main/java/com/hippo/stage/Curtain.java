@@ -51,6 +51,6 @@ public abstract class Curtain {
     /**
      * Called when the {@code Curtain} is complete.
      */
-    void OnComplete();
+    void onComplete();
   }
 }

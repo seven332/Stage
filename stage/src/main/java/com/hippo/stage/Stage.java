@@ -233,7 +233,7 @@ public abstract class Stage {
       runningCurtain = curtain;
       curtain.execute(upper, lower, new Curtain.OnCompleteListener() {
         @Override
-        public void OnComplete() {
+        public void onComplete() {
           runningCurtain = null;
           detachView(upper);
           detachViews(lower);
@@ -399,6 +399,9 @@ public abstract class Stage {
 
       // The activity is destroyed, can't attach views to this container
       container = null;
+
+      // Clear curtain suppler
+      curtainSuppler = null;
     }
   }
 
@@ -453,6 +456,7 @@ public abstract class Stage {
 
   /**
    * Sets the curtain suppler for this {@code Stage}.
+   * It will be clear when the stage detached from {@link Activity}.
    */
   public void setCurtainSuppler(CurtainSuppler suppler) {
     this.curtainSuppler = suppler;
@@ -470,7 +474,7 @@ public abstract class Stage {
      * Returns a {@link Curtain} for these scenes.
      */
     @Nullable
-    Curtain getCurtain(SceneInfo upper, List<SceneInfo> lower);
+    Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower);
   }
 
   // A Operation is used for delayed popping or pushing or something like that
