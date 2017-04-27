@@ -36,7 +36,7 @@ public class TimingCurtain extends Curtain {
   }
 
   @Override
-  public void execute(@NonNull List<SceneInfo> upper, @NonNull List<SceneInfo> lower,
+  public void execute(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower,
       @NonNull OnCompleteListener listener) {
     this.listener = listener;
   }

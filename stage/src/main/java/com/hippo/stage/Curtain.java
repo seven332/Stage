@@ -30,7 +30,7 @@ public abstract class Curtain {
 
   /**
    * Completes this {@code Curtain} right now.
-   * The {@link OnCompleteListener} passed in {@link #execute(List, List, OnCompleteListener)}
+   * The {@link OnCompleteListener} passed in {@link #execute(SceneInfo, List, OnCompleteListener)}
    * before, must be called in the method.
    */
   protected abstract void completeImmediately();
@@ -40,7 +40,7 @@ public abstract class Curtain {
    * {@code listener} must be called in this method or after the animation done.
    */
   protected abstract void execute(
-      @NonNull List<SceneInfo> upper, @NonNull List<SceneInfo> lower,
+      @NonNull SceneInfo upper, @NonNull List<SceneInfo> lower,
       @NonNull OnCompleteListener listener);
 
   /**

@@ -34,7 +34,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -225,7 +224,7 @@ public abstract class Stage {
   }
 
   private void changeScenes(
-      @NonNull final List<SceneInfo> upper, @NonNull final List<SceneInfo> lower) {
+      @NonNull final SceneInfo upper, @NonNull final List<SceneInfo> lower) {
     Curtain curtain = null;
     if (curtainSuppler != null) {
       curtain = curtainSuppler.getCurtain(upper, lower);
@@ -236,26 +235,30 @@ public abstract class Stage {
         @Override
         public void OnComplete() {
           runningCurtain = null;
-          detachViews(upper);
+          detachView(upper);
           detachViews(lower);
         }
       });
     } else {
-      detachViews(upper);
+      detachView(upper);
       detachViews(lower);
+    }
+  }
+
+  private void detachView(@NonNull SceneInfo info) {
+    if (info.viewState == SceneInfo.WILL_BE_DETACHED) {
+      Scene scene = info.scene;
+      if (info.isStarted) {
+        scene.stop();
+      }
+      scene.detachView(container);
     }
   }
 
   private void detachViews(
       @NonNull final List<SceneInfo> infos) {
     for (SceneInfo info : infos) {
-      if (info.viewState == SceneInfo.WILL_BE_DETACHED) {
-        Scene scene = info.scene;
-        if (info.isStarted) {
-          scene.stop();
-        }
-        scene.detachView(container);
-      }
+      detachView(info);
     }
   }
 
@@ -467,7 +470,7 @@ public abstract class Stage {
      * Returns a {@link Curtain} for these scenes.
      */
     @Nullable
-    Curtain getCurtain(List<SceneInfo> upper, List<SceneInfo> lower);
+    Curtain getCurtain(SceneInfo upper, List<SceneInfo> lower);
   }
 
   // A Operation is used for delayed popping or pushing or something like that
@@ -534,12 +537,11 @@ public abstract class Stage {
       if (index == 0 && isResumed) {
         scene.pause();
       }
-      SceneInfo upperInfo = new SceneInfo.Builder()
+      SceneInfo upper = new SceneInfo.Builder()
           .scene(scene)
           .viewState(SceneInfo.WILL_BE_DETACHED)
           .isStarted(isStarted)
           .build();
-      List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
       int opacity = scene.getOpacity();
       boolean newlyAttached = opacity == Scene.OPAQUE || (opacity == Scene.TRANSLUCENT && index != 0);
@@ -605,12 +607,11 @@ public abstract class Stage {
       if (isResumed) {
         scene.resume();
       }
-      SceneInfo upperInfo = new SceneInfo.Builder()
+      SceneInfo upper = new SceneInfo.Builder()
           .scene(scene)
           .viewState(SceneInfo.NEWLY_ATTACHED)
           .isStarted(isStarted)
           .build();
-      List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
       List<SceneInfo> lower = new ArrayList<>(oldScenes.size());
       // Some Scenes in bottom might be not visible
@@ -670,12 +671,11 @@ public abstract class Stage {
       if (isResumed) {
         scene.resume();
       }
-      SceneInfo upperInfo = new SceneInfo.Builder()
+      SceneInfo upper = new SceneInfo.Builder()
           .scene(scene)
           .viewState(SceneInfo.NEWLY_ATTACHED)
           .isStarted(isStarted)
           .build();
-      List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
       if (oldTopScene == null) {
         // If oldTopScene == null, add a null to make following works
@@ -767,12 +767,11 @@ public abstract class Stage {
       if (isResumed) {
         scene.resume();
       }
-      SceneInfo upperInfo = new SceneInfo.Builder()
+      SceneInfo upper = new SceneInfo.Builder()
           .scene(scene)
           .viewState(SceneInfo.NEWLY_ATTACHED)
           .isStarted(isStarted)
           .build();
-      List<SceneInfo> upper = Collections.singletonList(upperInfo);
 
       List<SceneInfo> lower = new ArrayList<>(oldScenes.size());
       boolean isTop = true;

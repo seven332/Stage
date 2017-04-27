@@ -30,7 +30,7 @@ public class TimingCurtainSuppler implements Stage.CurtainSuppler {
 
   @Nullable
   @Override
-  public Curtain getCurtain(List<SceneInfo> upper, List<SceneInfo> lower) {
+  public Curtain getCurtain(SceneInfo upper, List<SceneInfo> lower) {
     return new TimingCurtain();
   }
 }
