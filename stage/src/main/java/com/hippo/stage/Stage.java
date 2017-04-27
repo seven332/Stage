@@ -115,12 +115,16 @@ public abstract class Stage {
     }
   }
 
-  // TODO what if isDestroyed is true? Just ignore it?
   /**
    * Pop a {@link Scene}.
    * It's a no-op if scene isn't in the stack.
    */
   public void popScene(@NonNull Scene scene) {
+    if (isDestroyed) {
+      Log.e(LOG_TAG, "Can't call popScene() on a destroyed Scene");
+      return;
+    }
+
     completeRunningCurtain();
 
     if (!stack.contains(scene)) {
@@ -204,6 +208,11 @@ public abstract class Stage {
    * Push a {@link Scene} to the top of the stack.
    */
   public void pushScene(@NonNull Scene scene) {
+    if (isDestroyed) {
+      Log.e(LOG_TAG, "Can't call pushScene() on a destroyed Scene");
+      return;
+    }
+
     completeRunningCurtain();
 
     if (container != null) {
@@ -271,6 +280,11 @@ public abstract class Stage {
     if (oldTopScene == null) {
       // The stack is empty, just push the Scene
       pushScene(scene);
+      return;
+    }
+
+    if (isDestroyed) {
+      Log.e(LOG_TAG, "Can't call replaceTopScene() on a destroyed Scene");
       return;
     }
 
@@ -380,6 +394,11 @@ public abstract class Stage {
    * Pops all {@link Scene}s in the stack, push a {@link Scene} as root.
    */
   public void setRootScene(@NonNull Scene scene) {
+    if (isDestroyed) {
+      Log.e(LOG_TAG, "Can't call setRootScene() on a destroyed Scene");
+      return;
+    }
+
     completeRunningCurtain();
 
     if (container != null) {

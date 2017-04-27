@@ -154,6 +154,25 @@ public class StageTest {
     assertEquals(1, stage.getSceneCount());
   }
 
+  @Test
+  public void testPopPushAfterDestroyed() {
+    stage.detach();
+    stage.destroy();
+    assertEquals(0, stage.getSceneCount());
+
+    stage.pushScene(new TestScene());
+    assertEquals(0, stage.getSceneCount());
+
+    stage.popScene(new TestScene());
+    assertEquals(0, stage.getSceneCount());
+
+    stage.replaceTopScene(new TestScene());
+    assertEquals(0, stage.getSceneCount());
+
+    stage.setRootScene(new TestScene());
+    assertEquals(0, stage.getSceneCount());
+  }
+
   private static class TestStage extends Stage {
     @Nullable
     @Override
