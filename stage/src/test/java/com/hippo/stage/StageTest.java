@@ -24,9 +24,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import com.hippo.stage.util.TestContainer;
 import com.hippo.stage.util.TestScene;
+import com.hippo.stage.util.TestView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -171,6 +177,49 @@ public class StageTest {
 
     stage.setRootScene(new TestScene());
     assertEquals(0, stage.getSceneCount());
+  }
+
+  @Test
+  public void testPopPushWhenOperating() {
+    final Scene scene1 = new TestScene();
+    final Scene scene2 = new TestScene();
+    final Scene scene3 = new TestScene();
+
+    stage.pushScene(new Scene() {
+      @Override
+      protected void onCreate(@Nullable Bundle args) {
+        super.onCreate(args);
+
+        Stage stage = getStage();
+        stage.pushScene(scene1);
+        stage.pushScene(new Scene() {
+          @Override
+          protected void onCreate(@Nullable Bundle args) {
+            super.onCreate(args);
+
+            Stage stage = getStage();
+            stage.pushScene(scene2);
+          }
+
+          @NonNull
+          @Override
+          protected View onCreateView(@NonNull LayoutInflater inflater,
+              @NonNull ViewGroup container) {
+            return new TestView(inflater.getContext());
+          }
+        });
+        stage.replaceTopScene(scene3);
+      }
+
+      @NonNull
+      @Override
+      protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+        return new TestView(inflater.getContext());
+      }
+    });
+
+    assertEquals(4, stage.getSceneCount());
+    assertEquals(scene2, stage.getTopScene());
   }
 
   private static class TestStage extends Stage {
