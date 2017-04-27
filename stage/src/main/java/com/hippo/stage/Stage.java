@@ -376,6 +376,9 @@ public abstract class Stage {
     stack.push(scene);
   }
 
+  /**
+   * Pops all {@link Scene}s in the stack, push a {@link Scene} as root.
+   */
   public void setRootScene(@NonNull Scene scene) {
     completeRunningCurtain();
 
