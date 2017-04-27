@@ -74,6 +74,7 @@ public class StageTest {
     assertEquals(scene1, stage.getRootScene());
   }
 
+  @Test
   public void testGetSceneCount() {
     Scene scene1 = new TestScene();
     Scene scene2 = new TestScene();
@@ -87,6 +88,69 @@ public class StageTest {
     assertEquals(2, stage.getSceneCount());
 
     stage.popScene(scene1);
+    assertEquals(1, stage.getSceneCount());
+  }
+
+  @Test
+  public void testPushWithoutViews() {
+    Stage stage = new TestStage();
+
+    stage.pushScene(new TestScene());
+    assertEquals(1, stage.getSceneCount());
+
+    stage.pushScene(new TestScene());
+    assertEquals(2, stage.getSceneCount());
+  }
+
+  @Test
+  public void testPopWithoutViews() {
+    Stage stage = new TestStage();
+
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+    Scene scene3 = new TestScene();
+
+    stage.pushScene(scene1);
+    stage.pushScene(scene2);
+    stage.pushScene(scene3);
+    assertEquals(3, stage.getSceneCount());
+
+    stage.popScene(scene2);
+    assertEquals(2, stage.getSceneCount());
+
+    stage.popScene(scene3);
+    assertEquals(1, stage.getSceneCount());
+
+    stage.popScene(scene1);
+    assertEquals(0, stage.getSceneCount());
+
+    stage.popScene(scene2);
+    assertEquals(0, stage.getSceneCount());
+  }
+
+  @Test
+  public void testReplaceTopWithoutViews() {
+    Stage stage = new TestStage();
+
+    stage.pushScene(new TestScene());
+    stage.pushScene(new TestScene());
+    stage.pushScene(new TestScene());
+    assertEquals(3, stage.getSceneCount());
+
+    stage.replaceTopScene(new TestScene());
+    assertEquals(3, stage.getSceneCount());
+  }
+
+  @Test
+  public void testSetRootWithoutViews() {
+    Stage stage = new TestStage();
+
+    stage.pushScene(new TestScene());
+    stage.pushScene(new TestScene());
+    stage.pushScene(new TestScene());
+    assertEquals(3, stage.getSceneCount());
+
+    stage.setRootScene(new TestScene());
     assertEquals(1, stage.getSceneCount());
   }
 
