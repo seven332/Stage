@@ -46,6 +46,8 @@ public abstract class Scene {
 
   private static final boolean DEBUG = BuildConfig.DEBUG;
 
+  public static final int INVALID_ID = 0;
+
   @IntDef({TRANSPARENT, TRANSLUCENT, OPAQUE})
   @Retention(RetentionPolicy.CLASS)
   public @interface Opacity {}
@@ -72,6 +74,7 @@ public abstract class Scene {
   private static final int STATE_DETACHED = 7;
   private static final int STATE_DESTROYED = 8;
 
+  private static final String KEY_ID = "Scene:id";
   private static final String KEY_TAG = "Scene:tag";
   private static final String KEY_ARGS = "Scene:args";
   private static final String KEY_WILL_RETAIN_VIEW = "Scene:will_retain_view";
@@ -80,6 +83,8 @@ public abstract class Scene {
   private static final String KEY_VIEW_STATE_BUNDLE = "Scene:view_state:bundle";
 
   private Stage stage;
+  private int savedId = INVALID_ID;
+  private int id = INVALID_ID;
   private String tag;
   private Bundle args;
   private boolean willRetainView;
@@ -106,6 +111,25 @@ public abstract class Scene {
    */
   public final Stage getStage() {
     return stage;
+  }
+
+  private void setSavedId(int id) {
+    savedId = id;
+  }
+
+  int getSavedId() {
+    return savedId;
+  }
+
+  /**
+   * Returns the id of this {@code Scene}.
+   * It only returns a valid id between {@link #onCreate(Bundle)}
+   * and {@link #onDestroy()}, or {@link #INVALID_ID}.
+   * <p>
+   * Each {@code Scene} in the same Stage has a different id.
+   */
+  public final int getId() {
+    return id;
   }
 
   /**
@@ -271,7 +295,7 @@ public abstract class Scene {
     state = newState;
   }
 
-  void create(@NonNull Stage stage) {
+  void create(@NonNull Stage stage, int id) {
     if (this.stage != null) {
       throw new IllegalStateException("This Scene has been performed, can't perform is twice: "
           + getClass().getName());
@@ -281,6 +305,8 @@ public abstract class Scene {
     if (state == STATE_DESTROYED) {
       throw new IllegalStateException("This scene has been destroyed: " + getClass().getName());
     }
+
+    this.id = id;
 
     onCreate(args);
 
@@ -357,6 +383,7 @@ public abstract class Scene {
     onDestroy();
 
     stage = null;
+    id = INVALID_ID;
   }
 
   void finish() {
@@ -427,6 +454,7 @@ public abstract class Scene {
 
   Bundle saveInstanceState() {
     Bundle outState = new Bundle();
+    outState.putInt(KEY_ID, getId());
     outState.putString(KEY_TAG, getTag());
     outState.putBundle(KEY_ARGS, getArgs());
     outState.putBoolean(KEY_WILL_RETAIN_VIEW, willRetainView());
@@ -440,6 +468,7 @@ public abstract class Scene {
   }
 
   void restoreInstanceState(@NonNull Bundle savedInstanceState) {
+    setSavedId(savedInstanceState.getInt(KEY_ID, INVALID_ID));
     setTag(savedInstanceState.getString(KEY_TAG, null));
     setArgs(savedInstanceState.getBundle(KEY_ARGS));
     setWillRetainView(savedInstanceState.getBoolean(KEY_WILL_RETAIN_VIEW, false));

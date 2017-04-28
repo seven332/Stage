@@ -49,6 +49,7 @@ public abstract class Stage {
   private static final boolean DEBUG = BuildConfig.DEBUG;
 
   private static final String KEY_STACK = "Stage:stack";
+  private static final String KEY_CURRENT_SCENE_ID = "Stage:current_scene_id";
 
   private ViewGroup container;
   private CurtainSuppler curtainSuppler;
@@ -63,6 +64,7 @@ public abstract class Stage {
       onPopScene(scene);
     }
   });
+  private int currentSceneId = Scene.INVALID_ID;
 
   private boolean isStarted;
   private boolean isResumed;
@@ -263,7 +265,17 @@ public abstract class Stage {
   }
 
   private void onPushScene(@NonNull Scene scene) {
-    scene.create(this);
+    int id;
+    int savedId = scene.getSavedId();
+    if (savedId != Scene.INVALID_ID) {
+      id = savedId;
+    } else {
+      do {
+        id = ++currentSceneId;
+      } while (id == Scene.INVALID_ID);
+    }
+
+    scene.create(this, id);
   }
 
   private void onPopScene(@NonNull Scene scene) {
@@ -416,6 +428,8 @@ public abstract class Stage {
 
   @CallSuper
   void saveInstanceState(@NonNull Bundle outState) {
+    outState.putInt(KEY_CURRENT_SCENE_ID, currentSceneId);
+
     Bundle stackState = new Bundle();
     stack.saveInstanceState(stackState);
     outState.putBundle(KEY_STACK, stackState);
@@ -423,6 +437,8 @@ public abstract class Stage {
 
   @CallSuper
   void restoreInstanceState(@NonNull Bundle savedInstanceState) {
+    currentSceneId = savedInstanceState.getInt(KEY_CURRENT_SCENE_ID, Scene.INVALID_ID);
+
     Bundle bundle = savedInstanceState.getBundle(KEY_STACK);
     if (bundle != null) {
       // Only push Scenes to stack

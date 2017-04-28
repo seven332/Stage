@@ -129,4 +129,34 @@ public class StageActivityTest {
     assertEquals(sceneSavedKey, newScene.getSavedKey());
     assertEquals(viewSavedKey, newScene.getView().getSavedKey());
   }
+
+  @Test
+  public void testSceneGetId() {
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+
+    proxy.create();
+    Stage stage = proxy.get().installStage(0);
+
+    stage.pushScene(scene1);
+    stage.pushScene(scene2);
+    int id1 = scene1.getId();
+    int id2 = scene2.getId();
+    assertNotEquals(Scene.INVALID_ID, id1);
+    assertNotEquals(Scene.INVALID_ID, id2);
+    assertNotEquals(id1, id2);
+
+    proxy.restoreFromSavedState();
+    stage = proxy.get().installStage(0);
+
+    assertEquals(id2, stage.getTopScene().getId());
+    stage.popTopScene();
+    assertEquals(id1, stage.getTopScene().getId());
+
+    Scene scene3 = new TestScene();
+    stage.pushScene(scene3);
+    assertNotEquals(id1, scene3.getId());
+    assertNotEquals(id2, scene3.getId());
+    assertNotEquals(Scene.INVALID_ID, scene3.getId());
+  }
 }
