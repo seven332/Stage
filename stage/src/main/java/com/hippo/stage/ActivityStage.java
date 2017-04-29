@@ -22,7 +22,7 @@ package com.hippo.stage;
 
 class ActivityStage extends Stage {
 
-  public ActivityStage(Director director) {
+  public ActivityStage(InternalDirector director) {
     super(director);
   }
 }

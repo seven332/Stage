@@ -22,7 +22,6 @@ package com.hippo.stage;
 
 import static org.junit.Assert.assertEquals;
 
-import com.hippo.stage.util.DumpDirector;
 import com.hippo.stage.util.HomogeniousPermutator;
 import com.hippo.stage.util.Reflections;
 import com.hippo.stage.util.SceneCalling;
@@ -98,7 +97,7 @@ public class StageSetRootSceneTest {
     return array;
   }
 
-  private TestStage stage;
+  private DumpStage stage;
   private TestContainer container;
 
   private boolean started;
@@ -118,7 +117,7 @@ public class StageSetRootSceneTest {
 
   @Before
   public void before() {
-    stage = new TestStage(new DumpDirector());
+    stage = new DumpStage(new DumpDirector());
     container = new TestContainer(RuntimeEnvironment.application);
     stage.setContainer(container);
     stage.setCurtainSuppler(new TimingCurtainSuppler());
@@ -248,11 +247,5 @@ public class StageSetRootSceneTest {
     Reflections.getRunningCurtain(stage).completeImmediately();
     newScene.assertPair();
     assertEquals(0, container.getChildCount());
-  }
-
-  private static class TestStage extends Stage {
-    TestStage(Director director) {
-      super(director);
-    }
   }
 }

@@ -29,7 +29,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.hippo.stage.util.DumpDirector;
 import com.hippo.stage.util.TestContainer;
 import com.hippo.stage.util.TestScene;
 import com.hippo.stage.util.TestView;
@@ -44,13 +43,13 @@ import org.robolectric.annotation.Config;
 @Config(manifest = Config.NONE)
 public class StageTest {
 
-  private Director director;
+  private InternalDirector director;
   private Stage stage;
 
   @Before
   public void before() {
     director = new DumpDirector();
-    stage = new TestStage(director);
+    stage = new DumpStage(director);
     stage.setContainer(new TestContainer(RuntimeEnvironment.application));
   }
 
@@ -101,7 +100,7 @@ public class StageTest {
 
   @Test
   public void testPushWithoutViews() {
-    Stage stage = new TestStage(director);
+    Stage stage = new DumpStage(director);
 
     stage.pushScene(new TestScene());
     assertEquals(1, stage.getSceneCount());
@@ -112,7 +111,7 @@ public class StageTest {
 
   @Test
   public void testPopWithoutViews() {
-    Stage stage = new TestStage(director);
+    Stage stage = new DumpStage(director);
 
     Scene scene1 = new TestScene();
     Scene scene2 = new TestScene();
@@ -138,7 +137,7 @@ public class StageTest {
 
   @Test
   public void testReplaceTopWithoutViews() {
-    Stage stage = new TestStage(director);
+    Stage stage = new DumpStage(director);
 
     stage.pushScene(new TestScene());
     stage.pushScene(new TestScene());
@@ -151,7 +150,7 @@ public class StageTest {
 
   @Test
   public void testSetRootWithoutViews() {
-    Stage stage = new TestStage(director);
+    Stage stage = new DumpStage(director);
 
     stage.pushScene(new TestScene());
     stage.pushScene(new TestScene());
@@ -222,11 +221,5 @@ public class StageTest {
 
     assertEquals(4, stage.getSceneCount());
     assertEquals(scene2, stage.getTopScene());
-  }
-
-  private static class TestStage extends Stage {
-    TestStage(Director director) {
-      super(director);
-    }
   }
 }

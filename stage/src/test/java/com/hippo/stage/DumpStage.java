@@ -17,33 +17,12 @@
 package com.hippo.stage;
 
 /*
- * Created by Hippo on 4/22/2017.
+ * Created by Hippo on 4/29/2017.
  */
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.view.ViewGroup;
+public class DumpStage extends Stage {
 
-/**
- * A {@code Director} can direct multiple stage.
- */
-public interface Director {
-
-  /**
-   * Directs a {@link ViewGroup} as a {@link Stage}.
-   * <p>
-   * Use different container view for each {@code Stage}.
-   * Set different ID for each container view.
-   */
-  @NonNull
-  Stage direct(@NonNull ViewGroup container);
-}
-
-interface InternalDirector extends Director {
-
-  int requireSceneId();
-
-  @Nullable
-  Activity getActivity();
+  DumpStage(InternalDirector director) {
+    super(director);
+  }
 }

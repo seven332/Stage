@@ -32,7 +32,7 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 
-class ActivityDirector implements Director {
+class ActivityDirector implements InternalDirector {
 
   private static final boolean DEBUG = BuildConfig.DEBUG;
 

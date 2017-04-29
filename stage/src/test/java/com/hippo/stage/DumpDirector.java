@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hippo.stage.util;
+package com.hippo.stage;
 
 /*
  * Created by Hippo on 4/29/2017.
@@ -24,10 +24,8 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
-import com.hippo.stage.Director;
-import com.hippo.stage.Stage;
 
-public class DumpDirector implements Director {
+public class DumpDirector implements InternalDirector {
 
   @NonNull
   @Override

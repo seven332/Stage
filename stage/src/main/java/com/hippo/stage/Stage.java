@@ -51,7 +51,7 @@ public abstract class Stage {
   private static final String KEY_ID = "Stage:id";
   private static final String KEY_STACK = "Stage:stack";
 
-  private Director director;
+  private InternalDirector director;
   private int id;
   private ViewGroup container;
   private CurtainSuppler curtainSuppler;
@@ -79,7 +79,7 @@ public abstract class Stage {
   private Operator replaceTop;
   private Operator setRoot;
 
-  Stage(Director director) {
+  Stage(InternalDirector director) {
     this.director = director;
   }
 

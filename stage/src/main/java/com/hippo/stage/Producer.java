@@ -29,10 +29,9 @@ public final class Producer {
   private Producer() {}
 
   /**
+   * Hires a {@link Director} for a {@link Activity}.
    *
-   * @param activity
-   * @param savedInstanceState
-   * @return
+   * @param savedInstanceState the {@link Bundle} passed in {@link Activity#onCreate(Bundle)}
    */
   public static Director hire(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
     return ActivityDirector.getInstance(activity, savedInstanceState);
