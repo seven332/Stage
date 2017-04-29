@@ -20,15 +20,40 @@ package com.hippo.stage;
  * Created by Hippo on 4/22/2017.
  */
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.ViewGroup;
+import java.util.ArrayList;
 
 /**
  * A {@code Director} can direct multiple stage.
  */
-public interface Director {
+public abstract class Director {
+
+  private static final boolean DEBUG = BuildConfig.DEBUG;
+
+  private static final String KEY_STAGE_STATES = "Director:stage_states";
+
+  private boolean isStarted;
+  private boolean isResumed;
+  private boolean isDestroy;
+
+  private final SparseArray<Stage> stageMap = new SparseArray<>();
+
+  /**
+   * Hires a {@link Director} for a {@link Activity}.
+   *
+   * @param savedInstanceState the {@link Bundle} passed in {@link Activity#onCreate(Bundle)}
+   */
+  public static Director hire(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+    return ActivityDirector.getInstance(activity, savedInstanceState);
+  }
 
   /**
    * Directs a {@link ViewGroup} as a {@link Stage}.
@@ -36,14 +61,170 @@ public interface Director {
    * Use different container view for each {@code Stage}.
    * Set different ID for each container view.
    */
-  @NonNull
-  Stage direct(@NonNull ViewGroup container);
-}
+  public Stage direct(@NonNull ViewGroup container) {
+    if (isDestroy) {
+      throw new IllegalStateException("Can't call direct() on a destroyed Director");
+    }
 
-interface InternalDirector extends Director {
+    int id = container.getId();
+    Stage stage = stageMap.get(id);
+    if (stage == null) {
+      stage = new Stage(this);
+      stage.setId(id);
 
-  int requireSceneId();
+      // Restore activity lifecycle
+      if (isStarted) {
+        stage.start();
+      }
+      if (isResumed) {
+        stage.resume();
+      }
+
+      // setContainer() handles view re-attaching, so call it after restoring state
+      stage.setContainer(container);
+
+      stageMap.put(id, stage);
+    } else {
+      if (!stage.hasContainer()) {
+        stage.setContainer(container);
+      } else if (stage.getContainer() != container) {
+        throw new IllegalStateException("The Stage already has a different container. "
+            + "If you want more than one Stage in a Activity, "
+            + "please use different container view for each Stage, "
+            + "and set different ID for each container view.");
+      }
+    }
+    return stage;
+  }
+
+  abstract int requireSceneId();
 
   @Nullable
-  Activity getActivity();
+  abstract Activity getActivity();
+
+  void start() {
+    if (DEBUG) {
+      assertFalse(isStarted);
+      assertFalse(isResumed);
+    }
+
+    isStarted = true;
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      stage.start();
+    }
+  }
+
+  void resume() {
+    if (DEBUG) {
+      assertTrue(isStarted);
+      assertFalse(isResumed);
+    }
+
+    isResumed = true;
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      stage.resume();
+    }
+  }
+
+  void pause() {
+    if (DEBUG) {
+      assertTrue(isStarted);
+      assertTrue(isResumed);
+    }
+
+    isResumed = false;
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      stage.pause();
+    }
+  }
+
+  void stop() {
+    if (DEBUG) {
+      assertTrue(isStarted);
+      assertFalse(isResumed);
+    }
+
+    isStarted = false;
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      stage.stop();
+    }
+  }
+
+  // Called before detach(), just like Fragment
+  void destroy() {
+    if (DEBUG) {
+      assertFalse(isStarted);
+      assertFalse(isResumed);
+      assertFalse(isDestroy);
+    }
+
+    isDestroy = true;
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      stage.detach();
+      stage.destroy();
+    }
+    stageMap.clear();
+  }
+
+  void detach() {
+    if (DEBUG) {
+      assertFalse(isStarted);
+      assertFalse(isResumed);
+    }
+
+    // destroy() is called before detach()
+    // Check it to avoid detach stage twice
+    if (!isDestroy) {
+      for (int i = 0, n = stageMap.size(); i < n; ++i) {
+        Stage stage = stageMap.valueAt(i);
+        stage.detach();
+      }
+    }
+  }
+
+  boolean isFinishing() {
+    return isDestroy;
+  }
+
+  void saveInstanceState(Bundle outState) {
+    ArrayList<Bundle> stageStates = new ArrayList<>(stageMap.size());
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      Bundle bundle = new Bundle();
+      stage.saveInstanceState(bundle);
+      stageStates.add(bundle);
+    }
+    outState.putParcelableArrayList(KEY_STAGE_STATES, stageStates);
+  }
+
+  void restoreInstanceState(@NonNull Bundle savedInstanceState) {
+    ArrayList<Bundle> stageStates = savedInstanceState.getParcelableArrayList(KEY_STAGE_STATES);
+    if (stageStates != null) {
+      for (Bundle stageState : stageStates) {
+        Stage stage = new Stage(this);
+        stage.restoreInstanceState(stageState);
+
+        // Restore stage lifecycle
+        if (isStarted) {
+          stage.start();
+        }
+        if (isResumed) {
+          stage.resume();
+        }
+
+        int id = stage.getId();
+        stageMap.put(id, stage);
+      }
+    }
+  }
 }

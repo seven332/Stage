@@ -22,7 +22,7 @@ package com.hippo.stage;
 
 public class DumpStage extends Stage {
 
-  DumpStage(InternalDirector director) {
+  DumpStage(Director director) {
     super(director);
   }
 }

@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.hippo.stage.Director;
-import com.hippo.stage.Producer;
 import com.hippo.stage.Stage;
 
 public class TestActivity extends Activity {
@@ -39,7 +38,7 @@ public class TestActivity extends Activity {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    director = Producer.hire(this, savedInstanceState);
+    director = Director.hire(this, savedInstanceState);
 
     root = new FrameLayout(this);
     setContentView(root);

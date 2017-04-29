@@ -42,7 +42,7 @@ import java.util.Queue;
  * A {@code Stage} is where {@link Scene}s performed.
  * {@code Stage} objects handle attaching and detaching views of {@link Scene}s.
  */
-public abstract class Stage {
+public class Stage {
 
   private static final String LOG_TAG = Scene.class.getSimpleName();
 
@@ -51,7 +51,7 @@ public abstract class Stage {
   private static final String KEY_ID = "Stage:id";
   private static final String KEY_STACK = "Stage:stack";
 
-  private InternalDirector director;
+  private Director director;
   private int id;
   private ViewGroup container;
   private CurtainSuppler curtainSuppler;
@@ -79,7 +79,7 @@ public abstract class Stage {
   private Operator replaceTop;
   private Operator setRoot;
 
-  Stage(InternalDirector director) {
+  Stage(Director director) {
     this.director = director;
   }
 
@@ -454,7 +454,7 @@ public abstract class Stage {
    * Return the {@link Activity} this {@code Stage} is currently associated with.
    */
   @Nullable
-  public Activity getActivity() {
+  Activity getActivity() {
     return director != null ? director.getActivity() : null;
   }
 

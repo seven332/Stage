@@ -43,7 +43,7 @@ import org.robolectric.annotation.Config;
 @Config(manifest = Config.NONE)
 public class StageTest {
 
-  private InternalDirector director;
+  private Director director;
   private Stage stage;
 
   @Before
