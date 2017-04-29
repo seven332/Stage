@@ -17,12 +17,24 @@
 package com.hippo.stage;
 
 /*
- * Created by Hippo on 4/20/2017.
+ * Created by Hippo on 4/29/2017.
  */
 
-class ActivityStage extends Stage {
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-  public ActivityStage(Director director) {
-    super(director);
+public final class Producer {
+  private Producer() {}
+
+  /**
+   *
+   * @param activity
+   * @param savedInstanceState
+   * @return
+   */
+  public static Director hire(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+    return ActivityDirector.getInstance(activity, savedInstanceState);
   }
 }

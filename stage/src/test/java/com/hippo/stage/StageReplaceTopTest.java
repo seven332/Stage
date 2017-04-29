@@ -22,8 +22,7 @@ package com.hippo.stage;
 
 import static org.junit.Assert.assertEquals;
 
-import android.app.Activity;
-import android.support.annotation.Nullable;
+import com.hippo.stage.util.DumpDirector;
 import com.hippo.stage.util.HomogeniousPermutator;
 import com.hippo.stage.util.Reflections;
 import com.hippo.stage.util.SceneCalling;
@@ -120,7 +119,7 @@ public class StageReplaceTopTest {
 
   @Before
   public void before() {
-    stage = new TestStage();
+    stage = new TestStage(new DumpDirector());
     container = new TestContainer(RuntimeEnvironment.application);
     stage.setContainer(container);
     stage.setCurtainSuppler(new TimingCurtainSuppler());
@@ -300,10 +299,8 @@ public class StageReplaceTopTest {
   }
 
   private static class TestStage extends Stage {
-    @Nullable
-    @Override
-    Activity getActivity() {
-      return null;
+    public TestStage(Director director) {
+      super(director);
     }
   }
 }

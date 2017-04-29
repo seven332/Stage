@@ -26,19 +26,20 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import com.hippo.stage.Director;
+import com.hippo.stage.Producer;
 import com.hippo.stage.Stage;
 
 public class TestActivity extends Activity {
 
+  private Director director;
   private FrameLayout root;
-  private Bundle savedInstanceState;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    this.savedInstanceState = savedInstanceState;
-    Stage.register(this);
+    director = Producer.hire(this, savedInstanceState);
 
     root = new FrameLayout(this);
     setContentView(root);
@@ -59,6 +60,6 @@ public class TestActivity extends Activity {
       root.addView(container);
     }
 
-    return Stage.install(this, container, savedInstanceState);
+    return director.direct(container);
   }
 }

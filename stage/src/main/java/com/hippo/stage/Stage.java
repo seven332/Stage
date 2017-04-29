@@ -48,9 +48,11 @@ public abstract class Stage {
 
   private static final boolean DEBUG = BuildConfig.DEBUG;
 
+  private static final String KEY_ID = "Stage:id";
   private static final String KEY_STACK = "Stage:stack";
-  private static final String KEY_CURRENT_SCENE_ID = "Stage:current_scene_id";
 
+  private Director director;
+  private int id;
   private ViewGroup container;
   private CurtainSuppler curtainSuppler;
   private Curtain runningCurtain;
@@ -64,7 +66,6 @@ public abstract class Stage {
       onPopScene(scene);
     }
   });
-  private int currentSceneId = Scene.INVALID_ID;
 
   private boolean isStarted;
   private boolean isResumed;
@@ -78,40 +79,16 @@ public abstract class Stage {
   private Operator replaceTop;
   private Operator setRoot;
 
-  /**
-   * Register a {@link Activity} to make it available for installing {@code Stage}.
-   * <p>
-   * Actually this method create a {@link Director} which is a {@link android.app.Fragment},
-   * and add it the the {@link Activity}. Call it where it's safe
-   * to add a {@link android.app.Fragment}.
-   * <p>
-   * This is useful when no {@code Stage} need to be created at beginning.
-   *
-   * @see #install(Activity, ViewGroup, Bundle)
-   */
-  public static void register(@NonNull Activity activity) {
-    Director.install(activity);
+  Stage(Director director) {
+    this.director = director;
   }
 
-  /**
-   * Install a {@code Stage} to a {@link Activity}.
-   * <p>
-   * If {@link #register(Activity)} hasn't been called before, it is called here.
-   * <p>
-   * Multiple {@code Stage}s can be installed to the same {@link Activity}.
-   * Use different container view for each {@code Stage}.
-   * Set different ID for each container view.
-   *
-   * @param savedInstanceState the {@link Bundle} passed in {@link Activity#onCreate(Bundle)}
-   *
-   * @see #register(Activity)
-   */
-  @NonNull
-  public static Stage install(
-      @NonNull Activity activity, @NonNull ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
-    Director director = Director.install(activity);
-    return director.getStage(container, savedInstanceState);
+  void setId(int id) {
+    this.id = id;
+  }
+
+  int getId() {
+    return id;
   }
 
   /**
@@ -265,16 +242,10 @@ public abstract class Stage {
   }
 
   private void onPushScene(@NonNull Scene scene) {
-    int id;
-    int savedId = scene.getSavedId();
-    if (savedId != Scene.INVALID_ID) {
-      id = savedId;
-    } else {
-      do {
-        id = ++currentSceneId;
-      } while (id == Scene.INVALID_ID);
+    int id = scene.getSavedId();
+    if (id == Scene.INVALID_ID) {
+      id = director.requireSceneId();
     }
-
     scene.create(this, id);
   }
 
@@ -424,11 +395,12 @@ public abstract class Stage {
 
     isDestroyed = true;
     stack.popAll();
+    director = null;
   }
 
   @CallSuper
   void saveInstanceState(@NonNull Bundle outState) {
-    outState.putInt(KEY_CURRENT_SCENE_ID, currentSceneId);
+    outState.putInt(KEY_ID, id);
 
     Bundle stackState = new Bundle();
     stack.saveInstanceState(stackState);
@@ -437,7 +409,7 @@ public abstract class Stage {
 
   @CallSuper
   void restoreInstanceState(@NonNull Bundle savedInstanceState) {
-    currentSceneId = savedInstanceState.getInt(KEY_CURRENT_SCENE_ID, Scene.INVALID_ID);
+    id = savedInstanceState.getInt(KEY_ID);
 
     Bundle bundle = savedInstanceState.getBundle(KEY_STACK);
     if (bundle != null) {
@@ -478,8 +450,13 @@ public abstract class Stage {
     this.curtainSuppler = suppler;
   }
 
+  /**
+   * Return the {@link Activity} this {@code Stage} is currently associated with.
+   */
   @Nullable
-  abstract Activity getActivity();
+  public Activity getActivity() {
+    return director != null ? director.getActivity() : null;
+  }
 
   /**
    * A {@code CurtainSuppler} supplies {@link Curtain} for {@link Stage}.

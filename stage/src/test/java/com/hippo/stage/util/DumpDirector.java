@@ -14,15 +14,35 @@
  * limitations under the License.
  */
 
-package com.hippo.stage;
+package com.hippo.stage.util;
 
 /*
- * Created by Hippo on 4/20/2017.
+ * Created by Hippo on 4/29/2017.
  */
 
-class ActivityStage extends Stage {
+import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.ViewGroup;
+import com.hippo.stage.Director;
+import com.hippo.stage.Stage;
 
-  public ActivityStage(Director director) {
-    super(director);
+public class DumpDirector implements Director {
+
+  @NonNull
+  @Override
+  public Stage direct(@NonNull ViewGroup container) {
+    return null;
+  }
+
+  @Override
+  public int requireSceneId() {
+    return 0;
+  }
+
+  @Nullable
+  @Override
+  public Activity getActivity() {
+    return null;
   }
 }

@@ -20,265 +20,27 @@ package com.hippo.stage;
  * Created by Hippo on 4/22/2017.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import android.app.Activity;
-import android.app.Fragment;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
 import android.view.ViewGroup;
 
 /**
- * Don't use it! It's a {@code Fragment}, so it's public.
- * <p>
- * A {@code Director} stores data cross {@link Activity} during recreating
- * and handle lifecycle of {@link Stage}.
+ * A {@code Director} can direct multiple stage.
  */
-public class Director extends Fragment {
+public interface Director {
 
-  private static final boolean DEBUG = BuildConfig.DEBUG;
-
-  private static final String FRAGMENT_TAG = "Director";
-
-  private static final String KEY_STAGE_STATE_PREFIX = "Director:stage_state:";
-
-  private boolean isStarted;
-  private boolean isResumed;
-  private boolean isDestroy;
-
-  private Activity activity;
-
-  private final SparseArray<ActivityStage> stageMap = new SparseArray<>();
-
-  private final ActivityCallbacks activityCallbacks =
-      new ActivityCallbacks() {
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-          if (activity != null && activity == getActivity()) {
-            saveStageState(outState);
-          }
-        }
-      };
-
+  /**
+   * Directs a {@link ViewGroup} as a {@link Stage}.
+   * <p>
+   * Use different container view for each {@code Stage}.
+   * Set different ID for each container view.
+   */
   @NonNull
-  static Director install(@NonNull Activity activity) {
-    Director director = (Director) activity.getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+  Stage direct(@NonNull ViewGroup container);
 
-    if (director == null) {
-      director = new Director();
-      activity.getFragmentManager().beginTransaction().add(director, FRAGMENT_TAG).commit();
-    }
+  int requireSceneId();
 
-    // Fragment.getActivity() returns null before Fragment.onCreate() called.
-    // So store Activity here for Stage and Scene.
-    director.setActivityForStage(activity);
-
-    return director;
-  }
-
-  public Director() {
-    setRetainInstance(true);
-    setHasOptionsMenu(true);
-  }
-
-  private void setActivityForStage(Activity activity) {
-    if (this.activity == null) {
-      this.activity = activity;
-    } else {
-      if (DEBUG) {
-        assertEquals(this.activity, activity);
-      }
-    }
-  }
-
-  Activity getActivityForStage() {
-    return activity;
-  }
-
-  @NonNull
-  Stage getStage(@NonNull ViewGroup container, @Nullable Bundle savedInstanceState) {
-    if (isDestroy) {
-      throw new IllegalStateException("Can't call getStage() on a destroyed Director");
-    }
-
-    int stageHashKey = getStageHashKey(container);
-    ActivityStage stage = stageMap.get(stageHashKey);
-    if (stage == null) {
-      stage = new ActivityStage(stageHashKey, this);
-
-      // Restore
-      if (savedInstanceState != null) {
-        Bundle stageState = savedInstanceState.getBundle(getStageStateKey(stageHashKey));
-        if (stageState != null) {
-          stage.restoreInstanceState(stageState);
-        }
-      }
-
-      // Restore activity lifecycle
-      if (isStarted) {
-        stage.start();
-      }
-      if (isResumed) {
-        stage.resume();
-      }
-
-      // setContainer() handles view re-attaching, so call it after restoring state
-      stage.setContainer(container);
-
-      stageMap.put(stageHashKey, stage);
-    } else {
-      if (!stage.hasContainer()) {
-        stage.setContainer(container);
-      } else if (stage.getContainer() != container) {
-        throw new IllegalStateException("The Stage already has a different container. "
-            + "If you want more than one Stage in a Activity, "
-            + "please use different container view for each Stage, "
-            + "and set different ID for each container view.");
-      }
-    }
-    return stage;
-  }
-
-  private static int getStageHashKey(@NonNull ViewGroup viewGroup) {
-    return viewGroup.getId();
-  }
-
-  private static String getStageStateKey(int hashKey) {
-    return KEY_STAGE_STATE_PREFIX + hashKey;
-  }
-
-  @Override
-  public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    getActivity().getApplication().registerActivityLifecycleCallbacks(activityCallbacks);
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-
-    if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
-    }
-
-    isStarted = true;
-
-    for (int i = 0, n = stageMap.size(); i < n; ++i) {
-      ActivityStage stage = stageMap.valueAt(i);
-      stage.start();
-    }
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-
-    if (DEBUG) {
-      assertTrue(isStarted);
-      assertFalse(isResumed);
-    }
-
-    isResumed = true;
-
-    for (int i = 0, n = stageMap.size(); i < n; ++i) {
-      ActivityStage stage = stageMap.valueAt(i);
-      stage.resume();
-    }
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-
-    if (DEBUG) {
-      assertTrue(isStarted);
-      assertTrue(isResumed);
-    }
-
-    isResumed = false;
-
-    for (int i = 0, n = stageMap.size(); i < n; ++i) {
-      ActivityStage stage = stageMap.valueAt(i);
-      stage.pause();
-    }
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-
-    if (DEBUG) {
-      assertTrue(isStarted);
-      assertFalse(isResumed);
-    }
-
-    isStarted = false;
-
-    for (int i = 0, n = stageMap.size(); i < n; ++i) {
-      ActivityStage stage = stageMap.valueAt(i);
-      stage.stop();
-    }
-  }
-
-  @Override
-  public void onDetach() {
-    super.onDetach();
-
-    if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
-    }
-
-    // onDestroy() is called before onDetach()
-    // Check it to avoid detach stage twice
-    if (!isDestroy) {
-      for (int i = 0, n = stageMap.size(); i < n; ++i) {
-        ActivityStage stage = stageMap.valueAt(i);
-        stage.detach();
-      }
-
-      // The activity will be destroyed soon
-      activity = null;
-    }
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-
-    if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
-      assertFalse(isDestroy);
-    }
-
-    isDestroy = true;
-
-    getActivity().getApplication().unregisterActivityLifecycleCallbacks(activityCallbacks);
-
-    for (int i = 0, n = stageMap.size(); i < n; ++i) {
-      ActivityStage stage = stageMap.valueAt(i);
-      stage.detach();
-      stage.destroy();
-    }
-    stageMap.clear();
-
-    // The activity will be destroyed soon
-    activity = null;
-  }
-
-  private void saveStageState(Bundle outState) {
-    for (int i = 0, n = stageMap.size(); i < n; ++i) {
-      ActivityStage stage = stageMap.valueAt(i);
-      Bundle bundle = new Bundle();
-      stage.saveInstanceState(bundle);
-      outState.putBundle(getStageStateKey(stage.getHashKey()), bundle);
-    }
-  }
+  @Nullable
+  Activity getActivity();
 }

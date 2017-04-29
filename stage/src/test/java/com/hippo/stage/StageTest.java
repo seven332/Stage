@@ -23,13 +23,13 @@ package com.hippo.stage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.hippo.stage.util.DumpDirector;
 import com.hippo.stage.util.TestContainer;
 import com.hippo.stage.util.TestScene;
 import com.hippo.stage.util.TestView;
@@ -44,11 +44,13 @@ import org.robolectric.annotation.Config;
 @Config(manifest = Config.NONE)
 public class StageTest {
 
+  private Director director;
   private Stage stage;
 
   @Before
   public void before() {
-    stage = new TestStage();
+    director = new DumpDirector();
+    stage = new TestStage(director);
     stage.setContainer(new TestContainer(RuntimeEnvironment.application));
   }
 
@@ -99,7 +101,7 @@ public class StageTest {
 
   @Test
   public void testPushWithoutViews() {
-    Stage stage = new TestStage();
+    Stage stage = new TestStage(director);
 
     stage.pushScene(new TestScene());
     assertEquals(1, stage.getSceneCount());
@@ -110,7 +112,7 @@ public class StageTest {
 
   @Test
   public void testPopWithoutViews() {
-    Stage stage = new TestStage();
+    Stage stage = new TestStage(director);
 
     Scene scene1 = new TestScene();
     Scene scene2 = new TestScene();
@@ -136,7 +138,7 @@ public class StageTest {
 
   @Test
   public void testReplaceTopWithoutViews() {
-    Stage stage = new TestStage();
+    Stage stage = new TestStage(director);
 
     stage.pushScene(new TestScene());
     stage.pushScene(new TestScene());
@@ -149,7 +151,7 @@ public class StageTest {
 
   @Test
   public void testSetRootWithoutViews() {
-    Stage stage = new TestStage();
+    Stage stage = new TestStage(director);
 
     stage.pushScene(new TestScene());
     stage.pushScene(new TestScene());
@@ -223,10 +225,8 @@ public class StageTest {
   }
 
   private static class TestStage extends Stage {
-    @Nullable
-    @Override
-    Activity getActivity() {
-      return null;
+    TestStage(Director director) {
+      super(director);
     }
   }
 }
