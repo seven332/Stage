@@ -21,6 +21,9 @@ package com.hippo.stage;
  */
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class DumpDirector extends Director {
@@ -35,4 +38,16 @@ public class DumpDirector extends Director {
   public Activity getActivity() {
     return null;
   }
+
+  @Override
+  void startActivity(@NonNull Intent intent) {}
+
+  @Override
+  void startActivity(@NonNull Intent intent, @Nullable Bundle options) {}
+
+  @Override
+  void startActivityForResult(Intent intent, int requestCode) {}
+
+  @Override
+  void startActivityForResult(Intent intent, int requestCode, Bundle options) {}
 }

@@ -24,10 +24,14 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 
@@ -45,6 +49,7 @@ public abstract class Director {
   private boolean isDestroy;
 
   private final SparseArray<Stage> stageMap = new SparseArray<>();
+  private final SparseIntArray requestCodeMap = new SparseIntArray();
 
   /**
    * Hires a {@link Director} for a {@link Activity}.
@@ -101,6 +106,41 @@ public abstract class Director {
 
   @Nullable
   abstract Activity getActivity();
+
+  abstract void startActivity(@NonNull Intent intent);
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  abstract void startActivity(@NonNull Intent intent, @Nullable Bundle options);
+
+  void startActivityForResult(int stageId, Intent intent, int requestCode) {
+    // TODO check duplicate request code
+    requestCodeMap.put(requestCode, stageId);
+    startActivityForResult(intent, requestCode);
+  }
+
+  abstract void startActivityForResult(Intent intent, int requestCode);
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  void startActivityForResult(int stageId, Intent intent, int requestCode, Bundle options) {
+    // TODO check duplicate request code
+    requestCodeMap.put(requestCode, stageId);
+    startActivityForResult(intent, requestCode, options);
+  }
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  abstract void startActivityForResult(Intent intent, int requestCode, Bundle options);
+
+  void onActivityResult(int requestCode, int resultCode, Intent data) {
+    int index = requestCodeMap.indexOfKey(requestCode);
+    if (index >= 0) {
+      int stageId = requestCodeMap.valueAt(index);
+      requestCodeMap.removeAt(index);
+      Stage stage = stageMap.get(stageId);
+      if (stage != null) {
+        stage.onActivityResult(requestCode, resultCode, data);
+      }
+    }
+  }
 
   void start() {
     if (DEBUG) {

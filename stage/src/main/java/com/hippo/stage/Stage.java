@@ -27,11 +27,15 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -78,6 +82,8 @@ public class Stage {
   private Operator push;
   private Operator replaceTop;
   private Operator setRoot;
+
+  private final SparseIntArray requestCodeMap = new SparseIntArray();
 
   Stage(Director director) {
     this.director = director;
@@ -419,6 +425,16 @@ public class Stage {
     }
   }
 
+  @Nullable
+  private Scene findSceneById(int sceneId) {
+    for (Scene scene : stack) {
+      if (scene.getId() == sceneId) {
+        return scene;
+      }
+    }
+    return null;
+  }
+
   /**
    * Returns top {@link Scene} in stack.
    */
@@ -456,6 +472,48 @@ public class Stage {
   @Nullable
   Activity getActivity() {
     return director != null ? director.getActivity() : null;
+  }
+
+  void startActivity(@NonNull Intent intent) {
+    if (director != null) {
+      director.startActivity(intent);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  void startActivity(@NonNull Intent intent, @Nullable Bundle options) {
+    if (director != null) {
+      director.startActivity(intent, options);
+    }
+  }
+
+  void startActivityForResult(int sceneId, Intent intent, int requestCode) {
+    if (director != null) {
+      // TODO check duplicate request code
+      requestCodeMap.put(requestCode, sceneId);
+      director.startActivityForResult(id, intent, requestCode);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  void startActivityForResult(int sceneId, Intent intent, int requestCode, Bundle options) {
+    if (director != null) {
+      // TODO check duplicate request code
+      requestCodeMap.put(requestCode, sceneId);
+      director.startActivityForResult(id, intent, requestCode, options);
+    }
+  }
+
+  void onActivityResult(int requestCode, int resultCode, Intent data) {
+    int index = requestCodeMap.indexOfKey(requestCode);
+    if (index >= 0) {
+      int sceneId = requestCodeMap.valueAt(index);
+      requestCodeMap.removeAt(index);
+      Scene scene = findSceneById(sceneId);
+      if (scene != null) {
+        scene.onActivityResult(requestCode, resultCode, data);
+      }
+    }
   }
 
   /**

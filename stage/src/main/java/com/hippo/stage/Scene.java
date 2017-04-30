@@ -25,11 +25,14 @@ import static junit.framework.Assert.assertNull;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -270,6 +273,53 @@ public abstract class Scene {
     Activity activity = getActivity();
     return activity != null ? activity.getApplication() : null;
   }
+
+  /**
+   * Same as {@link Activity#startActivity(Intent)}.
+   * It's a no-op if this {@code Scene} hasn't been created or it's destroyed.
+   */
+  public void startActivity(@NonNull Intent intent) {
+    if (stage != null) {
+      stage.startActivity(intent);
+    }
+  }
+
+  /**
+   * Same as {@link Activity#startActivity(Intent, Bundle)}.
+   * It's a no-op if this {@code Scene} hasn't been created or it's destroyed.
+   */
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  public void startActivity(@NonNull Intent intent, @Nullable Bundle options) {
+    if (stage != null) {
+      stage.startActivity(intent, options);
+    }
+  }
+
+  /**
+   * Same as {@link Activity#startActivityForResult(Intent, int)}.
+   * It's a no-op if this {@code Scene} hasn't been created or it's destroyed.
+   */
+  public void startActivityForResult(Intent intent, int requestCode) {
+    if (stage != null) {
+      stage.startActivityForResult(id, intent, requestCode);
+    }
+  }
+
+  /**
+   * Same as {@link Activity#startActivityForResult(Intent, int, Bundle)}.
+   * It's a no-op if this {@code Scene} hasn't been created or it's destroyed.
+   */
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
+    if (stage != null) {
+      stage.startActivityForResult(id, intent, requestCode, options);
+    }
+  }
+
+  /**
+   * Same as {@link Activity#onActivityResult(int, int, Intent)}.
+   */
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
   private void assertState(int state) {
     if (this.state != state) {

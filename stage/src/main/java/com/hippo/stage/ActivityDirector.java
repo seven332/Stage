@@ -22,9 +22,12 @@ package com.hippo.stage;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 
 class ActivityDirector extends Director {
 
@@ -35,6 +38,7 @@ class ActivityDirector extends Director {
   private int currentSceneId = Scene.INVALID_ID;
 
   private Activity activity;
+  private Fragment fragment;
 
   static ActivityDirector getInstance(
       @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ class ActivityDirector extends Director {
     ActivityDirector director = fragment.getDirector();
     if (director == null) {
       director = new ActivityDirector();
+      director.setFragment(fragment);
       director.setActivity(activity);
       if (savedInstanceState != null) {
         director.restoreInstanceState(savedInstanceState);
@@ -71,9 +76,43 @@ class ActivityDirector extends Director {
     }
   }
 
+  private void setFragment(@Nullable Fragment fragment) {
+    this.fragment = fragment;
+  }
+
   @Override
   public Activity getActivity() {
     return activity;
+  }
+
+  @Override
+  void startActivity(@NonNull Intent intent) {
+    if (fragment != null) {
+      fragment.startActivity(intent);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  @Override
+  void startActivity(@NonNull Intent intent, @Nullable Bundle options) {
+    if (fragment != null) {
+      fragment.startActivity(intent, options);
+    }
+  }
+
+  @Override
+  void startActivityForResult(Intent intent, int requestCode) {
+    if (fragment != null) {
+      fragment.startActivityForResult(intent, requestCode);
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+  @Override
+  void startActivityForResult(Intent intent, int requestCode, Bundle options) {
+    if (fragment != null) {
+      fragment.startActivityForResult(intent, requestCode, options);
+    }
   }
 
   @Override
@@ -99,6 +138,8 @@ class ActivityDirector extends Director {
   void destroy() {
     super.destroy();
 
+    // The Fragment is destroyed
+    fragment = null;
     // The activity will be destroyed soon
     activity = null;
   }
@@ -232,6 +273,13 @@ class ActivityDirector extends Director {
     private void saveInstanceState(Bundle outState) {
       if (director != null) {
         director.saveInstanceState(outState);
+      }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      if (director != null) {
+        director.onActivityResult(requestCode, resultCode, data);
       }
     }
   }
