@@ -83,7 +83,8 @@ public class Stage {
   private Operator replaceTop;
   private Operator setRoot;
 
-  private final SparseIntArray requestCodeMap = new SparseIntArray();
+  private final SparseIntArray activityRequestCodeMap = new SparseIntArray();
+  private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
 
   Stage(Director director) {
     this.director = director;
@@ -490,7 +491,7 @@ public class Stage {
   void startActivityForResult(int sceneId, Intent intent, int requestCode) {
     if (director != null) {
       // TODO check duplicate request code
-      requestCodeMap.put(requestCode, sceneId);
+      activityRequestCodeMap.put(requestCode, sceneId);
       director.startActivityForResult(id, intent, requestCode);
     }
   }
@@ -499,19 +500,40 @@ public class Stage {
   void startActivityForResult(int sceneId, Intent intent, int requestCode, Bundle options) {
     if (director != null) {
       // TODO check duplicate request code
-      requestCodeMap.put(requestCode, sceneId);
+      activityRequestCodeMap.put(requestCode, sceneId);
       director.startActivityForResult(id, intent, requestCode, options);
     }
   }
 
   void onActivityResult(int requestCode, int resultCode, Intent data) {
-    int index = requestCodeMap.indexOfKey(requestCode);
+    int index = activityRequestCodeMap.indexOfKey(requestCode);
     if (index >= 0) {
-      int sceneId = requestCodeMap.valueAt(index);
-      requestCodeMap.removeAt(index);
+      int sceneId = activityRequestCodeMap.valueAt(index);
+      activityRequestCodeMap.removeAt(index);
       Scene scene = findSceneById(sceneId);
       if (scene != null) {
         scene.onActivityResult(requestCode, resultCode, data);
+      }
+    }
+  }
+
+  void requestPermissions(int sceneId, @NonNull String[] permissions, int requestCode) {
+    if (director != null) {
+      // TODO check duplicate request code
+      permissionRequestCodeMap.put(requestCode, sceneId);
+      director.requestPermissions(id, permissions, requestCode);
+    }
+  }
+
+  void onRequestPermissionsResult(
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    int index = permissionRequestCodeMap.indexOfKey(requestCode);
+    if (index >= 0) {
+      int sceneId = permissionRequestCodeMap.valueAt(index);
+      permissionRequestCodeMap.removeAt(index);
+      Scene scene = findSceneById(sceneId);
+      if (scene != null) {
+        scene.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
     }
   }

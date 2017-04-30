@@ -23,8 +23,10 @@ package com.hippo.stage;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -39,6 +41,8 @@ class ActivityDirector extends Director {
 
   private Activity activity;
   private Fragment fragment;
+
+  private Handler handler = new Handler();
 
   static ActivityDirector getInstance(
       @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
@@ -115,6 +119,36 @@ class ActivityDirector extends Director {
     }
   }
 
+  // ActivityCompat.requestPermissions(Activity, String[], int)
+  @Override
+  void requestPermissions(@NonNull final String[] permissions, final int requestCode) {
+    if (Build.VERSION.SDK_INT >= 23) {
+      if (fragment != null) {
+        fragment.requestPermissions(permissions, requestCode);
+      }
+    } else {
+      if (handler != null) {
+        handler.post(new Runnable() {
+          @Override
+          public void run() {
+            final int[] grantResults = new int[permissions.length];
+
+            PackageManager packageManager = activity.getPackageManager();
+            String packageName = activity.getPackageName();
+
+            final int permissionCount = permissions.length;
+            for (int i = 0; i < permissionCount; i++) {
+              grantResults[i] = packageManager.checkPermission(
+                  permissions[i], packageName);
+            }
+
+            onRequestPermissionsResult(requestCode, permissions, grantResults);
+          }
+        });
+      }
+    }
+  }
+
   @Override
   public int requireSceneId() {
     int id;
@@ -142,6 +176,8 @@ class ActivityDirector extends Director {
     fragment = null;
     // The activity will be destroyed soon
     activity = null;
+    // The director is destroyed
+    handler = null;
   }
 
   @Override
@@ -280,6 +316,14 @@ class ActivityDirector extends Director {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       if (director != null) {
         director.onActivityResult(requestCode, resultCode, data);
+      }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+        int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+      if (director != null) {
+        director.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
     }
   }

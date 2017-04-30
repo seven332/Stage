@@ -50,4 +50,7 @@ public class DumpDirector extends Director {
 
   @Override
   void startActivityForResult(Intent intent, int requestCode, Bundle options) {}
+
+  @Override
+  void requestPermissions(@NonNull String[] permissions, int requestCode) {}
 }

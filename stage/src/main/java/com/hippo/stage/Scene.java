@@ -335,6 +335,22 @@ public abstract class Scene {
    */
   public void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
+  /**
+   * Same as {@code ActivityCompat#requestPermissions(Activity, String[], int)}.
+   * It's a no-op if this {@code Scene} hasn't been created or it's destroyed.
+   */
+  public void requestPermissions(@NonNull String[] permissions, int requestCode) {
+    if (stage != null) {
+      stage.requestPermissions(id, permissions, requestCode);
+    }
+  }
+
+  /**
+   * Same as {@link Activity#onRequestPermissionsResult(int, String[], int[])}.
+   */
+  public void onRequestPermissionsResult(
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {}
+
   private void assertState(int state) {
     if (this.state != state) {
       throw new IllegalStateException("State should be " + state + ", but it's " + this.state);

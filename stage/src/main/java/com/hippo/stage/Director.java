@@ -49,7 +49,8 @@ public abstract class Director {
   private boolean isDestroy;
 
   private final SparseArray<Stage> stageMap = new SparseArray<>();
-  private final SparseIntArray requestCodeMap = new SparseIntArray();
+  private final SparseIntArray activityRequestCodeMap = new SparseIntArray();
+  private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
 
   /**
    * Hires a {@link Director} for a {@link Activity}.
@@ -114,7 +115,7 @@ public abstract class Director {
 
   void startActivityForResult(int stageId, Intent intent, int requestCode) {
     // TODO check duplicate request code
-    requestCodeMap.put(requestCode, stageId);
+    activityRequestCodeMap.put(requestCode, stageId);
     startActivityForResult(intent, requestCode);
   }
 
@@ -123,7 +124,7 @@ public abstract class Director {
   @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
   void startActivityForResult(int stageId, Intent intent, int requestCode, Bundle options) {
     // TODO check duplicate request code
-    requestCodeMap.put(requestCode, stageId);
+    activityRequestCodeMap.put(requestCode, stageId);
     startActivityForResult(intent, requestCode, options);
   }
 
@@ -131,13 +132,34 @@ public abstract class Director {
   abstract void startActivityForResult(Intent intent, int requestCode, Bundle options);
 
   void onActivityResult(int requestCode, int resultCode, Intent data) {
-    int index = requestCodeMap.indexOfKey(requestCode);
+    int index = activityRequestCodeMap.indexOfKey(requestCode);
     if (index >= 0) {
-      int stageId = requestCodeMap.valueAt(index);
-      requestCodeMap.removeAt(index);
+      int stageId = activityRequestCodeMap.valueAt(index);
+      activityRequestCodeMap.removeAt(index);
       Stage stage = stageMap.get(stageId);
       if (stage != null) {
         stage.onActivityResult(requestCode, resultCode, data);
+      }
+    }
+  }
+
+  void requestPermissions(int stageId, @NonNull String[] permissions, int requestCode) {
+    // TODO check duplicate request code
+    permissionRequestCodeMap.put(requestCode, stageId);
+    requestPermissions(permissions, requestCode);
+  }
+
+  abstract void requestPermissions(@NonNull String[] permissions, int requestCode);
+
+  void onRequestPermissionsResult(
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    int index = permissionRequestCodeMap.indexOfKey(requestCode);
+    if (index >= 0) {
+      int stageId = permissionRequestCodeMap.valueAt(index);
+      permissionRequestCodeMap.removeAt(index);
+      Stage stage = stageMap.get(stageId);
+      if (stage != null) {
+        stage.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
     }
   }
