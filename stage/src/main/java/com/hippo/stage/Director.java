@@ -46,7 +46,8 @@ public abstract class Director {
 
   private boolean isStarted;
   private boolean isResumed;
-  private boolean isDestroy;
+  private boolean isFinishing;
+  private boolean isDestroyed;
 
   private final SparseArray<Stage> stageMap = new SparseArray<>();
   private final SparseIntArray activityRequestCodeMap = new SparseIntArray();
@@ -68,7 +69,7 @@ public abstract class Director {
    * Set different ID for each container view.
    */
   public Stage direct(@NonNull ViewGroup container) {
-    if (isDestroy) {
+    if (isDestroyed) {
       throw new IllegalStateException("Can't call direct() on a destroyed Director");
     }
 
@@ -220,42 +221,44 @@ public abstract class Director {
     }
   }
 
+  void detach() {
+    if (DEBUG) {
+      assertFalse(isStarted);
+      assertFalse(isResumed);
+      assertFalse(isDestroyed);
+    }
+
+    for (int i = 0, n = stageMap.size(); i < n; ++i) {
+      Stage stage = stageMap.valueAt(i);
+      stage.detach();
+    }
+  }
+
   // Called before detach(), just like Fragment
   void destroy() {
     if (DEBUG) {
       assertFalse(isStarted);
       assertFalse(isResumed);
-      assertFalse(isDestroy);
+      assertTrue(isFinishing);
+      assertFalse(isDestroyed);
     }
 
-    isDestroy = true;
+    isDestroyed = true;
 
     for (int i = 0, n = stageMap.size(); i < n; ++i) {
       Stage stage = stageMap.valueAt(i);
-      stage.detach();
       stage.destroy();
     }
     stageMap.clear();
   }
 
-  void detach() {
-    if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
-    }
-
-    // destroy() is called before detach()
-    // Check it to avoid detach stage twice
-    if (!isDestroy) {
-      for (int i = 0, n = stageMap.size(); i < n; ++i) {
-        Stage stage = stageMap.valueAt(i);
-        stage.detach();
-      }
-    }
+  void finish() {
+    assertFalse(isFinishing);
+    isFinishing = true;
   }
 
   boolean isFinishing() {
-    return isDestroy;
+    return isFinishing;
   }
 
   void saveInstanceState(Bundle outState) {

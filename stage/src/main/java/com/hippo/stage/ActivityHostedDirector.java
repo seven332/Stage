@@ -162,6 +162,7 @@ class ActivityHostedDirector extends Director {
   void detach() {
     super.detach();
 
+    // If the director is finishing, let destroy() clear activity reference
     if (!isFinishing()) {
       // The activity will be destroyed soon
       activity = null;
@@ -196,7 +197,7 @@ class ActivityHostedDirector extends Director {
 
     private boolean isStarted;
     private boolean isResumed;
-    private boolean isDestroy;
+    private boolean isFinishing;
 
     @Nullable
     private ActivityHostedDirector director;
@@ -284,10 +285,12 @@ class ActivityHostedDirector extends Director {
     @Override
     public void onDestroy() {
       super.onDestroy();
-      isDestroy = true;
 
+      isFinishing = true;
+
+      // onDetach() will be called soon, let it call director.destroy()
       if (director != null) {
-        director.destroy();
+        director.finish();
       }
     }
 
@@ -297,9 +300,12 @@ class ActivityHostedDirector extends Director {
 
       if (director != null) {
         director.detach();
+        if (isFinishing) {
+          director.destroy();
+        }
       }
 
-      if (isDestroy) {
+      if (isFinishing) {
         // onDestroy() is called before onDetach(), clear data here
         getActivity().getApplication().unregisterActivityLifecycleCallbacks(activityCallbacks);
         director = null;
