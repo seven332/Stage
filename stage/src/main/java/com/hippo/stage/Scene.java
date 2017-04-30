@@ -235,6 +235,20 @@ public abstract class Scene {
   }
 
   /**
+   * Returns {@code true} if the view is visible for user.
+   */
+  public boolean isStarted() {
+    return state >= STATE_STARTED && state < STATE_STOPPED;
+  }
+
+  /**
+   * Returns {@code true} if the view is in the foreground.
+   */
+  public boolean isResumed() {
+    return state == STATE_RESUMED;
+  }
+
+  /**
    * Returns {@code true} if the view is attached.
    */
   public boolean isViewAttached() {
