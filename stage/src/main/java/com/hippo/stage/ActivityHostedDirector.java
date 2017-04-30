@@ -31,11 +31,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
-class ActivityDirector extends Director {
+class ActivityHostedDirector extends Director {
 
-  private static final String FRAGMENT_TAG = "ActivityDirector";
+  private static final String FRAGMENT_TAG = "ActivityHostedDirector";
 
-  private static final String KEY_CURRENT_SCENE_ID = "ActivityDirector:current_scene_id";
+  private static final String KEY_CURRENT_SCENE_ID = "ActivityHostedDirector:current_scene_id";
 
   private int currentSceneId = Scene.INVALID_ID;
 
@@ -44,7 +44,7 @@ class ActivityDirector extends Director {
 
   private Handler handler = new Handler();
 
-  static ActivityDirector getInstance(
+  static ActivityHostedDirector getInstance(
       @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
     // Get DataFragment
     DataFragment fragment =
@@ -55,9 +55,9 @@ class ActivityDirector extends Director {
     }
 
     // Get director
-    ActivityDirector director = fragment.getDirector();
+    ActivityHostedDirector director = fragment.getDirector();
     if (director == null) {
-      director = new ActivityDirector();
+      director = new ActivityHostedDirector();
       director.setFragment(fragment);
       director.setActivity(activity);
       if (savedInstanceState != null) {
@@ -75,7 +75,7 @@ class ActivityDirector extends Director {
     if (this.activity == null) {
       this.activity = activity;
     } else if (this.activity != activity) {
-      throw new IllegalStateException("Two different activity for one ActivityDirector. "
+      throw new IllegalStateException("Two different activity for one ActivityHostedDirector. "
           + "Maybe the library developer forgot to release old activity reference.");
     }
   }
@@ -199,7 +199,7 @@ class ActivityDirector extends Director {
     private boolean isDestroy;
 
     @Nullable
-    private ActivityDirector director;
+    private ActivityHostedDirector director;
 
     private final ActivityCallbacks activityCallbacks = new ActivityCallbacks() {
       @Override
@@ -215,7 +215,7 @@ class ActivityDirector extends Director {
       setHasOptionsMenu(true);
     }
 
-    private void setDirector(@NonNull ActivityDirector director) {
+    private void setDirector(@NonNull ActivityHostedDirector director) {
       if (this.director == null) {
         this.director = director;
 
@@ -231,7 +231,7 @@ class ActivityDirector extends Director {
     }
 
     @Nullable
-    private ActivityDirector getDirector() {
+    private ActivityHostedDirector getDirector() {
       return director;
     }
 

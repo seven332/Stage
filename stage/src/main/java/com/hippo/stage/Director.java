@@ -58,7 +58,7 @@ public abstract class Director {
    * @param savedInstanceState the {@link Bundle} passed in {@link Activity#onCreate(Bundle)}
    */
   public static Director hire(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-    return ActivityDirector.getInstance(activity, savedInstanceState);
+    return ActivityHostedDirector.getInstance(activity, savedInstanceState);
   }
 
   /**
