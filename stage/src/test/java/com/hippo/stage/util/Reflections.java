@@ -23,6 +23,7 @@ package com.hippo.stage.util;
 import static org.junit.Assert.assertTrue;
 
 import com.hippo.stage.Curtain;
+import com.hippo.stage.Director;
 import com.hippo.stage.Stage;
 import java.lang.reflect.Field;
 
@@ -49,5 +50,13 @@ public class Reflections {
 
   public static boolean isResumed(Stage stage) {
     return (boolean) getField(stage, Stage.class, "isResumed");
+  }
+
+  public static boolean isStarted(Director director) {
+    return (boolean) getField(director, Director.class, "isStarted");
+  }
+
+  public static boolean isResumed(Director director) {
+    return (boolean) getField(director, Director.class, "isResumed");
   }
 }

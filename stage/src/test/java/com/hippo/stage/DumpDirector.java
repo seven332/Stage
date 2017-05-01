@@ -28,9 +28,17 @@ import android.support.annotation.Nullable;
 
 public class DumpDirector extends Director {
 
+  private static final String KEY_CURRENT_SCENE_ID = "DumpDirector:current_scene_id";
+
+  private int currentSceneId = Scene.INVALID_ID;
+
   @Override
   public int requireSceneId() {
-    return 0;
+    int id;
+    do {
+      id = ++currentSceneId;
+    } while (id == Scene.INVALID_ID);
+    return id;
   }
 
   @Nullable
@@ -53,4 +61,16 @@ public class DumpDirector extends Director {
 
   @Override
   void requestPermissions(@NonNull String[] permissions, int requestCode) {}
+
+  @Override
+  void saveInstanceState(Bundle outState) {
+    outState.putInt(KEY_CURRENT_SCENE_ID, currentSceneId);
+    super.saveInstanceState(outState);
+  }
+
+  @Override
+  void restoreInstanceState(@NonNull Bundle savedInstanceState) {
+    currentSceneId = savedInstanceState.getInt(KEY_CURRENT_SCENE_ID, Scene.INVALID_ID);
+    super.restoreInstanceState(savedInstanceState);
+  }
 }

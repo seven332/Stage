@@ -84,6 +84,7 @@ public abstract class Scene {
   private static final String KEY_VIEW_STATE = "Scene:view_state";
   private static final String KEY_VIEW_STATE_HIERARCHY = "Scene:view_state:hierarchy";
   private static final String KEY_VIEW_STATE_BUNDLE = "Scene:view_state:bundle";
+  private static final String KEY_CHILD_DIRECTOR = "Scene:child_director";
 
   private Stage stage;
   private int savedId = INVALID_ID;
@@ -99,6 +100,8 @@ public abstract class Scene {
 
   private int state = STATE_NONE;
   private boolean isFinishing;
+
+  private SceneHostedDirector childDirector;
 
   @NonNull
   static Scene newInstance(String className, @NonNull Bundle bundle) {
@@ -271,6 +274,38 @@ public abstract class Scene {
     return state == STATE_DESTROYED;
   }
 
+  int requireSceneId() {
+    return stage.requireSceneId();
+  }
+
+  /**
+   * Hires a {@link Director} to direct {@link Stage}s
+   * on the {@code ViewGroup} of this {@code Scene}.
+   */
+  public Director hireChildDirector() {
+    if (isDestroyed()) {
+      throw new IllegalStateException("Can't call hireChildDirector() on a destroyed Scene");
+    }
+
+    if (childDirector == null) {
+      childDirector = new SceneHostedDirector();
+      childDirector.setScene(this);
+
+      // Restore child director lifecycle
+      if (isStarted()) {
+        childDirector.start();
+      }
+      if (isResumed()) {
+        childDirector.resume();
+      }
+      if (isFinishing()) {
+        childDirector.finish();
+      }
+    }
+
+    return childDirector;
+  }
+
   /**
    * Return the {@link Activity} this {@code Scene} is currently associated with.
    */
@@ -427,24 +462,51 @@ public abstract class Scene {
 
   void start() {
     updateState(STATE_STARTED, STATE_ATTACHED, STATE_STOPPED);
+
+    if (childDirector != null) {
+      childDirector.start();
+    }
+
     onStart();
   }
 
   void resume() {
     updateState(STATE_RESUMED, STATE_STARTED, STATE_PAUSED);
+
+    if (childDirector != null) {
+      childDirector.resume();
+    }
+
     onResume();
   }
 
   void pause() {
     updateState(STATE_PAUSED, STATE_RESUMED);
+
+    if (childDirector != null) {
+      childDirector.pause();
+    }
+
     onPause();
   }
 
   void stop() {
     updateState(STATE_STOPPED, STATE_STARTED, STATE_PAUSED);
+
+    if (childDirector != null) {
+      childDirector.stop();
+    }
+
     onStop();
   }
 
+  private void destroyView() {
+    if (childDirector != null) {
+      childDirector.detach();
+    }
+
+    onDestroyView(view);
+  }
 
   private void destroy() {
     updateState(STATE_DESTROYED, STATE_CREATED, STATE_DETACHED);
@@ -456,8 +518,13 @@ public abstract class Scene {
     }
 
     if (view != null) {
-      onDestroyView(view);
+      destroyView();
       view = null;
+    }
+
+    if (childDirector != null) {
+      childDirector.destroy();
+      childDirector = null;
     }
 
     onDestroy();
@@ -468,6 +535,10 @@ public abstract class Scene {
 
   void finish() {
     isFinishing = true;
+
+    if (childDirector != null) {
+      childDirector.finish();
+    }
 
     if (state == STATE_CREATED || state == STATE_DETACHED) {
       // No need to wait view detach, call destroy() now
@@ -499,7 +570,7 @@ public abstract class Scene {
     onDetachView(view);
 
     if (!willRetainView || forceDestroyView) {
-      onDestroyView(view);
+      destroyView();
       view = null;
     }
 
@@ -544,6 +615,12 @@ public abstract class Scene {
     }
     outState.putBundle(KEY_VIEW_STATE, viewState);
 
+    if (childDirector != null) {
+      Bundle childDirectorState = new Bundle();
+      childDirector.saveInstanceState(childDirectorState);
+      outState.putBundle(KEY_CHILD_DIRECTOR, childDirectorState);
+    }
+
     return outState;
   }
 
@@ -556,6 +633,13 @@ public abstract class Scene {
     viewState = savedInstanceState.getBundle(KEY_VIEW_STATE);
     if (viewState != null) {
       viewState.setClassLoader(getClass().getClassLoader());
+    }
+
+    Bundle childDirectorState = savedInstanceState.getBundle(KEY_CHILD_DIRECTOR);
+    if (childDirectorState != null) {
+      childDirector = new SceneHostedDirector();
+      childDirector.setScene(this);
+      childDirector.restoreInstanceState(childDirectorState);
     }
   }
 

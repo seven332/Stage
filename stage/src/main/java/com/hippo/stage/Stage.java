@@ -248,10 +248,14 @@ public class Stage {
     }
   }
 
+  int requireSceneId() {
+    return director.requireSceneId();
+  }
+
   private void onPushScene(@NonNull Scene scene) {
     int id = scene.getSavedId();
     if (id == Scene.INVALID_ID) {
-      id = director.requireSceneId();
+      id = requireSceneId();
     }
     scene.create(this, id);
   }
