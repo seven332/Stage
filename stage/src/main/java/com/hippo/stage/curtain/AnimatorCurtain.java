@@ -22,6 +22,7 @@ package com.hippo.stage.curtain;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,6 +42,24 @@ public abstract class AnimatorCurtain extends Curtain {
   private ViewTreeObserver.OnPreDrawListener onPreDrawListener;
   private Animator animator;
   private OnCompleteListener listener;
+
+  private long duration = -1;
+  private TimeInterpolator interpolator;
+
+  /**
+   * Sets duration for the {@link Animator} returned by {@link #getAnimator(SceneInfo, List)}.
+   * Negative value will be ignored.
+   */
+  public void setDuration(long duration) {
+    this.duration = duration;
+  }
+
+  /**
+   * Sets interpolator for the {@link Animator} returned by {@link #getAnimator(SceneInfo, List)}.
+   */
+  public void setInterpolator(TimeInterpolator interpolator) {
+    this.interpolator = interpolator;
+  }
 
   @Override
   protected void completeImmediately() {
@@ -102,6 +121,12 @@ public abstract class AnimatorCurtain extends Curtain {
     Animator animate = getAnimator(upper, lower);
     if (animate != null) {
       this.animator = animate;
+      if (duration >= 0) {
+        animate.setDuration(duration);
+      }
+      if (interpolator != null) {
+        animate.setInterpolator(interpolator);
+      }
       animate.addListener(new AnimatorListenerAdapter() {
         @Override
         public void onAnimationEnd(Animator animation) {

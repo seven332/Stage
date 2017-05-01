@@ -31,8 +31,6 @@ import java.util.List;
 
 public class FadeCurtain extends AnimatorCurtain {
 
-  private static final long ANIMATOR_DURATION = 150L;
-
   @Nullable
   @Override
   protected Animator getAnimator(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
@@ -50,7 +48,6 @@ public class FadeCurtain extends AnimatorCurtain {
       }
     }
 
-    set.setDuration(ANIMATOR_DURATION);
     return set;
   }
 
