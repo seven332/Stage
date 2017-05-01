@@ -132,7 +132,7 @@ public abstract class Scene {
    * It only returns a valid id between {@link #onCreate(Bundle)}
    * and {@link #onDestroy()}, or {@link #INVALID_ID}.
    * <p>
-   * Each {@code Scene} in the same Stage has a different id.
+   * Each {@code Scene} in the same Activity has a different id.
    */
   public final int getId() {
     return id;
@@ -276,6 +276,20 @@ public abstract class Scene {
 
   int requireSceneId() {
     return stage.requireSceneId();
+  }
+
+  /**
+   * Look for a child {@link Scene} with the given id.
+   */
+  @Nullable
+  public Scene findSceneById(int sceneId) {
+    if (sceneId == id) {
+      return this;
+    }
+    if (childDirector != null) {
+      return childDirector.findSceneById(sceneId);
+    }
+    return null;
   }
 
   /**

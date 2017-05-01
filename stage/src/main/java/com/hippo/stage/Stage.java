@@ -430,11 +430,15 @@ public class Stage {
     }
   }
 
+  /**
+   * Look for a child {@link Scene} with the given id.
+   */
   @Nullable
-  private Scene findSceneById(int sceneId) {
+  public Scene findSceneById(int sceneId) {
     for (Scene scene : stack) {
-      if (scene.getId() == sceneId) {
-        return scene;
+      Scene result = scene.findSceneById(sceneId);
+      if (result != null) {
+        return result;
       }
     }
     return null;

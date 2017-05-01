@@ -106,6 +106,21 @@ public abstract class Director {
 
   abstract int requireSceneId();
 
+  /**
+   * Look for a child {@link Scene} with the given id.
+   */
+  @Nullable
+  public Scene findSceneById(int sceneId) {
+    for(int i = 0, n = stageMap.size(); i < n; i++) {
+      Stage stage = stageMap.valueAt(i);
+      Scene result = stage.findSceneById(sceneId);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
+  }
+
   @Nullable
   abstract Activity getActivity();
 
