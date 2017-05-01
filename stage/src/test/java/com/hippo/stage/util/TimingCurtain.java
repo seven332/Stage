@@ -21,6 +21,7 @@ package com.hippo.stage.util;
  */
 
 import android.support.annotation.NonNull;
+import android.view.ViewGroup;
 import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
 import java.util.List;
@@ -36,8 +37,8 @@ public class TimingCurtain extends Curtain {
   }
 
   @Override
-  public void execute(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower,
-      @NonNull OnCompleteListener listener) {
+  protected void execute(@NonNull ViewGroup container, @NonNull SceneInfo upper,
+      @NonNull List<SceneInfo> lower, @NonNull OnCompleteListener listener) {
     this.listener = listener;
   }
 }

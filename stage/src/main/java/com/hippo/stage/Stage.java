@@ -217,7 +217,7 @@ public class Stage {
     }
     if (curtain != null) {
       runningCurtain = curtain;
-      curtain.execute(upper, lower, new Curtain.OnCompleteListener() {
+      curtain.execute(container, upper, lower, new Curtain.OnCompleteListener() {
         @Override
         public void onComplete() {
           runningCurtain = null;

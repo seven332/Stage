@@ -27,6 +27,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
@@ -47,7 +48,8 @@ public abstract class AnimatorCurtain extends Curtain {
   private TimeInterpolator interpolator;
 
   /**
-   * Sets duration for the {@link Animator} returned by {@link #getAnimator(SceneInfo, List)}.
+   * Sets duration for the {@link Animator} returned by
+   * {@link #getAnimator(ViewGroup, SceneInfo, List)}.
    * Negative value will be ignored.
    */
   public void setDuration(long duration) {
@@ -55,7 +57,8 @@ public abstract class AnimatorCurtain extends Curtain {
   }
 
   /**
-   * Sets interpolator for the {@link Animator} returned by {@link #getAnimator(SceneInfo, List)}.
+   * Sets interpolator for the {@link Animator} returned by
+   * {@link #getAnimator(ViewGroup, SceneInfo, List)}.
    */
   public void setInterpolator(TimeInterpolator interpolator) {
     this.interpolator = interpolator;
@@ -94,8 +97,8 @@ public abstract class AnimatorCurtain extends Curtain {
   }
 
   @Override
-  protected void execute(@NonNull final SceneInfo upper, @NonNull final List<SceneInfo> lower,
-      @NonNull final OnCompleteListener listener) {
+  protected void execute(@NonNull final ViewGroup container, @NonNull final SceneInfo upper,
+      @NonNull final List<SceneInfo> lower, @NonNull final OnCompleteListener listener) {
     this.listener = listener;
     view = getFirstNonLaidOutView(upper, lower);
     if (view != null) {
@@ -107,18 +110,19 @@ public abstract class AnimatorCurtain extends Curtain {
           }
           view = null;
           onPreDrawListener = null;
-          animate(upper, lower);
+          animate(container, upper, lower);
           return true;
         }
       };
       view.getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
     } else {
-      animate(upper, lower);
+      animate(container, upper, lower);
     }
   }
 
-  private void animate(@NonNull final SceneInfo upper, @NonNull final List<SceneInfo> lower) {
-    Animator animate = getAnimator(upper, lower);
+  private void animate(@NonNull ViewGroup container, @NonNull final SceneInfo upper,
+      @NonNull final List<SceneInfo> lower) {
+    Animator animate = getAnimator(container, upper, lower);
     if (animate != null) {
       this.animator = animate;
       if (duration >= 0) {
@@ -151,7 +155,8 @@ public abstract class AnimatorCurtain extends Curtain {
    * Returns an {@link Animator} to show transition between {@link com.hippo.stage.Scene Scene}s.
    */
   @Nullable
-  protected abstract Animator getAnimator(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower);
+  protected abstract Animator getAnimator(@NonNull ViewGroup container, @NonNull SceneInfo upper,
+      @NonNull List<SceneInfo> lower);
 
   /**
    * Will be called after the animator ends to reset the detached view to its pre-animation state.

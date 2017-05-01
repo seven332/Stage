@@ -21,6 +21,7 @@ package com.hippo.stage;
  */
 
 import android.support.annotation.NonNull;
+import android.view.ViewGroup;
 import java.util.List;
 
 /**
@@ -30,8 +31,9 @@ public abstract class Curtain {
 
   /**
    * Completes this {@code Curtain} right now.
-   * The {@link OnCompleteListener} passed in {@link #execute(SceneInfo, List, OnCompleteListener)}
-   * before, must be called in the method.
+   * The {@link OnCompleteListener} passed in
+   * {@link #execute(ViewGroup, SceneInfo, List, OnCompleteListener)} before,
+   * must be called in the method.
    */
   protected abstract void completeImmediately();
 
@@ -39,9 +41,8 @@ public abstract class Curtain {
    * Executes this {@code Curtain} with {@code upper} and {@code lower}.
    * {@code listener} must be called in this method or after the animation done.
    */
-  protected abstract void execute(
-      @NonNull SceneInfo upper, @NonNull List<SceneInfo> lower,
-      @NonNull OnCompleteListener listener);
+  protected abstract void execute(@NonNull ViewGroup container, @NonNull SceneInfo upper,
+      @NonNull List<SceneInfo> lower, @NonNull OnCompleteListener listener);
 
   /**
    * A listener for being notified when the {@link Curtain} is complete.
