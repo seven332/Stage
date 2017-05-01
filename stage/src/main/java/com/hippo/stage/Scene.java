@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -382,7 +383,12 @@ public abstract class Scene {
   /**
    * Same as {@link Activity#onActivityResult(int, int, Intent)}.
    */
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {}
+  @CallSuper
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (childDirector != null) {
+      childDirector.onActivityResult(requestCode, resultCode, data);
+    }
+  }
 
   /**
    * Same as {@code ActivityCompat#requestPermissions(Activity, String[], int)}.
@@ -397,8 +403,13 @@ public abstract class Scene {
   /**
    * Same as {@link Activity#onRequestPermissionsResult(int, String[], int[])}.
    */
+  @CallSuper
   public void onRequestPermissionsResult(
-      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {}
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    if (childDirector != null) {
+      childDirector.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
 
   private void assertState(int state) {
     if (this.state != state) {
