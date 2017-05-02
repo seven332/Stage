@@ -464,7 +464,13 @@ public class Stage {
   }
 
   /**
-   * TODO
+   * Handle the back button being pressed.
+   * Returns {@code true} if the back action is consumed.
+   * <p>
+   * It calls {@link Scene#handleBack()} on the top {@link Scene}.
+   * If the back action isn't consumed, it pops the top {@code Scene}.
+   * If {@link #willPopTheLastScene()} returns {@code false}, it
+   * keeps the last {@code Scene}.
    */
   public boolean handleBack() {
     Scene scene = getTopScene();
