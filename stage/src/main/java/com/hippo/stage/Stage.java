@@ -295,6 +295,9 @@ public class Stage {
     }
 
     this.container = container;
+    if (container instanceof StageLayout) {
+      ((StageLayout) container).setStage(this);
+    }
 
     // Restore views
     ArrayList<Scene> visible = getVisibleScenes();
@@ -394,6 +397,9 @@ public class Stage {
       }
 
       // The activity is destroyed, can't attach views to this container
+      if (container instanceof StageLayout) {
+        ((StageLayout) container).setStage(this);
+      }
       container = null;
 
       // Clear curtain suppler

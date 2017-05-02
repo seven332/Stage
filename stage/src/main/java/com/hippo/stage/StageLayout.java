@@ -30,6 +30,8 @@ import android.widget.FrameLayout;
 
 /**
  * The standard container for a {@link Stage}.
+ * It blocks touch even when curtain running,
+ * requests focus when getting touch event.
  */
 public class StageLayout extends FrameLayout {
 

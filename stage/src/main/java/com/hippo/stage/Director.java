@@ -71,6 +71,8 @@ public abstract class Director {
    * <p>
    * Use different container view for each {@code Stage}.
    * Set different ID for each container view.
+   * <p>
+   * It's better if the {@code container} is an instance of {@link StageLayout}.
    */
   public Stage direct(@NonNull ViewGroup container) {
     if (isDestroyed) {
