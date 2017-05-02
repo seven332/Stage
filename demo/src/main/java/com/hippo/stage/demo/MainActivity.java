@@ -16,14 +16,65 @@
 
 package com.hippo.stage.demo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v7.app.AppCompatActivity;
+import android.view.ViewGroup;
+import com.hippo.stage.Curtain;
+import com.hippo.stage.CurtainSuppler;
+import com.hippo.stage.Director;
+import com.hippo.stage.SceneInfo;
+import com.hippo.stage.Stage;
+import com.hippo.stage.curtain.ShiftCurtain;
+import com.hippo.stage.demo.scene.HomeScene;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CurtainSuppler {
+
+  private Director director;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    director = Director.hire(this, savedInstanceState);
+    director.setCurtainSuppler(this);
+
+    ViewGroup container = (ViewGroup) findViewById(R.id.stage_layout);
+
+    Stage stage = director.direct(container);
+
+    if (stage.getSceneCount() == 0) {
+      stage.pushScene(new HomeScene());
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    // Avoid memory leak
+    director.setCurtainSuppler(null);
+  }
+
+  @Override
+  public void onBackPressed() {
+    if (!director.handleBack()) {
+      super.onBackPressed();
+    }
+  }
+
+  @Nullable
+  @Override
+  public Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    if (lower.isEmpty()) {
+      return null;
+    } else {
+      ShiftCurtain curtain = new ShiftCurtain();
+      curtain.setInterpolator(new FastOutSlowInInterpolator());
+      return curtain;
+    }
   }
 }

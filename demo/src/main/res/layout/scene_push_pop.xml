@@ -15,24 +15,27 @@
   ~ limitations under the License.
   -->
 
-<manifest
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.hippo.stage.demo">
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
 
-  <application
-    android:name=".App"
-    android:allowBackup="true"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/AppTheme">
+  <TextView
+    android:id="@+id/text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
 
-    <activity android:name=".MainActivity">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
-  </application>
-</manifest>
+  <Button
+    android:id="@+id/push"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Push"/>
+
+  <Button
+    android:id="@+id/pop"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Pop"/>
+
+</LinearLayout>
