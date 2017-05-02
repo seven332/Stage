@@ -6,7 +6,7 @@ Stage is a View-based Android UI framework. It helps you create an app with only
 
 ![Stage Structure](images/stage-structure.jpg)
 
-Name | Description |
+Name | Description
 ---|---
 __Director__ | Director can be hired by Activity or Scene. A Director can direct multiple Stages.
 __Stage__ | A Stage holds a Scene stack.
@@ -20,6 +20,20 @@ __Curtain__ | Curtain show transition between Scenes.
 Activity lifecycle is integrated to Scene lifecycle. If Activity.onPause() is called, Scene.onPause() is called on all resumed Scenes. If Activity.onStop() is called, Scene.onStop() is called on all started Scenes.
 
 Scene instances are kept after Activity recreated. Instead of recreating Scene instances, onDestroyView() and onCreateView() are called.
+
+## View attaching and detaching
+
+Scene have a property named `Opacity` which describes how this Scene affects the visibility of the Scene just below.
+
+Name | Description
+---|---
+__Transparent__|The Scene just below is visible
+__Translucent__|The Scene just below is only visible if this Scene is the top Scene
+__Opaque__|The Scene just below is invisible
+
+For example, a dialog-like Scene is transparent, a swipe-to-finish Scene is translucent.
+
+Stage handles Scene view attaching and detaching according to Scenes' `Opacity`.
 
 ## License
 
