@@ -610,7 +610,7 @@ public class Stage {
   }
 
   // A Operation is used for delayed popping or pushing or something like that
-  private final class Operation {
+  private static final class Operation {
 
     private final Scene scene;
     private final Operator operator;
