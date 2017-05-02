@@ -33,6 +33,9 @@ public class DumpDirector extends Director {
   private int currentSceneId = Scene.INVALID_ID;
 
   @Override
+  public void requestFocus() {}
+
+  @Override
   public int requireSceneId() {
     int id;
     do {

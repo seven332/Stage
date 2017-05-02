@@ -32,8 +32,15 @@ class SceneHostedDirector extends Director {
 
   private Scene scene;
 
-  public void setScene(Scene scene) {
+  void setScene(Scene scene) {
     this.scene = scene;
+  }
+
+  @Override
+  public void requestFocus() {
+    if (scene != null) {
+      scene.requestFocus();
+    }
   }
 
   @Override

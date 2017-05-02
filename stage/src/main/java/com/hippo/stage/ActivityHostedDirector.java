@@ -122,7 +122,7 @@ class ActivityHostedDirector extends Director {
   // ActivityCompat.requestPermissions(Activity, String[], int)
   @Override
   void requestPermissions(@NonNull final String[] permissions, final int requestCode) {
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (fragment != null) {
         fragment.requestPermissions(permissions, requestCode);
       }
@@ -147,6 +147,11 @@ class ActivityHostedDirector extends Director {
         });
       }
     }
+  }
+
+  @Override
+  public void requestFocus() {
+    // ActivityHostedDirector is the root, it's always focused
   }
 
   @Override

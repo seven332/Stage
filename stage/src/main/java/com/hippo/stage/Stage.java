@@ -86,6 +86,8 @@ public class Stage {
   private final SparseIntArray activityRequestCodeMap = new SparseIntArray();
   private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
 
+  private boolean willPopTheLastScene;
+
   Stage(Director director) {
     this.director = director;
   }
@@ -427,6 +429,49 @@ public class Stage {
       // Only push Scenes to stack
       stack.restoreInstanceState(bundle);
       // setContainer() should be called soon, let it handle view attaching
+    }
+  }
+
+  /**
+   * Requests focus for this {@code Stage}.
+   * It affects its host {@link Director#handleBack()}.
+   */
+  public void requestFocus() {
+    if (director != null) {
+      director.setFocusedStage(this);
+    }
+  }
+
+  /**
+   * Sets whether the last scene will popped in {@link #handleBack()}.
+   * {@code false} in default.
+   */
+  public void setWillPopTheLastScene(boolean willPopTheLastScene) {
+    this.willPopTheLastScene = willPopTheLastScene;
+  }
+
+  /**
+   * Returns the value whether the last scene will popped in {@link #handleBack()}.
+   */
+  public boolean willPopTheLastScene() {
+    return willPopTheLastScene;
+  }
+
+  /**
+   * TODO
+   */
+  public boolean handleBack() {
+    Scene scene = getTopScene();
+    if (scene != null && scene.handleBack()) {
+      return true;
+    } else {
+      int maxSceneCount = willPopTheLastScene ? 0 : 1;
+      if (stack.size() > maxSceneCount) {
+        popTopScene();
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 

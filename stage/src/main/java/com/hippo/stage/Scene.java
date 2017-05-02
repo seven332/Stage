@@ -275,6 +275,29 @@ public abstract class Scene {
     return state == STATE_DESTROYED;
   }
 
+  /**
+   * Requests focus for its host {@code Stage}.
+   */
+  public void requestFocus() {
+    if (stage != null) {
+      stage.requestFocus();
+    }
+  }
+
+  /**
+   * Handle the back button being pressed.
+   * Returns {@code true} if the back action is consumed.
+   * <p>
+   * In default, it calls {@link Director#handleBack()} on its child director.
+   */
+  public boolean handleBack() {
+    if (childDirector != null) {
+      return childDirector.handleBack();
+    } else {
+      return false;
+    }
+  }
+
   int requireSceneId() {
     return stage.requireSceneId();
   }

@@ -35,6 +35,8 @@ import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 
+// TODO How to remove a Stage?
+
 /**
  * A {@code Director} can direct multiple stage.
  */
@@ -52,6 +54,8 @@ public abstract class Director {
   private final SparseArray<Stage> stageMap = new SparseArray<>();
   private final SparseIntArray activityRequestCodeMap = new SparseIntArray();
   private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
+
+  private Stage focusedStage;
 
   /**
    * Hires a {@link Director} for a {@link Activity}.
@@ -102,6 +106,40 @@ public abstract class Director {
       }
     }
     return stage;
+  }
+
+  /**
+   * Requests focus for its host {@code Stage} if it's a child {@code Director} of a {@link Scene}.
+   */
+  public abstract void requestFocus();
+
+  void setFocusedStage(Stage stage) {
+    this.focusedStage = stage;
+    requestFocus();
+  }
+
+  /**
+   * Handle the back button being pressed.
+   * Returns {@code true} if the back action is consumed.
+   * <p>
+   * It calls {@link Stage#handleBack()} on the focused {@link Stage}.
+   * If the back action isn't consumed, it traversal every {@code Stage} until
+   * the back action is consumed.
+   */
+  public boolean handleBack() {
+    if (focusedStage != null && focusedStage.handleBack()) {
+      return true;
+    }
+    for (int i = 0, n = stageMap.size(); i < n; i++) {
+      Stage stage = stageMap.valueAt(i);
+      if (stage == focusedStage) {
+        continue;
+      }
+      if (stage.handleBack()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   abstract int requireSceneId();
