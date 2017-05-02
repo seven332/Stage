@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import java.util.List;
 
 class SceneHostedDirector extends Director {
 
@@ -40,6 +41,18 @@ class SceneHostedDirector extends Director {
   public void requestFocus() {
     if (scene != null) {
       scene.requestFocus();
+    }
+  }
+
+  @Nullable
+  @Override
+  Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    if (hasCurtainSuppler()) {
+      return super.requestCurtain(upper, lower);
+    } else if (scene != null) {
+      return scene.requestCurtain(upper, lower);
+    } else {
+      return null;
     }
   }
 

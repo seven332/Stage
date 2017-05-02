@@ -34,6 +34,7 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
+import java.util.List;
 
 // TODO How to remove a Stage?
 
@@ -54,6 +55,8 @@ public abstract class Director {
   private final SparseArray<Stage> stageMap = new SparseArray<>();
   private final SparseIntArray activityRequestCodeMap = new SparseIntArray();
   private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
+
+  private CurtainSuppler curtainSuppler;
 
   private Stage focusedStage;
 
@@ -142,6 +145,23 @@ public abstract class Director {
       }
     }
     return false;
+  }
+
+  /**
+   * Sets the curtain suppler for its all {@link Stage}s.
+   * {@link Stage} can override it by calling {@link Stage#setCurtainSuppler(CurtainSuppler)}.
+   */
+  public void setCurtainSuppler(CurtainSuppler suppler) {
+    this.curtainSuppler = suppler;
+  }
+
+  boolean hasCurtainSuppler() {
+    return curtainSuppler != null;
+  }
+
+  @Nullable
+  Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    return curtainSuppler != null ? curtainSuppler.getCurtain(upper, lower) : null;
   }
 
   abstract int requireSceneId();

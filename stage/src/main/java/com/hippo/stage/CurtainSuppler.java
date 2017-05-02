@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package com.hippo.stage.util;
+package com.hippo.stage;
 
 /*
- * Created by Hippo on 4/23/2017.
+ * Created by Hippo on 5/2/2017.
  */
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hippo.stage.Curtain;
-import com.hippo.stage.CurtainSuppler;
-import com.hippo.stage.SceneInfo;
 import java.util.List;
 
-public class TimingCurtainSuppler implements CurtainSuppler {
+/**
+ * A {@code CurtainSuppler} supplies {@link Curtain} for {@link Stage}.
+ */
+public interface CurtainSuppler {
 
+  /**
+   * Returns a {@link Curtain} for these scenes.
+   */
   @Nullable
-  @Override
-  public Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
-    return new TimingCurtain();
-  }
+  Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower);
 }

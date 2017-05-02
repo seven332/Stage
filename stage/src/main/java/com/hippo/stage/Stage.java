@@ -211,12 +211,20 @@ public class Stage {
     }
   }
 
+  @Nullable
+  Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    if (curtainSuppler != null) {
+      return curtainSuppler.getCurtain(upper, lower);
+    } else if (director != null) {
+      return director.requestCurtain(upper, lower);
+    } else {
+      return null;
+    }
+  }
+
   private void changeScenes(
       @NonNull final SceneInfo upper, @NonNull final List<SceneInfo> lower) {
-    Curtain curtain = null;
-    if (curtainSuppler != null) {
-      curtain = curtainSuppler.getCurtain(upper, lower);
-    }
+    Curtain curtain = requestCurtain(upper, lower);
     if (curtain != null) {
       runningCurtain = curtain;
       curtain.execute(container, upper, lower, new Curtain.OnCompleteListener() {
@@ -401,9 +409,6 @@ public class Stage {
         ((StageLayout) container).setStage(this);
       }
       container = null;
-
-      // Clear curtain suppler
-      curtainSuppler = null;
     }
   }
 
@@ -526,7 +531,6 @@ public class Stage {
 
   /**
    * Sets the curtain suppler for this {@code Stage}.
-   * It will be clear when the stage detached from {@link Activity}.
    */
   public void setCurtainSuppler(CurtainSuppler suppler) {
     this.curtainSuppler = suppler;
@@ -601,18 +605,6 @@ public class Stage {
         scene.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
     }
-  }
-
-  /**
-   * A {@code CurtainSuppler} supplies {@link Curtain} for {@link Stage}.
-   */
-  public interface CurtainSuppler {
-
-    /**
-     * Returns a {@link Curtain} for these scenes.
-     */
-    @Nullable
-    Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower);
   }
 
   // A Operation is used for delayed popping or pushing or something like that

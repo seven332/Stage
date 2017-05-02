@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * A {@code Scene} manages a portion of the UI.
@@ -296,6 +297,11 @@ public abstract class Scene {
     } else {
       return false;
     }
+  }
+
+  @Nullable
+  Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    return stage != null ? stage.requestCurtain(upper, lower) : null;
   }
 
   int requireSceneId() {
