@@ -675,6 +675,8 @@ public abstract class Scene {
       outState.putBundle(KEY_CHILD_DIRECTOR, childDirectorState);
     }
 
+    onSaveInstanceState(outState);
+
     return outState;
   }
 
@@ -695,6 +697,8 @@ public abstract class Scene {
       childDirector.setScene(this);
       childDirector.restoreInstanceState(childDirectorState);
     }
+
+    onRestoreInstanceState(savedInstanceState);
   }
 
   protected void onCreate(@Nullable Bundle args) {}
@@ -721,6 +725,10 @@ public abstract class Scene {
   protected void onSaveViewState(@NonNull View view, @NonNull Bundle outState) {}
 
   protected void onRestoreViewState(@NonNull View view, @NonNull Bundle savedViewState) {}
+
+  protected void onSaveInstanceState(@NonNull Bundle outState) {}
+
+  protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
 
   @Override
   public String toString() {
