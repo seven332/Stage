@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-include ':stage'
-include ':stage-dialog'
-include ':stage-dialog-support'
-include ':demo'
+package com.hippo.stage.dialog;
+
+/*
+ * Created by Hippo on 5/3/2017.
+ */
+
+import android.support.annotation.NonNull;
+import android.view.View;
+
+/**
+ * The dialog root view.
+ * The view of {@link DialogScene} implements it.
+ */
+public interface DialogRoot {
+
+  /**
+   * Returns the dialog content.
+   * <p>
+   * The content is a view which uses {@link android.R.attr#windowBackground} as background.
+   */
+  @NonNull
+  View getDialogContent();
+}

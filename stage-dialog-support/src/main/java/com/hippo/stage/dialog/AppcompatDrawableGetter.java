@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-include ':stage'
-include ':stage-dialog'
-include ':stage-dialog-support'
-include ':demo'
+package com.hippo.stage.dialog;
+
+/*
+ * Created by Hippo on 5/3/2017.
+ */
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Keep;
+import android.support.v7.content.res.AppCompatResources;
+
+@Keep
+class AppcompatDrawableGetter implements DrawableGetter {
+
+  @Override
+  public Drawable getDrawable(Context context, int resId) {
+    return AppCompatResources.getDrawable(context, resId);
+  }
+}

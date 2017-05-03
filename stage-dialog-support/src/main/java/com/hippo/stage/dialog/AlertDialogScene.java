@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-include ':stage'
-include ':stage-dialog'
-include ':stage-dialog-support'
-include ':demo'
+package com.hippo.stage.dialog;
+
+/*
+ * Created by Hippo on 5/3/2017.
+ */
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+
+/**
+ * {@link DialogScene} with {@link android.support.v7.appcompat.R.attr#alertDialogTheme}.
+ */
+public class AlertDialogScene extends DialogScene {
+
+  @Override
+  protected void onCreate(@Nullable Bundle args) {
+    super.onCreate(args);
+    setThemeAttrId(android.support.v7.appcompat.R.attr.alertDialogTheme);
+  }
+}
