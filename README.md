@@ -2,9 +2,9 @@
 
 Stage is a View-based Android UI framework. It helps you create an app with only one Activity. It learns a lot from [Conductor](https://github.com/bluelinelabs/Conductor).
 
-## Structure
+## Hierarchy
 
-![Stage Structure](images/stage-structure.jpg)
+![Stage Hierarchy](images/stage-hierarchy.jpg)
 
 Name | Description
 ---|---
@@ -33,7 +33,7 @@ __Opaque__|The Scene just below is invisible
 
 For example, a dialog-like Scene is transparent, a swipe-to-finish Scene is translucent.
 
-Stage handles Scene view attaching and detaching according to Scenes' `Opacity`.
+Stage handles Scene view attaching and detaching according to Scenes' `Opacity` value: attaches the visible, detaches the invisible.
 
 ## License
 
