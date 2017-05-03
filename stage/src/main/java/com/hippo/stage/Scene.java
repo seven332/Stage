@@ -187,6 +187,9 @@ public abstract class Scene {
    * set this flag. This is useful when a {@code Scene}'s view hierarchy is expensive to
    * tear down and rebuild.
    * <p>
+   * The view must be destroyed if the host {@link Activity} is destroyed,
+   * or it will cause memory leak.
+   * <p>
    * It's can only be called before or in {@link #onCreate(Bundle)}.
    *
    * @see #willRetainView()
@@ -701,45 +704,107 @@ public abstract class Scene {
     onRestoreInstanceState(savedInstanceState);
   }
 
+  /**
+   * Called when the {@code Scene} is being pushed to the stack.
+   * It's where most non-view initialization should go.
+   */
   @CallSuper
   protected void onCreate(@Nullable Bundle args) {}
 
+  /**
+   * Called when the {@code Scene} is ready to display its view.
+   * A valid view must be returned. It's where most view binding should go.
+   */
   @NonNull
   protected abstract View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container);
 
+  /**
+   * Called when the {@code Scene} view is attached to its container ViewGroup.
+   * <p>
+   * If {@link #willRetainView()} returns {@code false},
+   * {@link #onCreateView(LayoutInflater, ViewGroup)} is always called before it.
+   */
   @CallSuper
   protected void onAttachView(@NonNull View view) {}
 
+  /**
+   * Called when the {@code Scene} view becoming visible.
+   * <p>
+   * Activity lifecycle is integrated to Scene lifecycle.
+   * Only if {@link Activity#onStart()} has been called, it could be called.
+   */
   @CallSuper
   protected void onStart() {}
 
+  /**
+   * Called after the {@code Scene} becoming the top scene.
+   * <p>
+   * Activity lifecycle is integrated to Scene lifecycle.
+   * Only if {@link Activity#onResume()} has been called, it could be called.
+   */
   @CallSuper
   protected void onResume() {}
 
+  /**
+   * Called when the {@code Scene} is not the top scene. The counterpart to {@link #onResume}.
+   * <p>
+   * Activity lifecycle is integrated to Scene lifecycle.
+   * Once {@link Activity#onPause()} is called, it is called on all resumed Scene.
+   */
   @CallSuper
   protected void onPause() {}
 
+  /**
+   * Called when the {@code Scene} becoming invisible. The counterpart to {@link #onStart()}.
+   * <p>
+   * Activity lifecycle is integrated to Scene lifecycle.
+   * Once {@link Activity#onStop()} is called, it is called on all started Scene.
+   */
   @CallSuper
   protected void onStop() {}
 
+  /**
+   * Called when the {@code Scene} view is detached from its container ViewGroup.
+   * The counterpart to {@link #onAttachView(View)}.
+   */
   @CallSuper
   protected void onDetachView(@NonNull View view) {}
 
+  /**
+   * Called when the {@code Scene} view is ready to be destroyed.
+   * The counterpart to {@link #onCreateView(LayoutInflater, ViewGroup)}.
+   */
   @CallSuper
   protected void onDestroyView(@NonNull View view) {}
 
+  /**
+   * Called when the {@code Scene} is being popped from the stack.
+   * The counterpart to {@link #onCreate(Bundle)}.
+   */
   @CallSuper
   protected void onDestroy() {}
 
+  /**
+   * Saves the view state.
+   */
   @CallSuper
   protected void onSaveViewState(@NonNull View view, @NonNull Bundle outState) {}
 
+  /**
+   * Restores state to the view that was saved in {@link #onSaveViewState(View, Bundle)}.
+   */
   @CallSuper
   protected void onRestoreViewState(@NonNull View view, @NonNull Bundle savedViewState) {}
 
+  /**
+   * Saves this {@code Scene}'s state.
+   */
   @CallSuper
   protected void onSaveInstanceState(@NonNull Bundle outState) {}
 
+  /**
+   * Restores state to this {@code Scene} that was saved in {@link #onSaveInstanceState(Bundle)}.
+   */
   @CallSuper
   protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
 
