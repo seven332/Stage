@@ -493,7 +493,20 @@ public class Stage {
   }
 
   /**
-   * Look for a child {@link Scene} with the given id.
+   * Look for a child {@link Scene} with the given id in the scene stack.
+   */
+  @Nullable
+  public Scene findSceneByTag(@NonNull String tag) {
+    for (Scene scene : stack) {
+      if (tag.equals(scene.getTag())) {
+        return scene;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Look for a child {@link Scene} with the given id in the scene sub-hierarchy.
    */
   @Nullable
   public Scene findSceneById(int sceneId) {
