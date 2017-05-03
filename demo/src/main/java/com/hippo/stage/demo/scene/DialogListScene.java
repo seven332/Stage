@@ -17,7 +17,7 @@
 package com.hippo.stage.demo.scene;
 
 /*
- * Created by Hippo on 4/25/2017.
+ * Created by Hippo on 5/3/2017.
  */
 
 import android.support.annotation.NonNull;
@@ -29,22 +29,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.hippo.stage.Scene;
 import com.hippo.stage.demo.R;
-import com.hippo.stage.demo.Utils;
+import com.hippo.stage.dialog.DialogScene;
 
-public class HomeScene extends RefWatcherScene {
+public class DialogListScene extends Scene {
 
   private static final String[] ITEMS = {
-      "Push and Pop",
-      "Start Activity for Result",
-      "Child Director",
-      "Dialog",
-  };
-
-  private static final Class[] CLASSES = {
-      PushPopScene.class,
-      StartActivityForResultScene.class,
-      ChildDirectorScene.class,
-      DialogListScene.class,
+      "Not Cancelled",
+      "Cancelled",
+      "Cancelled on Touch Outside",
   };
 
   @NonNull
@@ -56,7 +48,21 @@ public class HomeScene extends RefWatcherScene {
     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Scene scene = Utils.newInstance(CLASSES[position]);
+        DialogScene scene = new SimpleDialogScene();
+        switch (position) {
+          case 0:
+            scene.setCancellable(false);
+            scene.setCancelledOnTouchOutside(false);
+            break;
+          case 1:
+            scene.setCancellable(true);
+            scene.setCancelledOnTouchOutside(false);
+            break;
+          case 2:
+            scene.setCancellable(true);
+            scene.setCancelledOnTouchOutside(true);
+            break;
+        }
         getStage().pushScene(scene);
       }
     });

@@ -27,8 +27,10 @@ import com.hippo.stage.CurtainSuppler;
 import com.hippo.stage.Director;
 import com.hippo.stage.SceneInfo;
 import com.hippo.stage.Stage;
+import com.hippo.stage.curtain.FadeCurtain;
 import com.hippo.stage.curtain.ShiftCurtain;
 import com.hippo.stage.demo.scene.HomeScene;
+import com.hippo.stage.dialog.DialogScene;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CurtainSuppler {
@@ -71,8 +73,13 @@ public class MainActivity extends AppCompatActivity implements CurtainSuppler {
   public Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
     if (lower.isEmpty()) {
       return null;
+    } else if (upper.scene instanceof DialogScene) {
+      FadeCurtain curtain = new FadeCurtain();
+      curtain.setDuration(150L);
+      return curtain;
     } else {
       ShiftCurtain curtain = new ShiftCurtain();
+      curtain.setDuration(150L);
       curtain.setInterpolator(new FastOutSlowInInterpolator());
       return curtain;
     }
