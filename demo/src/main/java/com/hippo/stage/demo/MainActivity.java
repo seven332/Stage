@@ -30,6 +30,7 @@ import com.hippo.stage.Stage;
 import com.hippo.stage.curtain.FadeCurtain;
 import com.hippo.stage.curtain.ShiftCurtain;
 import com.hippo.stage.demo.scene.HomeScene;
+import com.hippo.stage.demo.scene.SwipeBackScene;
 import com.hippo.stage.dialog.DialogScene;
 import java.util.List;
 
@@ -77,6 +78,15 @@ public class MainActivity extends AppCompatActivity implements CurtainSuppler {
       FadeCurtain curtain = new FadeCurtain();
       curtain.setDuration(150L);
       return curtain;
+    } else if (upper.scene instanceof SwipeBackScene) {
+      if (!((SwipeBackScene) upper.scene).isFinished()) {
+        ShiftCurtain curtain = new ShiftCurtain();
+        curtain.setDuration(150L);
+        curtain.setInterpolator(new FastOutSlowInInterpolator());
+        return curtain;
+      } else {
+        return null;
+      }
     } else {
       ShiftCurtain curtain = new ShiftCurtain();
       curtain.setDuration(150L);

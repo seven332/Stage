@@ -38,6 +38,7 @@ public class HomeScene extends RefWatcherScene {
       "Start Activity for Result",
       "Child Director",
       "Dialog",
+      "Swipe to Finish",
   };
 
   private static final Class[] CLASSES = {
@@ -45,6 +46,7 @@ public class HomeScene extends RefWatcherScene {
       StartActivityForResultScene.class,
       ChildDirectorScene.class,
       DialogListScene.class,
+      SwipeBackScene.class,
   };
 
   @NonNull

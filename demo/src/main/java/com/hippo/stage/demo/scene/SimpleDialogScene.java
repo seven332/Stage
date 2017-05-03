@@ -21,15 +21,12 @@ package com.hippo.stage.demo.scene;
  */
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import com.hippo.android.dialog.base.DialogView;
 import com.hippo.android.dialog.base.DialogViewBuilder;
-import com.hippo.stage.dialog.AlertDialogScene;
 
-public class SimpleDialogScene extends AlertDialogScene {
+public class SimpleDialogScene extends DialogScene {
 
   private static final String TITLE = "李凭箜篌引";
   private static final String MESSAGE = "吴丝蜀桐张高秋，空白凝云颓不流。\n"
@@ -41,16 +38,14 @@ public class SimpleDialogScene extends AlertDialogScene {
       + "吴质不眠倚桂树，露脚斜飞湿寒兔。";
   private static final String OK = "好的";
 
-  @Nullable
+  @NonNull
   @Override
-  protected View onCreateContentView(@NonNull LayoutInflater inflater,
+  protected DialogView onCreateDialogView(@NonNull LayoutInflater inflater,
       @NonNull ViewGroup container) {
-    DialogView view = new DialogViewBuilder()
+    return new DialogViewBuilder()
         .title(TITLE)
         .message(MESSAGE)
         .positiveButton(OK, null)
         .build(inflater, container);
-    view.setDialog(this);
-    return view;
   }
 }
