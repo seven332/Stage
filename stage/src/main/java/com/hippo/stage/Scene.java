@@ -701,33 +701,46 @@ public abstract class Scene {
     onRestoreInstanceState(savedInstanceState);
   }
 
+  @CallSuper
   protected void onCreate(@Nullable Bundle args) {}
 
   @NonNull
   protected abstract View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container);
 
+  @CallSuper
   protected void onAttachView(@NonNull View view) {}
 
+  @CallSuper
   protected void onStart() {}
 
+  @CallSuper
   protected void onResume() {}
 
+  @CallSuper
   protected void onPause() {}
 
+  @CallSuper
   protected void onStop() {}
 
+  @CallSuper
   protected void onDetachView(@NonNull View view) {}
 
+  @CallSuper
   protected void onDestroyView(@NonNull View view) {}
 
+  @CallSuper
   protected void onDestroy() {}
 
+  @CallSuper
   protected void onSaveViewState(@NonNull View view, @NonNull Bundle outState) {}
 
+  @CallSuper
   protected void onRestoreViewState(@NonNull View view, @NonNull Bundle savedViewState) {}
 
+  @CallSuper
   protected void onSaveInstanceState(@NonNull Bundle outState) {}
 
+  @CallSuper
   protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
 
   @Override
