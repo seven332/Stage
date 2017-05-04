@@ -19,7 +19,7 @@ __Curtain__ | Curtain show transition between Scenes.
 
 Activity lifecycle is integrated to Scene lifecycle. If Activity.onPause() is called, Scene.onPause() is called on all resumed Scenes. If Activity.onStop() is called, Scene.onStop() is called on all started Scenes.
 
-Scene instances are kept after Activity recreated. Instead of recreating Scene instances, onDestroyView() and onCreateView() are called.
+Scene instances are kept after Activity recreated. Instead of recreating Scene instances, onDestroyView() and onCreateView() are called. But a Scene may be destroyed if system is running low on memory, a new Scene instance is created when user open the app again. So it's necessary to save Scene's state.
 
 ## View attaching and detaching
 
