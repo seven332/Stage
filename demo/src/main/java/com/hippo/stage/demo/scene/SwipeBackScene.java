@@ -23,13 +23,19 @@ package com.hippo.stage.demo.scene;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.hippo.stage.Curtain;
+import com.hippo.stage.SceneInfo;
 import com.hippo.stage.Stage;
+import com.hippo.stage.curtain.NoOpCurtain;
+import com.hippo.stage.curtain.ShiftCurtain;
 import com.hippo.stage.demo.R;
 import com.hippo.swipeback.SwipeBackLayout;
+import java.util.List;
 
 public class SwipeBackScene extends RefWatcherScene {
 
@@ -73,7 +79,20 @@ public class SwipeBackScene extends RefWatcherScene {
     return view;
   }
 
-  public boolean isFinished() {
+  @Nullable
+  @Override
+  protected Curtain onCreateCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    if (isFinished()) {
+      return NoOpCurtain.INSTANCE;
+    } else {
+      ShiftCurtain curtain = new ShiftCurtain();
+      curtain.setDuration(150L);
+      curtain.setInterpolator(new FastOutSlowInInterpolator());
+      return curtain;
+    }
+  }
+
+  private boolean isFinished() {
     View view = getView();
     if (view != null) {
       return ((SwipeBackLayout) view.findViewById(R.id.swipe_back)).isFinished();

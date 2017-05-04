@@ -158,10 +158,6 @@ public abstract class Director {
     this.curtainSuppler = suppler;
   }
 
-  boolean hasCurtainSuppler() {
-    return curtainSuppler != null;
-  }
-
   @Nullable
   Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
     return curtainSuppler != null ? curtainSuppler.getCurtain(upper, lower) : null;

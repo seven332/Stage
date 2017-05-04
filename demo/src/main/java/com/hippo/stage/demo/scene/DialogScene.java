@@ -28,8 +28,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.hippo.android.dialog.base.DialogView;
+import com.hippo.stage.Curtain;
+import com.hippo.stage.SceneInfo;
+import com.hippo.stage.curtain.FadeCurtain;
 import com.hippo.stage.demo.App;
 import com.hippo.stage.dialog.AlertDialogScene;
+import java.util.List;
 
 public abstract class DialogScene extends AlertDialogScene {
 
@@ -63,5 +67,13 @@ public abstract class DialogScene extends AlertDialogScene {
     App app = (App) getApplication();
     assertNotNull(app);
     app.getRefWatcher().watch(this);
+  }
+
+  @Nullable
+  @Override
+  protected Curtain onCreateCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    FadeCurtain curtain = new FadeCurtain();
+    curtain.setDuration(150L);
+    return curtain;
   }
 }

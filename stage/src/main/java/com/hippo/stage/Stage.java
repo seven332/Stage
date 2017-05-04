@@ -235,18 +235,28 @@ public class Stage {
 
   @Nullable
   Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    Curtain curtain = null;
     if (curtainSuppler != null) {
-      return curtainSuppler.getCurtain(upper, lower);
-    } else if (director != null) {
-      return director.requestCurtain(upper, lower);
-    } else {
-      return null;
+      curtain = curtainSuppler.getCurtain(upper, lower);
     }
+    if (curtain == null && director != null) {
+      return director.requestCurtain(upper, lower);
+    }
+    return curtain;
+  }
+
+  @Nullable
+  private Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    Curtain curtain = upper.scene.onCreateCurtain(upper, lower);
+    if (curtain == null) {
+      curtain = requestCurtain(upper, lower);
+    }
+    return curtain;
   }
 
   private void changeScenes(
       @NonNull final SceneInfo upper, @NonNull final List<SceneInfo> lower) {
-    Curtain curtain = requestCurtain(upper, lower);
+    Curtain curtain = getCurtain(upper, lower);
     if (curtain != null) {
       runningCurtain = curtain;
       curtain.execute(container, upper, lower, new Curtain.OnCompleteListener() {

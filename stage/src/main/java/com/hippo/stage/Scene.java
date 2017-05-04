@@ -785,6 +785,21 @@ public abstract class Scene {
   @CallSuper
   protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
 
+  /**
+   * Returns a curtain when this {@code Scene} is upper.
+   * <p>
+   * It has the highest priority. If it returns {@code null},
+   * {@link CurtainSuppler#getCurtain(SceneInfo, List)} is called
+   * on the {@code CurtainSuppler} of its host {@link Stage}.
+   * <p>
+   * If no animation should be played, returns
+   * {@link com.hippo.stage.curtain.NoOpCurtain#INSTANCE} instead of {@code null}.
+   */
+  @Nullable
+  protected Curtain onCreateCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
+    return null;
+  }
+
   @Override
   public String toString() {
     return getClass().getName() + "{"

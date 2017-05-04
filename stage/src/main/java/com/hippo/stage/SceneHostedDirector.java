@@ -47,13 +47,11 @@ class SceneHostedDirector extends Director {
   @Nullable
   @Override
   Curtain requestCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower) {
-    if (hasCurtainSuppler()) {
-      return super.requestCurtain(upper, lower);
-    } else if (scene != null) {
-      return scene.requestCurtain(upper, lower);
-    } else {
-      return null;
+    Curtain curtain = super.requestCurtain(upper, lower);
+    if (curtain == null && scene != null) {
+      curtain = scene.requestCurtain(upper, lower);
     }
+    return curtain;
   }
 
   @Override

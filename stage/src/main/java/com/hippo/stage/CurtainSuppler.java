@@ -31,6 +31,11 @@ public interface CurtainSuppler {
 
   /**
    * Returns a {@link Curtain} for these scenes.
+   * <p>
+   * If no animation should be played, returns
+   * {@link com.hippo.stage.curtain.NoOpCurtain#INSTANCE} instead of {@code null},
+   * otherwise, another {@code CurtainSuppler} with lower priority might be
+   * asked.
    */
   @Nullable
   Curtain getCurtain(@NonNull SceneInfo upper, @NonNull List<SceneInfo> lower);
