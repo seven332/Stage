@@ -127,6 +127,13 @@ public class Stage {
   /**
    * Push a {@link Scene} to the top of the stack.
    */
+  public void pushScene(@NonNull Announcer announcer) {
+    pushScene(announcer.build());
+  }
+
+  /**
+   * Push a {@link Scene} to the top of the stack.
+   */
   public void pushScene(@NonNull Scene scene) {
     if (push == null) {
       push = new Push();
@@ -138,11 +145,26 @@ public class Stage {
    * Replace the top {@link Scene} with a {@code Scene}.
    * If the stack is empty, just push the {@code Scene}.
    */
+  public void replaceTopScene(@NonNull Announcer announcer) {
+    replaceTopScene(announcer.build());
+  }
+
+  /**
+   * Replace the top {@link Scene} with a {@code Scene}.
+   * If the stack is empty, just push the {@code Scene}.
+   */
   public void replaceTopScene(@NonNull Scene scene) {
     if (replaceTop == null) {
       replaceTop = new ReplaceTop();
     }
     operate(scene, replaceTop);
+  }
+
+  /**
+   * Pops all {@link Scene}s in the stack, push a {@link Scene} as root.
+   */
+  public void setRootScene(@NonNull Announcer announcer) {
+    setRootScene(announcer.build());
   }
 
   /**

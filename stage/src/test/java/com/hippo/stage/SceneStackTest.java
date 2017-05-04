@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.support.annotation.NonNull;
-import com.hippo.stage.util.TestScene;
 import org.junit.Before;
 import org.junit.Test;
 

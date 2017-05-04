@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import android.os.Bundle;
 import com.hippo.stage.util.Reflections;
 import com.hippo.stage.util.TestContainer;
-import com.hippo.stage.util.TestScene;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

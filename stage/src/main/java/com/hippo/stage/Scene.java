@@ -82,7 +82,6 @@ public abstract class Scene {
   private static final String KEY_ID = "Scene:id";
   private static final String KEY_TAG = "Scene:tag";
   private static final String KEY_ARGS = "Scene:args";
-  private static final String KEY_WILL_RETAIN_VIEW = "Scene:will_retain_view";
   private static final String KEY_VIEW_STATE = "Scene:view_state";
   private static final String KEY_VIEW_STATE_HIERARCHY = "Scene:view_state:hierarchy";
   private static final String KEY_VIEW_STATE_BUNDLE = "Scene:view_state:bundle";
@@ -140,43 +139,23 @@ public abstract class Scene {
     return id;
   }
 
-  /**
-   * Sets tag for this {@code Scene}.
-   * <p>
-   * It's can only be called before or in {@link #onCreate(Bundle)}.
-   *
-   * @see #getTag()
-   */
-  public final void setTag(String tag) {
-    assertState(STATE_NONE);
+  void setTag(String tag) {
     this.tag = tag;
   }
 
   /**
-   * Returns tag. {@code null} in default.
-   *
-   * @see #setTag(String)
+   * Returns the tag passed in {@link Announcer#tag(String)}.
    */
   public final String getTag() {
     return tag;
   }
 
-  /**
-   * Sets arguments for this {@code Scene}.
-   * <p>
-   * It's can only be called before or in {@link #onCreate(Bundle)}.
-   *
-   * @see #getArgs()
-   */
-  public final void setArgs(Bundle args) {
-    assertState(STATE_NONE);
+  void setArgs(Bundle args) {
     this.args = args;
   }
 
   /**
-   * Returns arguments. {@code null} in default.
-   *
-   * @see #setArgs(Bundle)
+   * Returns arguments passed in {@link Announcer#args(Bundle)}.
    */
   public final Bundle getArgs() {
     return args;
@@ -194,7 +173,7 @@ public abstract class Scene {
    *
    * @see #willRetainView()
    */
-  public final void setWillRetainView(boolean willRetainView) {
+  protected final void setWillRetainView(boolean willRetainView) {
     assertState(STATE_NONE);
     this.willRetainView = willRetainView;
   }
@@ -217,7 +196,7 @@ public abstract class Scene {
    *
    * @see #getOpacity()
    */
-  public final void setOpacity(@Opacity int opacity) {
+  protected final void setOpacity(@Opacity int opacity) {
     assertState(STATE_NONE);
     this.opacity = opacity;
   }
@@ -665,7 +644,6 @@ public abstract class Scene {
     outState.putInt(KEY_ID, getId());
     outState.putString(KEY_TAG, getTag());
     outState.putBundle(KEY_ARGS, getArgs());
-    outState.putBoolean(KEY_WILL_RETAIN_VIEW, willRetainView());
 
     if (view != null) {
       saveViewState(view);
@@ -687,7 +665,6 @@ public abstract class Scene {
     setSavedId(savedInstanceState.getInt(KEY_ID, INVALID_ID));
     setTag(savedInstanceState.getString(KEY_TAG, null));
     setArgs(savedInstanceState.getBundle(KEY_ARGS));
-    setWillRetainView(savedInstanceState.getBoolean(KEY_WILL_RETAIN_VIEW, false));
 
     viewState = savedInstanceState.getBundle(KEY_VIEW_STATE);
     if (viewState != null) {

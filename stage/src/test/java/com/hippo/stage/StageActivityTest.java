@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNotNull;
 
 import com.hippo.stage.util.ActivityProxy;
 import com.hippo.stage.util.Reflections;
-import com.hippo.stage.util.TestScene;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

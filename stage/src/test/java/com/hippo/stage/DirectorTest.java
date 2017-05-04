@@ -25,7 +25,6 @@ import static org.junit.Assert.assertEquals;
 import android.support.annotation.IdRes;
 import android.view.ViewGroup;
 import com.hippo.stage.util.TestContainer;
-import com.hippo.stage.util.TestScene;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

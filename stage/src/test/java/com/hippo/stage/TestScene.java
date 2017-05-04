@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hippo.stage.util;
+package com.hippo.stage;
 
 /*
  * Created by Hippo on 4/23/2017.
@@ -29,7 +29,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.hippo.stage.Scene;
+import com.hippo.stage.util.SceneCalling;
+import com.hippo.stage.util.TestView;
 
 public class TestScene extends Scene {
 
@@ -71,7 +72,6 @@ public class TestScene extends Scene {
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
     id = args != null ? args.getInt(KEY_ID) : 0;
-    setTag(Integer.toString(id));
     //noinspection SimplifiableConditionalExpression
     setWillRetainView(args != null ? args.getBoolean(KEY_RETAIN_VIEW) : false);
     //noinspection WrongConstant
@@ -165,7 +165,6 @@ public class TestScene extends Scene {
     args.putInt(KEY_ID, id);
     args.putInt(KEY_OPACITY, opacity);
     args.putBoolean(KEY_RETAIN_VIEW, retainView);
-    scene.setArgs(args);
-    return scene;
+    return (TestScene) Announcer.of(scene).args(args).tag(Integer.toString(id)).build();
   }
 }

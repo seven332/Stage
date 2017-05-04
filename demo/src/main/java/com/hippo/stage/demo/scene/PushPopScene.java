@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.hippo.stage.Announcer;
 import com.hippo.stage.Scene;
 import com.hippo.stage.demo.R;
 
@@ -57,8 +58,7 @@ public class PushPopScene extends RefWatcherScene {
         Scene scene = new PushPopScene();
         Bundle args = new Bundle();
         args.putInt(KEY_INDEX, index + 1);
-        scene.setArgs(args);
-        getStage().pushScene(scene);
+        getStage().pushScene(Announcer.of(scene).args(args));
       }
     });
     view.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
