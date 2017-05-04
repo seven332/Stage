@@ -27,7 +27,6 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
 import com.hippo.stage.Stage;
@@ -37,15 +36,9 @@ import com.hippo.stage.demo.R;
 import com.hippo.swipeback.SwipeBackLayout;
 import java.util.List;
 
-public class SwipeBackScene extends RefWatcherScene {
+public abstract class SwipeBackScene extends RefWatcherScene {
 
-  private static final String MESSAGE = "初，郑武公娶于申，曰武姜，生庄公及共叔段。庄公寤生，惊姜氏，故名曰寤生，遂恶之。爱共叔段，欲立之。亟请于武公，公弗许。\n"
-      + "及庄公即位，为之请制。公曰：“制，岩邑也，虢叔死焉。佗邑唯命。”请京，使居之，谓之京城大叔。祭仲曰：“都城过百雉，国之害也。先王之制：大都不过参国之一，中五之一，小九之一。今京不度，非制也，君将不堪。”公曰：“姜氏欲之，焉辟害？”对曰：“姜氏何厌之有！不如早为之所，无使滋蔓，蔓难图也。蔓草犹不可除，况君之宠弟乎！”公曰：“多行不义，必自毙，子姑待之。”\n"
-      + "既而大叔命西鄙北鄙贰于己。公子吕曰：“国不堪贰，君将若之何？欲与大叔，臣请事之；若弗与，则请除之。无生民心。”公曰：“无庸，将自及。”大叔又收贰以为己邑，至于廪延。子封曰：“可矣，厚将得众。”公曰：“不义，不暱，厚将崩。”\n"
-      + "大叔完聚，缮甲兵，具卒乘，将袭郑。夫人将启之。公闻其期，曰：“可矣！”命子封帅车二百乘以伐京。京叛大叔段，段入于鄢，公伐诸鄢。五月辛丑，大叔出奔共。\n"
-      + "书曰：“郑伯克段于鄢。”段不弟，故不言弟；如二君，故曰克；称郑伯，讥失教也；谓之郑志。不言出奔，难之也。\n"
-      + "遂寘姜氏于城颍，而誓之曰：“不及黄泉，无相见也。”既而悔之。颍考叔为颍谷封人，闻之，有献于公，公赐之食，食舍肉。公问之，对曰：“小人有母，皆尝小人之食矣，未尝君之羹，请以遗之。”公曰：“尔有母遗，繄我独无！”颍考叔曰：“敢问何谓也？”公语之故，且告之悔。对曰：“君何患焉？若阙地及泉，隧而相见，其谁曰不然？”公从之。公入而赋：“大隧之中，其乐也融融！”姜出而赋：“大隧之外，其乐也洩洩。”遂为母子如初。\n"
-      + "君子曰：“颍考叔，纯孝也，爱其母，施及庄公。《诗》曰：‘孝子不匮，永锡尔类。’其是之谓乎！”";
+  private SwipeBackLayout swipeBackLayout;
 
   @Override
   protected void onCreate(@Nullable Bundle args) {
@@ -55,9 +48,9 @@ public class SwipeBackScene extends RefWatcherScene {
 
   @NonNull
   @Override
-  protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+  protected final View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
     View view = inflater.inflate(R.layout.scene_swipe_back, container, false);
-    SwipeBackLayout swipeBackLayout = (SwipeBackLayout) view.findViewById(R.id.swipe_back);
+    swipeBackLayout = (SwipeBackLayout) view.findViewById(R.id.swipe_back);
     swipeBackLayout.setSwipeEdge(SwipeBackLayout.EDGE_LEFT);
     swipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
       @Override
@@ -74,9 +67,21 @@ public class SwipeBackScene extends RefWatcherScene {
         }
       }
     });
-    TextView message = (TextView) view.findViewById(R.id.message);
-    message.setText(MESSAGE);
+
+    View content = onCreateContent(inflater, swipeBackLayout);
+    swipeBackLayout.addView(content);
+
     return view;
+  }
+
+  @NonNull
+  protected abstract View onCreateContent(@NonNull LayoutInflater inflater,
+      @NonNull ViewGroup container);
+
+  @Override
+  protected void onDestroyView(@NonNull View view) {
+    super.onDestroyView(view);
+    swipeBackLayout = null;
   }
 
   @Nullable

@@ -46,7 +46,7 @@ public class HomeScene extends RefWatcherScene {
       StartActivityForResultScene.class,
       ChildDirectorScene.class,
       DialogListScene.class,
-      SwipeBackScene.class,
+      SimpleSwipeBackScene.class,
   };
 
   @NonNull
