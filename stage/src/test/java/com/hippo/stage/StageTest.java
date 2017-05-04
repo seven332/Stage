@@ -21,7 +21,9 @@ package com.hippo.stage;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -220,5 +222,38 @@ public class StageTest {
 
     assertEquals(4, stage.getSceneCount());
     assertEquals(scene2, stage.getTopScene());
+  }
+
+  @Test
+  public void testSuspendAndRestore() {
+    ViewGroup container = new TestContainer(RuntimeEnvironment.application);
+
+    Stage stage = new Stage(new DumpDirector());
+    stage.start();
+    stage.resume();
+
+    stage.setContainer(container);
+
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+    Scene scene3 = new TestScene();
+
+    stage.pushScene(scene1);
+    stage.pushScene(scene2);
+    stage.pushScene(scene3);
+
+    assertFalse(container.getChildCount() == 0);
+    assertTrue(scene3.isResumed());
+    assertTrue(scene3.isStarted());
+
+    stage.suspend();
+    assertTrue(container.getChildCount() == 0);
+    assertFalse(scene3.isResumed());
+    assertFalse(scene3.isStarted());
+
+    stage.restore(container);
+    assertFalse(container.getChildCount() == 0);
+    assertTrue(scene3.isResumed());
+    assertTrue(scene3.isStarted());
   }
 }

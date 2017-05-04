@@ -322,7 +322,10 @@ public final class Stage {
     return scenes;
   }
 
-  boolean hasContainer() {
+  /**
+   * Returns {@code true} if this Stage has a container.
+   */
+  public boolean hasContainer() {
     return container != null;
   }
 
@@ -473,6 +476,63 @@ public final class Stage {
       // Only push Scenes to stack
       stack.restoreInstanceState(bundle);
       // setContainer() should be called soon, let it handle view attaching
+    }
+  }
+
+  /**
+   * Detaches this Stage from it's container, but keeps all state.
+   * <p>
+   * It is useful when a Stage should be invisible temporarily or
+   * need another container.
+   * <p>
+   * Uses {@link #restore(ViewGroup)} to set another container.
+   * <p>
+   * It's a no-op if the Stage has no container.
+   *
+   * @see #restore(ViewGroup)
+   * @see #hasContainer()
+   */
+  public void suspend() {
+    if (container == null) {
+      return;
+    }
+
+    completeRunningCurtain();
+
+    if (isResumed) {
+      // Only top scene should pause
+      Scene scene = getTopScene();
+      if (scene != null) {
+        scene.pause();
+      }
+    }
+
+    // All visible scenes should be stopped and detached
+    for (Scene scene : getVisibleScenes()) {
+      if (isStarted) {
+        scene.stop();
+      }
+      scene.detachView(container, true);
+    }
+
+    // Detach from the container
+    if (container instanceof StageLayout) {
+      ((StageLayout) container).removeStage(this);
+    }
+    container = null;
+  }
+
+  /**
+   * Restore a suspended Stage with the container.
+   * <p>
+   * If the Stage has a container, throw IllegalStateException.
+   */
+  // TODO merge setContainer() to restore()
+  public void restore(@NonNull ViewGroup container) {
+    if (this.container == null) {
+      setContainer(container);
+    } else if (this.container != container) {
+      throw new IllegalStateException("The Stage isn't suspended, can't be restored");
     }
   }
 
