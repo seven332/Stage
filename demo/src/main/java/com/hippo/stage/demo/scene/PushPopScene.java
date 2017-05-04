@@ -64,7 +64,7 @@ public class PushPopScene extends RefWatcherScene {
     view.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        getStage().popScene(PushPopScene.this);
+        pop();
       }
     });
     return view;

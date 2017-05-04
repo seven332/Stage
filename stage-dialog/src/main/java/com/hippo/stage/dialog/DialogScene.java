@@ -31,7 +31,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.hippo.stage.Scene;
-import com.hippo.stage.Stage;
 
 /**
  * {@code DialogScene} shows a view in dialog style.
@@ -233,11 +232,7 @@ public class DialogScene extends Scene implements DialogInterface {
     if (!dismissed) {
       dismissed = true;
       onDismiss();
-
-      Stage stage = getStage();
-      if (stage != null) {
-        stage.popScene(this);
-      }
+      pop();
     }
   }
 

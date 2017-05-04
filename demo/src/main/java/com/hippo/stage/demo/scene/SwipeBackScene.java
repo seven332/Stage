@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
-import com.hippo.stage.Stage;
 import com.hippo.stage.curtain.NoOpCurtain;
 import com.hippo.stage.curtain.ShiftCurtain;
 import com.hippo.stage.demo.R;
@@ -61,10 +60,7 @@ public abstract class SwipeBackScene extends RefWatcherScene {
       public void onSwipeOverThreshold() {}
       @Override
       public void onFinish() {
-        Stage stage = getStage();
-        if (stage != null) {
-          stage.popScene(SwipeBackScene.this);
-        }
+        pop();
       }
     });
 

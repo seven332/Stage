@@ -117,7 +117,7 @@ public class Stage {
    * Pop a {@link Scene}.
    * It's a no-op if scene isn't in the stack.
    */
-  public void popScene(@NonNull Scene scene) {
+  void popScene(@NonNull Scene scene) {
     if (pop == null) {
       pop = new Pop();
     }
