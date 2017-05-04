@@ -259,6 +259,16 @@ public abstract class Scene {
   }
 
   /**
+   * Pops this {@code Scene} from its {@link Stage}.
+   * It's a no-op is it's not in a Stage.
+   */
+  public void pop() {
+    if (stage != null) {
+      stage.popScene(this);
+    }
+  }
+
+  /**
    * Requests focus for its host {@code Stage}.
    */
   public void requestFocus() {
