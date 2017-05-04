@@ -43,7 +43,7 @@ public class ChildDirectorTest {
 
   @Before
   public void before() {
-    stage = new DumpStage(new DumpDirector());
+    stage = new Stage(new DumpDirector());
     stage.setContainer(new TestContainer(RuntimeEnvironment.application));
     scene = new TestScene();
     stage.pushScene(scene);
@@ -101,7 +101,7 @@ public class ChildDirectorTest {
     Bundle state = new Bundle();
     stage.saveInstanceState(state);
 
-    Stage newStage = new DumpStage(new DumpDirector());
+    Stage newStage = new Stage(new DumpDirector());
     newStage.setContainer(new TestContainer(RuntimeEnvironment.application));
     newStage.restoreInstanceState(state);
     Scene newScene = newStage.getTopScene();

@@ -89,7 +89,7 @@ public class StagePushTest {
     return array;
   }
 
-  private DumpStage stage;
+  private Stage stage;
   private TestContainer container;
 
   private boolean started;
@@ -107,7 +107,7 @@ public class StagePushTest {
 
   @Before
   public void before() {
-    stage = new DumpStage(new DumpDirector());
+    stage = new Stage(new DumpDirector());
     container = new TestContainer(RuntimeEnvironment.application);
     stage.setContainer(container);
     stage.setCurtainSuppler(new TimingCurtainSuppler());

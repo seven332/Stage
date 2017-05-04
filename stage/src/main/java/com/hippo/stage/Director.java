@@ -146,7 +146,7 @@ public abstract class Director {
     return stage;
   }
 
-  void waste(Stage stage) {
+  void close(Stage stage) {
     if (DEBUG) {
       assertEquals(stage, stageMap.get(stage.getId()));
     }

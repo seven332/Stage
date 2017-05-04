@@ -85,7 +85,7 @@ public class DirectorTest {
   }
 
   @Test
-  public void testWasteStage() {
+  public void testCloseStage() {
     ViewGroup container = new TestContainer(RuntimeEnvironment.application);
     Stage stage = director.direct(container);
 
@@ -99,7 +99,7 @@ public class DirectorTest {
     assertEquals(false, scene2.isFinishing());
     assertEquals(1, container.getChildCount());
 
-    stage.waste();
+    stage.close();
 
     assertEquals(true, scene1.isFinishing());
     assertEquals(true, scene2.isFinishing());

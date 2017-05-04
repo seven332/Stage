@@ -482,9 +482,9 @@ public final class Stage {
    * All {@link Scene}s in its stack will be popped.
    * Don't do any operation on a destroyed Stage.
    */
-  public void waste() {
+  public void close() {
     if (director != null) {
-      director.waste(this);
+      director.close(this);
     }
   }
 

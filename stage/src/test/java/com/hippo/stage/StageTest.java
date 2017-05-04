@@ -48,7 +48,7 @@ public class StageTest {
   @Before
   public void before() {
     director = new DumpDirector();
-    stage = new DumpStage(director);
+    stage = new Stage(director);
     stage.setContainer(new TestContainer(RuntimeEnvironment.application));
   }
 
@@ -99,7 +99,7 @@ public class StageTest {
 
   @Test
   public void testPushWithoutViews() {
-    Stage stage = new DumpStage(director);
+    Stage stage = new Stage(director);
 
     stage.pushScene(new TestScene());
     assertEquals(1, stage.getSceneCount());
@@ -110,7 +110,7 @@ public class StageTest {
 
   @Test
   public void testPopWithoutViews() {
-    Stage stage = new DumpStage(director);
+    Stage stage = new Stage(director);
 
     Scene scene1 = new TestScene();
     Scene scene2 = new TestScene();
@@ -136,7 +136,7 @@ public class StageTest {
 
   @Test
   public void testReplaceTopWithoutViews() {
-    Stage stage = new DumpStage(director);
+    Stage stage = new Stage(director);
 
     stage.pushScene(new TestScene());
     stage.pushScene(new TestScene());
@@ -149,7 +149,7 @@ public class StageTest {
 
   @Test
   public void testSetRootWithoutViews() {
-    Stage stage = new DumpStage(director);
+    Stage stage = new Stage(director);
 
     stage.pushScene(new TestScene());
     stage.pushScene(new TestScene());
