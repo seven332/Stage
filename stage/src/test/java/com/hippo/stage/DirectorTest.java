@@ -83,4 +83,26 @@ public class DirectorTest {
     assertEquals(scene6, director.findSceneById(6));
     assertEquals(null, director.findSceneById(7));
   }
+
+  @Test
+  public void testWasteStage() {
+    ViewGroup container = new TestContainer(RuntimeEnvironment.application);
+    Stage stage = director.direct(container);
+
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+
+    stage.pushScene(scene1);
+    stage.pushScene(scene2);
+
+    assertEquals(false, scene1.isFinishing());
+    assertEquals(false, scene2.isFinishing());
+    assertEquals(1, container.getChildCount());
+
+    stage.waste();
+
+    assertEquals(true, scene1.isFinishing());
+    assertEquals(true, scene2.isFinishing());
+    assertEquals(0, container.getChildCount());
+  }
 }

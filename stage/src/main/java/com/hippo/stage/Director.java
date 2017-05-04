@@ -20,6 +20,7 @@ package com.hippo.stage;
  * Created by Hippo on 4/22/2017.
  */
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
@@ -35,8 +36,6 @@ import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
-
-// TODO How to remove a Stage?
 
 /**
  * A {@code Director} can direct multiple stage.
@@ -123,6 +122,23 @@ public abstract class Director {
       }
     }
     return stage;
+  }
+
+  void waste(Stage stage) {
+    if (DEBUG) {
+      assertEquals(stage, stageMap.get(stage.getId()));
+    }
+
+    if (isResumed) {
+      stage.pause();
+    }
+    if (isStarted) {
+      stage.stop();
+    }
+    stage.detach();
+    stage.destroy();
+
+    stageMap.remove(stage.getId());
   }
 
   /**

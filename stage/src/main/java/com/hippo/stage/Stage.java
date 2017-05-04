@@ -476,6 +476,18 @@ public class Stage {
   }
 
   /**
+   * Destroys this {@code Stage}.
+   * This Stage will be removed from its host {@link Director}.
+   * All {@link Scene}s in its stack will be popped.
+   * Don't do any operation on a destroyed Stage.
+   */
+  public void waste() {
+    if (director != null) {
+      director.waste(this);
+    }
+  }
+
+  /**
    * Requests focus for this {@code Stage}.
    * It affects its host {@link Director#handleBack()}.
    */
