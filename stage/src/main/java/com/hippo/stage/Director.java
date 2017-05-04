@@ -73,19 +73,29 @@ public abstract class Director {
   }
 
   /**
+   * {@code direct(container, container.getId())}
+   * <p>
+   * Use the id of the container as stage id.
+   */
+  public Stage direct(@NonNull ViewGroup container) {
+    return direct(container, container.getId());
+  }
+
+  /**
    * Directs a {@link ViewGroup} as a {@link Stage}.
    * <p>
-   * Use different container view for each {@code Stage}.
-   * Set different ID for each container view.
+   * Use different id for each {@code Stage}.
+   * One container can be used for multiple Stage.
+   * <p>
+   * If the id is already been used, return the old Stage.
    * <p>
    * It's better if the {@code container} is an instance of {@link StageLayout}.
    */
-  public Stage direct(@NonNull ViewGroup container) {
+  public Stage direct(@NonNull ViewGroup container, int id) {
     if (isDestroyed) {
       throw new IllegalStateException("Can't call direct() on a destroyed Director");
     }
 
-    int id = container.getId();
     Stage stage = stageMap.get(id);
     if (stage == null) {
       stage = new Stage(this);
@@ -108,9 +118,8 @@ public abstract class Director {
         stage.setContainer(container);
       } else if (stage.getContainer() != container) {
         throw new IllegalStateException("The Stage already has a different container. "
-            + "If you want more than one Stage in a Activity, "
-            + "please use different container view for each Stage, "
-            + "and set different ID for each container view.");
+            + "If you want more than one Stage, "
+            + "please use different id for each Stage.");
       }
     }
     return stage;

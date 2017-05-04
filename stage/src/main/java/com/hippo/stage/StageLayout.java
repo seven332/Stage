@@ -27,6 +27,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The standard container for a {@link Stage}.
@@ -35,7 +37,7 @@ import android.widget.FrameLayout;
  */
 public class StageLayout extends FrameLayout {
 
-  private Stage stage;
+  private Set<Stage> stageSet = new HashSet<>();
 
   public StageLayout(@NonNull Context context) {
     super(context);
@@ -50,15 +52,34 @@ public class StageLayout extends FrameLayout {
     super(context, attrs, defStyleAttr);
   }
 
-  void setStage(Stage stage) {
-    this.stage = stage;
+  void addStage(Stage stage) {
+    stageSet.add(stage);
+  }
+
+  void removeStage(Stage stage) {
+    stageSet.remove(stage);
+  }
+
+  private void requestStageFocus() {
+    if (stageSet.size() > 0) {
+      stageSet.iterator().next().requestFocus();
+    }
+  }
+
+  private boolean hasCurtainRunning() {
+    if (stageSet.size() > 0) {
+      for (Stage stage : stageSet) {
+        if (stage.hasCurtainRunning()) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (stage != null) {
-      stage.requestFocus();
-    }
-    return (stage != null && stage.hasCurtainRunning()) || super.onInterceptTouchEvent(ev);
+    requestStageFocus();
+    return hasCurtainRunning() || super.onInterceptTouchEvent(ev);
   }
 }

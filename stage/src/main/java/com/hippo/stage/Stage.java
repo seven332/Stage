@@ -336,7 +336,7 @@ public class Stage {
 
     this.container = container;
     if (container instanceof StageLayout) {
-      ((StageLayout) container).setStage(this);
+      ((StageLayout) container).addStage(this);
     }
 
     // Restore views
@@ -438,7 +438,7 @@ public class Stage {
 
       // The activity is destroyed, can't attach views to this container
       if (container instanceof StageLayout) {
-        ((StageLayout) container).setStage(this);
+        ((StageLayout) container).removeStage(this);
       }
       container = null;
     }
