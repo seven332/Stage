@@ -60,6 +60,9 @@ public abstract class Director {
 
   private Stage focusedStage;
 
+  // Hide Director constructor
+  Director() {}
+
   /**
    * Hires a {@link Director} for a {@link Activity}.
    *
