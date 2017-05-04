@@ -91,6 +91,25 @@ public abstract class Director {
    * It's better if the {@code container} is an instance of {@link StageLayout}.
    */
   public Stage direct(@NonNull ViewGroup container, int id) {
+    return direct(container, id, null);
+  }
+
+  /**
+   * Directs a {@link ViewGroup} as a {@link Stage}.
+   * <p>
+   * {@code savedState} should be from {@link Stage#saveInstanceState(Bundle)}.
+   * The old id is used. If {@code savedState} is {@code null} or doesn't contain an id,
+   * it's just the same as {@link #direct(ViewGroup)}.
+   */
+  public Stage direct(@NonNull ViewGroup container, @Nullable Bundle savedState) {
+    if (savedState != null && savedState.containsKey(Stage.KEY_ID)) {
+      return direct(container, savedState.getInt(Stage.KEY_ID), savedState);
+    } else {
+      return direct(container);
+    }
+  }
+
+  private Stage direct(@NonNull ViewGroup container, int id, @Nullable Bundle savedState) {
     if (isDestroyed) {
       throw new IllegalStateException("Can't call direct() on a destroyed Director");
     }
@@ -98,6 +117,9 @@ public abstract class Director {
     Stage stage = stageMap.get(id);
     if (stage == null) {
       stage = new Stage(this);
+      if (savedState != null) {
+        stage.restoreInstanceState(savedState);
+      }
       stage.setId(id);
 
       // Restore activity lifecycle

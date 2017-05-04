@@ -30,7 +30,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -46,13 +45,13 @@ import java.util.Queue;
  * A {@code Stage} is where {@link Scene}s performed.
  * {@code Stage} objects handle attaching and detaching views of {@link Scene}s.
  */
-public class Stage {
+public final class Stage {
 
   private static final String LOG_TAG = Scene.class.getSimpleName();
 
   private static final boolean DEBUG = BuildConfig.DEBUG;
 
-  private static final String KEY_ID = "Stage:id";
+  static final String KEY_ID = "Stage:id";
   private static final String KEY_STACK = "Stage:stack";
 
   private Director director;
@@ -454,8 +453,11 @@ public class Stage {
     director = null;
   }
 
-  @CallSuper
-  void saveInstanceState(@NonNull Bundle outState) {
+  /**
+   * Saves state of this {@code Stage}.
+   * It could be used for {@link Director#direct(ViewGroup, Bundle)}.
+   */
+  public void saveInstanceState(@NonNull Bundle outState) {
     outState.putInt(KEY_ID, id);
 
     Bundle stackState = new Bundle();
@@ -463,7 +465,6 @@ public class Stage {
     outState.putBundle(KEY_STACK, stackState);
   }
 
-  @CallSuper
   void restoreInstanceState(@NonNull Bundle savedInstanceState) {
     id = savedInstanceState.getInt(KEY_ID);
 
