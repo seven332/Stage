@@ -468,6 +468,7 @@ public final class Stage {
     outState.putBundle(KEY_STACK, stackState);
   }
 
+  // TODO restoreInstanceState() is always called after new Stage(), why not move it to the constructor?
   void restoreInstanceState(@NonNull Bundle savedInstanceState) {
     id = savedInstanceState.getInt(KEY_ID);
 

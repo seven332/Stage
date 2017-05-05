@@ -37,7 +37,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO direct a Stage without ViewGroup
+// TODO override handleBack
 
 /**
  * A {@code Director} can direct multiple stage.
@@ -74,10 +74,19 @@ public abstract class Director {
   }
 
   /**
-   * {@code direct(container, container.getId())}
+   * Returns {@code true} if this {@code Director} contains a {@link Stage} with the id.
+   */
+  public boolean contains(int id) {
+    return stageMap.indexOfKey(id) >= 0;
+  }
+
+  /**
+   * Directs a {@link ViewGroup} as a {@link Stage}.
+   * Same as {@code direct(container, container.getId())}.
    * <p>
    * Use the id of the container as stage id.
    */
+  @NonNull
   public Stage direct(@NonNull ViewGroup container) {
     return direct(container, container.getId());
   }
@@ -88,10 +97,11 @@ public abstract class Director {
    * Use different id for each {@code Stage}.
    * One container can be used for multiple Stage.
    * <p>
-   * If the id is already been used, return the old Stage.
+   * If the id has already been used, return the old Stage.
    * <p>
    * It's better if the {@code container} is an instance of {@link StageLayout}.
    */
+  @NonNull
   public Stage direct(@NonNull ViewGroup container, int id) {
     return direct(container, id, null);
   }
@@ -100,9 +110,14 @@ public abstract class Director {
    * Directs a {@link ViewGroup} as a {@link Stage}.
    * <p>
    * {@code savedState} should be from {@link Stage#saveInstanceState(Bundle)}.
-   * The old id is used. If {@code savedState} is {@code null} or doesn't contain an id,
+   * The old id in {@code savedState} is used. If the Director doesn't contain
+   * a {@code Stage} with the id, {@code savedState} will be used to
+   * restore the {@code Stage}.
+   * <p>
+   * If {@code savedState} is {@code null} or doesn't contain an id,
    * it's just the same as {@link #direct(ViewGroup)}.
    */
+  @NonNull
   public Stage direct(@NonNull ViewGroup container, @Nullable Bundle savedState) {
     if (savedState != null && savedState.containsKey(Stage.KEY_ID)) {
       return direct(container, savedState.getInt(Stage.KEY_ID), savedState);
@@ -111,7 +126,35 @@ public abstract class Director {
     }
   }
 
-  private Stage direct(@NonNull ViewGroup container, int id, @Nullable Bundle savedState) {
+  /**
+   * Directs a {@link Stage}.
+   * <p>
+   * If the id hasn't been used, a headless Stage will be created.
+   */
+  @NonNull
+  public Stage direct(int id) {
+    return direct(null, id, null);
+  }
+
+  /**
+   * Directs a {@link Stage}.
+   * <p>
+   * The old id in {@code savedState} is used.
+   * If the id hasn't been used, a headless Stage will be created.
+   * <p>
+   * If {@code savedState} doesn't contain an id, return {@code null}.
+   */
+  @Nullable
+  public Stage direct(@NonNull Bundle savedState) {
+    if (savedState.containsKey(Stage.KEY_ID)) {
+      return direct(null, savedState.getInt(Stage.KEY_ID), savedState);
+    } else {
+      return null;
+    }
+  }
+
+  @NonNull
+  private Stage direct(@Nullable ViewGroup container, int id, @Nullable Bundle savedState) {
     if (isDestroyed) {
       throw new IllegalStateException("Can't call direct() on a destroyed Director");
     }
@@ -132,11 +175,13 @@ public abstract class Director {
         stage.resume();
       }
 
-      // setContainer() handles view re-attaching, so call it after restoring state
-      stage.setContainer(container);
+      if (container != null) {
+        // setContainer() handles view re-attaching, so call it after restoring state
+        stage.setContainer(container);
+      }
 
       stageMap.put(id, stage);
-    } else {
+    } else if (container != null) {
       if (!stage.hasContainer()) {
         stage.setContainer(container);
       } else if (stage.getContainer() != container) {

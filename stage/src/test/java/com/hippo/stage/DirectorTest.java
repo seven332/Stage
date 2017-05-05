@@ -21,6 +21,8 @@ package com.hippo.stage;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.support.annotation.IdRes;
 import android.view.ViewGroup;
@@ -95,14 +97,34 @@ public class DirectorTest {
     stage.pushScene(scene1);
     stage.pushScene(scene2);
 
-    assertEquals(false, scene1.isFinishing());
-    assertEquals(false, scene2.isFinishing());
+    assertEquals(false, scene1.isDestroyed());
+    assertEquals(false, scene2.isDestroyed());
     assertEquals(1, container.getChildCount());
 
     stage.close();
 
-    assertEquals(true, scene1.isFinishing());
-    assertEquals(true, scene2.isFinishing());
+    assertEquals(true, scene1.isDestroyed());
+    assertEquals(true, scene2.isDestroyed());
     assertEquals(0, container.getChildCount());
+  }
+
+  @Test
+  public void testHeadlessStage() {
+    director.start();
+    director.resume();
+
+    Stage stage = director.direct(1);
+
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+
+    stage.pushScene(scene1);
+    stage.pushScene(scene2);
+
+    assertFalse(scene2.isViewAttached());
+
+    stage.restore(new TestContainer(RuntimeEnvironment.application));
+
+    assertTrue(scene2.isViewAttached());
   }
 }
