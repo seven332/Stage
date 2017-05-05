@@ -39,6 +39,7 @@ public class HomeScene extends RefWatcherScene {
       "Child Director",
       "Dialog",
       "Swipe to Finish",
+      "ViewPager",
   };
 
   private static final Class[] CLASSES = {
@@ -47,6 +48,7 @@ public class HomeScene extends RefWatcherScene {
       ChildDirectorScene.class,
       DialogListScene.class,
       SimpleSwipeBackScene.class,
+      PagerScene.class,
   };
 
   @NonNull
