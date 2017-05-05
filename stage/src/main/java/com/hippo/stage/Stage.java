@@ -87,6 +87,7 @@ public final class Stage implements Iterable<Scene> {
   private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
 
   private boolean willPopTheLastScene;
+  private BackHandler backHandler;
 
   Stage(Director director) {
     this.director = director;
@@ -576,7 +577,33 @@ public final class Stage implements Iterable<Scene> {
   }
 
   /**
+   * Sets a {@link BackHandler} for this {@code Stage}.
+   * It overrides the default back action handling method.
+   */
+  public void setBackHandler(BackHandler backHandler) {
+    this.backHandler = backHandler;
+  }
+
+  /**
    * Handle the back button being pressed.
+   * Returns {@code true} if the back action is consumed.
+   * <p>
+   * The method calls {@link #onHandleBack()} directly, but it could be override by setting
+   * a {@link BackHandler}.
+   *
+   * @see #setBackHandler(BackHandler)
+   * @see #onHandleBack()
+   */
+  public boolean handleBack() {
+    if (backHandler != null) {
+      return backHandler.handleBack(this);
+    } else {
+      return onHandleBack();
+    }
+  }
+
+  /**
+   * This method is how a {@code Stage} handles back action in default.
    * Returns {@code true} if the back action is consumed.
    * <p>
    * It calls {@link Scene#handleBack()} on the top {@link Scene}.
@@ -584,7 +611,7 @@ public final class Stage implements Iterable<Scene> {
    * If {@link #willPopTheLastScene()} returns {@code false}, it
    * keeps the last {@code Scene}.
    */
-  public boolean handleBack() {
+  public boolean onHandleBack() {
     Scene scene = getTopScene();
     if (scene != null && scene.handleBack()) {
       return true;
@@ -747,6 +774,22 @@ public final class Stage implements Iterable<Scene> {
         scene.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
     }
+  }
+
+  // TODO How to merge it to Director.BackHandler?
+  /**
+   * Handles back action.
+   */
+  public interface BackHandler {
+
+    /**
+     * Overrides default back action handling method of {@link Stage}.
+     * Returns {@code true} if the back action is consumed.
+     * <p>
+     * If needing default back action handling, call {@link Stage#onHandleBack()}, <b>NOT</b>
+     * {@link Stage#handleBack()}.
+     */
+    boolean handleBack(Stage stage);
   }
 
   // A Operation is used for delayed popping or pushing or something like that

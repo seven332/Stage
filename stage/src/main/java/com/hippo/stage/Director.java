@@ -37,8 +37,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO override handleBack
-
 /**
  * A {@code Director} can direct multiple stage.
  */
@@ -58,6 +56,8 @@ public abstract class Director {
   private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
 
   private CurtainSuppler curtainSuppler;
+
+  private BackHandler backHandler;
 
   private Stage focusedStage;
 
@@ -230,14 +230,48 @@ public abstract class Director {
   }
 
   /**
-   * Handle the back button being pressed.
+   * Sets a {@link BackHandler} for this {@code Director}.
+   * It overrides the default back action handling method.
+   */
+  public void setBackHandler(BackHandler backHandler) {
+    this.backHandler = backHandler;
+  }
+
+  /**
+   * Handles the back button being pressed.
+   * Returns {@code true} if the back action is consumed.
+   * <p>
+   * Usually it's called in {@link Activity#onBackPressed()}, like: <pre>{@code
+   * public void onBackPressed() {
+   *   if (!director.handleBack()) {
+   *     super.onBackPressed();
+   *   }
+   * }
+   * }</pre>
+   * <p>
+   * The method calls {@link #onHandleBack()} directly, but it could be override by setting
+   * a {@link BackHandler}.
+   *
+   * @see #setBackHandler(BackHandler)
+   * @see #onHandleBack()
+   */
+  public boolean handleBack() {
+    if (backHandler != null) {
+      return backHandler.handleBack(this);
+    } else {
+      return onHandleBack();
+    }
+  }
+
+  /**
+   * This method is how a {@code Director} handles back action in default.
    * Returns {@code true} if the back action is consumed.
    * <p>
    * It calls {@link Stage#handleBack()} on the focused {@link Stage}.
    * If the back action isn't consumed, it traversal every {@code Stage} until
    * the back action is consumed.
    */
-  public boolean handleBack() {
+  public boolean onHandleBack() {
     if (focusedStage != null && focusedStage.handleBack()) {
       return true;
     }
@@ -468,5 +502,20 @@ public abstract class Director {
         stageMap.put(id, stage);
       }
     }
+  }
+
+  /**
+   * Handles back action.
+   */
+  public interface BackHandler {
+
+    /**
+     * Overrides default back action handling method of {@link Director}.
+     * Returns {@code true} if the back action is consumed.
+     * <p>
+     * If needing default back action handling, call {@link Director#onHandleBack()}, <b>NOT</b>
+     * {@link Director#handleBack()}.
+     */
+    boolean handleBack(Director director);
   }
 }
