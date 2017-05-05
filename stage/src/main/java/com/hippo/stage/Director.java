@@ -230,6 +230,17 @@ public abstract class Director {
   }
 
   /**
+   * Returns the focused {@link Stage}. The focused one will be the first
+   * to be asked in {@link #onHandleBack()}.
+   *
+   * @see Stage#requestFocus()
+   * @see #onHandleBack()
+   */
+  public Stage getFocusedStage() {
+    return focusedStage;
+  }
+
+  /**
    * Sets a {@link BackHandler} for this {@code Director}.
    * It overrides the default back action handling method.
    */
