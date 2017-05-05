@@ -81,6 +81,15 @@ public abstract class Director {
   }
 
   /**
+   * Returns a {@link Stage} with the id.
+   * This method can't create any Stage.
+   */
+  @Nullable
+  public Stage get(int id) {
+    return stageMap.get(id);
+  }
+
+  /**
    * Directs a {@link ViewGroup} as a {@link Stage}.
    * Same as {@code direct(container, container.getId())}.
    * <p>
