@@ -54,7 +54,7 @@ public abstract class Scene {
   public static final int INVALID_ID = 0;
 
   @IntDef({TRANSPARENT, TRANSLUCENT, OPAQUE})
-  @Retention(RetentionPolicy.CLASS)
+  @Retention(RetentionPolicy.SOURCE)
   public @interface Opacity {}
   /**
    * The {@code Scene} under this one is visible.

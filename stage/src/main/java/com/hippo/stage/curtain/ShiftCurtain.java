@@ -36,7 +36,7 @@ import java.util.List;
 public class ShiftCurtain extends AnimatorCurtain {
 
   @IntDef({LEFT, TOP, RIGHT, BOTTOM})
-  @Retention(RetentionPolicy.CLASS)
+  @Retention(RetentionPolicy.SOURCE)
   public @interface Direction {}
 
   public static final int LEFT = 0;

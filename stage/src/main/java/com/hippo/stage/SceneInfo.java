@@ -34,7 +34,7 @@ import java.lang.annotation.RetentionPolicy;
 public final class SceneInfo {
 
   @IntDef({NONE, NEWLY_ATTACHED, WILL_BE_DETACHED})
-  @Retention(RetentionPolicy.CLASS)
+  @Retention(RetentionPolicy.SOURCE)
   public @interface ViewState {}
 
   /**
