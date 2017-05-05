@@ -35,12 +35,13 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * A {@code Director} can direct multiple stage.
  */
-public abstract class Director {
+public abstract class Director implements Iterable<Stage> {
 
   private static final boolean DEBUG = BuildConfig.DEBUG;
 
@@ -217,6 +218,27 @@ public abstract class Director {
     stage.destroy();
 
     stageMap.remove(stage.getId());
+  }
+
+  /**
+   * Returns an unmodified Stage iterator which is a mysterious order.
+   */
+  @Override
+  public Iterator<Stage> iterator() {
+    return new Iterator<Stage>() {
+
+      private int index = 0;
+
+      @Override
+      public boolean hasNext() {
+        return index < stageMap.size();
+      }
+
+      @Override
+      public Stage next() {
+        return stageMap.valueAt(index++);
+      }
+    };
   }
 
   /**
