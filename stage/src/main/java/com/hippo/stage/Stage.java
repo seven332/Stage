@@ -37,6 +37,7 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -45,7 +46,7 @@ import java.util.Queue;
  * A {@code Stage} is where {@link Scene}s performed.
  * {@code Stage} objects handle attaching and detaching views of {@link Scene}s.
  */
-public final class Stage {
+public final class Stage implements Iterable<Scene> {
 
   private static final String LOG_TAG = Scene.class.getSimpleName();
 
@@ -639,6 +640,28 @@ public final class Stage {
   @Nullable
   public Scene getRootScene() {
     return stack.tail();
+  }
+
+  /**
+   * Returns an unmodified Scene iterator which is from top to root.
+   */
+  @NonNull
+  @Override
+  public Iterator<Scene> iterator() {
+    return new Iterator<Scene>() {
+
+      private Iterator<Scene> iterator = stack.iterator();
+
+      @Override
+      public boolean hasNext() {
+        return iterator.hasNext();
+      }
+
+      @Override
+      public Scene next() {
+        return iterator.next();
+      }
+    };
   }
 
   /**
