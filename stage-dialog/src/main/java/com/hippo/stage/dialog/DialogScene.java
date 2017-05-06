@@ -52,7 +52,6 @@ public class DialogScene extends Scene implements DialogInterface {
   private boolean cancelledOnTouchOutside = true;
 
   private boolean cancelled;
-  private boolean dismissed;
 
   @Override
   protected void onCreate(@Nullable Bundle args) {
@@ -63,6 +62,9 @@ public class DialogScene extends Scene implements DialogInterface {
   /**
    * Sets theme id for this dialog.
    * {@link #DEFAULT_THEME} for the default theme.
+   * <p>
+   * The value supplied here will be retained across dialog scene destroy and
+   * creation.
    */
   public void setThemeId(int themeId) {
     this.themeId = themeId;
@@ -71,6 +73,9 @@ public class DialogScene extends Scene implements DialogInterface {
   /**
    * Sets theme attribute id for this dialog.
    * {@link #DEFAULT_THEME} for the default theme.
+   * <p>
+   * The value supplied here will be retained across dialog scene destroy and
+   * creation.
    */
   public void setThemeAttrId(int themeAttrId) {
     this.themeAttrId = themeAttrId;
@@ -79,6 +84,9 @@ public class DialogScene extends Scene implements DialogInterface {
   /**
    * Sets whether this dialog is cancellable with the
    * {@link android.view.KeyEvent#KEYCODE_BACK BACK} key.
+   * <p>
+   * The value supplied here will be retained across dialog scene destroy and
+   * creation.
    */
   public void setCancellable(boolean flag) {
     cancellable = flag;
@@ -88,6 +96,9 @@ public class DialogScene extends Scene implements DialogInterface {
    * Sets whether this dialog is cancelled when touched outside the window's
    * bounds. If setting to true, the dialog is set to be cancellable if not
    * already set.
+   * <p>
+   * The value supplied here will be retained across dialog scene destroy and
+   * creation.
    *
    * @param cancel Whether the dialog should be cancelled when touched outside
    *               the window.
@@ -168,22 +179,12 @@ public class DialogScene extends Scene implements DialogInterface {
   }
 
   @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    // Avoid missing onDismiss()
-    if (!dismissed) {
-      dismissed = true;
-      onDismiss();
-    }
-  }
-
-  @Override
   public boolean handleBack() {
     boolean result = super.handleBack();
     result = !cancellable || result;
     if (!result) {
       // This dialog will be cancelled
-      if (!cancelled && !dismissed) {
+      if (!cancelled && !isDestroyed()) {
         cancelled = true;
         onCancel();
       }
@@ -216,33 +217,23 @@ public class DialogScene extends Scene implements DialogInterface {
    */
   @Override
   public void cancel() {
-    if (!cancelled && !dismissed) {
+    if (!cancelled && !isDestroyed()) {
       cancelled = true;
       onCancel();
-      dismiss();
+      pop();
     }
   }
 
   /**
-   * Dismiss this dialog, removing it from the screen. it will
-   * also call {@link #onDismiss()}.
+   * Pops this dialog scene.
    */
   @Override
   public void dismiss() {
-    if (!dismissed) {
-      dismissed = true;
-      onDismiss();
-      pop();
-    }
+    pop();
   }
 
   /**
    * This method will be invoked when the dialog is cancelled.
    */
   public void onCancel() {}
-
-  /**
-   * This method will be invoked when the dialog is dismissed.
-   */
-  public void onDismiss() {}
 }
