@@ -42,8 +42,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-// TODO Check onCreate() onStart() onXXX() calling
-
 /**
  * A {@code Scene} manages a portion of the UI.
  * It is similar to an Activity or Fragment in that it manages its own lifecycle and
@@ -302,7 +300,8 @@ public abstract class Scene {
    * It's a no-op is it's not in a Stage.
    */
   public void pop() {
-    if (stage != null) {
+    // No need to pop a finishing scene
+    if (!isFinishing && stage != null) {
       stage.popScene(this);
     }
   }
