@@ -72,6 +72,7 @@ public class TestScene extends Scene {
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
     id = args != null ? args.getInt(KEY_ID) : 0;
+    setTag(Integer.toString(id));
     //noinspection SimplifiableConditionalExpression
     setWillRetainView(args != null ? args.getBoolean(KEY_RETAIN_VIEW) : false);
     //noinspection WrongConstant
@@ -165,6 +166,7 @@ public class TestScene extends Scene {
     args.putInt(KEY_ID, id);
     args.putInt(KEY_OPACITY, opacity);
     args.putBoolean(KEY_RETAIN_VIEW, retainView);
-    return (TestScene) Announcer.of(scene).args(args).tag(Integer.toString(id)).build();
+    scene.setArgs(args);
+    return scene;
   }
 }

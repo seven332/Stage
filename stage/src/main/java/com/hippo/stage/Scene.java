@@ -42,6 +42,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
+// TODO Check onCreate() onStart() onXXX() calling
+
 /**
  * A {@code Scene} manages a portion of the UI.
  * It is similar to an Activity or Fragment in that it manages its own lifecycle and
@@ -82,6 +84,8 @@ public abstract class Scene {
   private static final String KEY_ID = "Scene:id";
   private static final String KEY_TAG = "Scene:tag";
   private static final String KEY_ARGS = "Scene:args";
+  private static final String KEY_WILL_RETAIN_VIEW = "Scene:will_retain_view";
+  private static final String KEY_OPACITY = "Scene:opacity";
   private static final String KEY_VIEW_STATE = "Scene:view_state";
   private static final String KEY_VIEW_STATE_HIERARCHY = "Scene:view_state:hierarchy";
   private static final String KEY_VIEW_STATE_BUNDLE = "Scene:view_state:bundle";
@@ -116,10 +120,12 @@ public abstract class Scene {
    * It only returns a valid value between {@link #onCreate(Bundle)}
    * and {@link #onDestroy()}, or {@code null}.
    */
+  @Nullable
   public final Stage getStage() {
     return stage;
   }
 
+  // The id from saveInstanceState Bundle
   private void setSavedId(int id) {
     savedId = id;
   }
@@ -130,8 +136,8 @@ public abstract class Scene {
 
   /**
    * Returns the id of this {@code Scene}.
-   * It only returns a valid id between {@link #onCreate(Bundle)}
-   * and {@link #onDestroy()}, or {@link #INVALID_ID}.
+   * It only returns a valid id after the {@code Scene} pushed to a {@link Stage},
+   * or {@link #INVALID_ID}.
    * <p>
    * Each {@code Scene} in the same Activity has a different id.
    */
@@ -139,23 +145,48 @@ public abstract class Scene {
     return id;
   }
 
-  void setTag(String tag) {
+  /**
+   * Sets a tag for this {@code Scene}.
+   * The tag could be used for {@link Stage#findSceneByTag(String)}.
+   * <p>
+   * The tag supplied here will be retained across scene destroy and
+   * creation.
+   *
+   * @see #getTag()
+   * @see Stage#findSceneByTag(String)
+   */
+  public void setTag(String tag) {
     this.tag = tag;
   }
 
   /**
-   * Returns the tag passed in {@link Announcer#tag(String)}.
+   * Returns the tag passed in {@link #setTag(String)}.
+   *
+   * @see #setTag(String)
+   * @see Stage#findSceneByTag(String)
    */
   public final String getTag() {
     return tag;
   }
 
-  void setArgs(Bundle args) {
+  /**
+   * Supply the construction arguments for this scene. It can only
+   * be called before the scene has been pushed to a stage.
+   * <p>
+   * The arguments supplied here will be retained across scene destroy and
+   * creation.
+   *
+   * @see #getArgs()
+   */
+  public void setArgs(Bundle args) {
+    assertState(STATE_NONE);
     this.args = args;
   }
 
   /**
-   * Returns arguments passed in {@link Announcer#args(Bundle)}.
+   * Returns the arguments passed in {@link #setArgs(Bundle)}.
+   *
+   * @see #setArgs(Bundle)
    */
   public final Bundle getArgs() {
     return args;
@@ -169,7 +200,11 @@ public abstract class Scene {
    * The view must be destroyed if the host {@link Activity} is destroyed,
    * or it will cause memory leak.
    * <p>
-   * It's can only be called before or in {@link #onCreate(Bundle)}.
+   * It can only be called before the scene has been pushed to a stage,
+   * or in {@link #onCreate(Bundle)}.
+   * <p>
+   * The value supplied here will be retained across scene destroy and
+   * creation.
    *
    * @see #willRetainView()
    */
@@ -192,7 +227,11 @@ public abstract class Scene {
    * Describes How this {@code Scene} affects the visibility of the {@code Scene} below.
    * Must be one of {@link #TRANSPARENT}, {@link #TRANSLUCENT} and {@link #OPAQUE}.
    * <p>
-   * It's can only be called before or in {@link #onCreate(Bundle)}.
+   * It can only be called before the scene has been pushed to a stage,
+   * or in {@link #onCreate(Bundle)}.
+   * <p>
+   * The value supplied here will be retained across scene destroy and
+   * creation.
    *
    * @see #getOpacity()
    */
@@ -576,7 +615,6 @@ public abstract class Scene {
     onDestroy();
 
     stage = null;
-    id = INVALID_ID;
   }
 
   void finish() {
@@ -654,6 +692,8 @@ public abstract class Scene {
     outState.putInt(KEY_ID, getId());
     outState.putString(KEY_TAG, getTag());
     outState.putBundle(KEY_ARGS, getArgs());
+    outState.putBoolean(KEY_WILL_RETAIN_VIEW, willRetainView());
+    outState.putInt(KEY_OPACITY, getOpacity());
 
     if (view != null) {
       saveViewState(view);
@@ -675,6 +715,9 @@ public abstract class Scene {
     setSavedId(savedInstanceState.getInt(KEY_ID, INVALID_ID));
     setTag(savedInstanceState.getString(KEY_TAG, null));
     setArgs(savedInstanceState.getBundle(KEY_ARGS));
+    setWillRetainView(savedInstanceState.getBoolean(KEY_WILL_RETAIN_VIEW));
+    //noinspection WrongConstant
+    setOpacity(savedInstanceState.getInt(KEY_OPACITY));
 
     viewState = savedInstanceState.getBundle(KEY_VIEW_STATE);
     if (viewState != null) {
