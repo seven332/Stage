@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-include ':stage'
-include ':stage-dialog'
-include ':stage-dialog-support'
-include ':stage-pager'
-include ':stage-lint'
-include ':demo'
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+configurations {
+    lintChecks
+}
+
+dependencies {
+    compile "com.android.tools.lint:lint-api:$lintLibrary"
+    compile "com.android.tools.lint:lint-checks:$lintLibrary"
+    lintChecks files(jar)
+}
+
+jar {
+    manifest {
+        attributes('Lint-Registry': 'com.hippo.stage.lint.StageIssueRegistry')
+    }
+}
+
+apply from: rootProject.file('maven-gradle.gradle')

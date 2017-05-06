@@ -14,9 +14,28 @@
  * limitations under the License.
  */
 
-include ':stage'
-include ':stage-dialog'
-include ':stage-dialog-support'
-include ':stage-pager'
-include ':stage-lint'
-include ':demo'
+apply plugin: 'maven'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    failOnError false
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-include ':stage'
-include ':stage-dialog'
-include ':stage-dialog-support'
-include ':stage-pager'
-include ':stage-lint'
-include ':demo'
+package com.hippo.stage.lint;
+
+/*
+ * Created by Hippo on 5/5/2017.
+ */
+
+import com.android.tools.lint.client.api.IssueRegistry;
+import com.android.tools.lint.detector.api.Issue;
+import java.util.Collections;
+import java.util.List;
+
+public class StageIssueRegistry extends IssueRegistry {
+
+  @Override public List<Issue> getIssues() {
+    return Collections.singletonList(BackHandlerDetector.ISSUE);
+  }
+}
