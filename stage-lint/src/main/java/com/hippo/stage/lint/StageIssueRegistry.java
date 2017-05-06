@@ -22,12 +22,14 @@ package com.hippo.stage.lint;
 
 import com.android.tools.lint.client.api.IssueRegistry;
 import com.android.tools.lint.detector.api.Issue;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class StageIssueRegistry extends IssueRegistry {
 
   @Override public List<Issue> getIssues() {
-    return Collections.singletonList(BackHandlerDetector.ISSUE);
+    return Arrays.asList(
+        BackHandlerDetector.ISSUE,
+        SceneDetector.ISSUE);
   }
 }
