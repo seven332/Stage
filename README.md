@@ -1,3 +1,5 @@
+[![Build](https://travis-ci.org/seven332/Stage.svg)](https://travis-ci.org/seven332/Stage) [![Release](https://jitpack.io/v/seven332/stage.svg)](https://jitpack.io/#seven332/stage)
+
 # Stage
 
 Stage is a View-based Android UI framework. It helps you create an app with only one Activity. It learns a lot from [Conductor](https://github.com/bluelinelabs/Conductor).
