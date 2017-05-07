@@ -124,15 +124,14 @@ public abstract class Director implements Iterable<Stage> {
    * a {@code Stage} with the id, {@code savedState} will be used to
    * restore the {@code Stage}.
    * <p>
-   * If {@code savedState} is {@code null} or doesn't contain an id,
-   * it's just the same as {@link #direct(ViewGroup)}.
+   * If {@code savedState} doesn't contain an id, return {@code null}.
    */
-  @NonNull
-  public Stage direct(@NonNull ViewGroup container, @Nullable Bundle savedState) {
-    if (savedState != null && savedState.containsKey(Stage.KEY_ID)) {
+  @Nullable
+  public Stage direct(@NonNull ViewGroup container, @NonNull Bundle savedState) {
+    if (savedState.containsKey(Stage.KEY_ID)) {
       return direct(container, savedState.getInt(Stage.KEY_ID), savedState);
     } else {
-      return direct(container);
+      return null;
     }
   }
 
