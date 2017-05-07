@@ -72,19 +72,7 @@ public class StagePager extends ViewPager {
 
     if (adapter instanceof StagePagerAdapter) {
       director = ((StagePagerAdapter) adapter).getHost().hireChildDirector();
-      // TODO Use static class
-      director.setBackHandler(new Director.BackHandler() {
-        @Override
-        public boolean handleBack(Director director) {
-          // Only care the focused Stage, which is the visible Stage for user
-          Stage stage = director.getFocusedStage();
-          if (stage != null) {
-            return stage.handleBack();
-          } else {
-            return director.onHandleBack();
-          }
-        }
-      });
+      director.setBackHandler(new PagerBackHandler());
     } else if (director != null) {
       director.setBackHandler(null);
       director = null;
@@ -115,5 +103,18 @@ public class StagePager extends ViewPager {
   @Override
   protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
     dispatchThawSelfOnly(container);
+  }
+
+  private static class PagerBackHandler implements Director.BackHandler {
+    @Override
+    public boolean handleBack(Director director) {
+      // Only care the focused Stage, which is the visible Stage for user
+      Stage stage = director.getFocusedStage();
+      if (stage != null) {
+        return stage.handleBack();
+      } else {
+        return director.onHandleBack();
+      }
+    }
   }
 }
