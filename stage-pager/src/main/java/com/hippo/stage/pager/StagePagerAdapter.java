@@ -20,8 +20,12 @@ package com.hippo.stage.pager;
  * Created by Hippo on 5/4/2017.
  */
 
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import com.hippo.stage.Director;
@@ -34,17 +38,25 @@ import com.hippo.stage.Stage;
  */
 public abstract class StagePagerAdapter extends PagerAdapter {
 
+  private static final String KEY_SAVED_STATE_MAP = "StagePagerAdapter:saved_state_map";
+
   private Scene host;
-  private boolean retainStage;
+  @Nullable
+  private SparseArray<Bundle> savedStateMap;
 
   /**
    * Creates a new StagePagerAdapter using the passed host.
    *
-   * @param retainStage whether retain {@link Stage} when page detached
+   * @param retainStage whether retain {@link Stage} when page detached, or save their states.
+   *                    If it is {@code true}, this class works like {@code FragmentPagerAdapter}.
+   *                    If it is {@code false}, this class works like
+   *                    {@code FragmentStatePagerAdapter}.
    */
   public StagePagerAdapter(@NonNull Scene host, boolean retainStage) {
     this.host = host;
-    this.retainStage = retainStage;
+    if (!retainStage) {
+      savedStateMap = new SparseArray<>();
+    }
   }
 
   Scene getHost() {
@@ -60,9 +72,23 @@ public abstract class StagePagerAdapter extends PagerAdapter {
   public Object instantiateItem(ViewGroup container, int position) {
     Director director = host.hireChildDirector();
 
-    boolean needBinding = !director.contains(position);
-    Stage stage = director.direct(container, position);
-    if (needBinding) {
+    if (director.contains(position)) {
+      // Contains the stage, just return it
+      return director.direct(container, position);
+    }
+
+    // Try to restore saved state
+    Stage stage = null;
+    if (savedStateMap != null) {
+      Bundle savedState = savedStateMap.get(position);
+      if (savedState != null) {
+        stage = director.direct(container, savedState);
+      }
+    }
+
+    // Create a new Stage
+    if (stage == null) {
+      stage = director.direct(container, position);
       bindStage(stage, position);
     }
 
@@ -73,10 +99,14 @@ public abstract class StagePagerAdapter extends PagerAdapter {
   public void destroyItem(ViewGroup container, int position, Object object) {
     Stage stage = (Stage) object;
 
-    if (retainStage) {
+    if (savedStateMap == null) {
       // Stage should be retained
       stage.suspend();
     } else {
+      // Save state
+      Bundle savedState = new Bundle();
+      stage.saveInstanceState(savedState);
+      savedStateMap.put(position, savedState);
       // Close Stage
       stage.close();
     }
@@ -93,5 +123,27 @@ public abstract class StagePagerAdapter extends PagerAdapter {
     }
 
     return false;
+  }
+
+  @Override
+  public Parcelable saveState() {
+    if (savedStateMap != null) {
+      Bundle state = new Bundle();
+      state.putSparseParcelableArray(KEY_SAVED_STATE_MAP, savedStateMap);
+      return state;
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public void restoreState(Parcelable state, ClassLoader loader) {
+    if (this.savedStateMap != null) {
+      Bundle bundle = (Bundle) state;
+      SparseArray<Bundle> savedStateMap = bundle.getSparseParcelableArray(KEY_SAVED_STATE_MAP);
+      if (savedStateMap != null) {
+        this.savedStateMap = savedStateMap;
+      }
+    }
   }
 }
