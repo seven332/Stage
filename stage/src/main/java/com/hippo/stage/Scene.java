@@ -636,14 +636,14 @@ public abstract class Scene {
   void detachView(@NonNull ViewGroup container, boolean forceDestroyView) {
     updateState(STATE_DETACHED, STATE_ATTACHED, STATE_STOPPED);
 
+    if (DEBUG) {
+      assertNotNull(view);
+    }
+
     // If retaining view, no need to recreate view before saveViewState() called,
     // no need to restore view state, no need to save view state
     if (!willRetainView) {
-      saveInstanceState();
-    }
-
-    if (DEBUG) {
-      assertNotNull(view);
+      saveViewState(view);
     }
 
     if (view.getParent() != container) {
