@@ -21,9 +21,11 @@ package com.hippo.stage.pager;
  */
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import com.hippo.stage.Director;
 import com.hippo.stage.Stage;
@@ -32,7 +34,8 @@ import com.hippo.stage.Stage;
  * The best choice for {@link ViewPager} of {@link StagePagerAdapter}.
  * It blocks touch even when curtain running,
  * requests focus for {@link Stage} when a page selected,
- * only handles back action for selected page.
+ * only handles back action for selected page,
+ * disables children view states saving.
  */
 public class StagePager extends ViewPager {
 
@@ -69,6 +72,7 @@ public class StagePager extends ViewPager {
 
     if (adapter instanceof StagePagerAdapter) {
       director = ((StagePagerAdapter) adapter).getHost().hireChildDirector();
+      // TODO Use static class
       director.setBackHandler(new Director.BackHandler() {
         @Override
         public boolean handleBack(Director director) {
@@ -101,5 +105,15 @@ public class StagePager extends ViewPager {
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     return hasCurtainRunning() || super.onInterceptTouchEvent(ev);
+  }
+
+  @Override
+  protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
+    dispatchFreezeSelfOnly(container);
+  }
+
+  @Override
+  protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
+    dispatchThawSelfOnly(container);
   }
 }

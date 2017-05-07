@@ -21,10 +21,12 @@ package com.hippo.stage;
  */
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import java.util.HashSet;
@@ -33,7 +35,8 @@ import java.util.Set;
 /**
  * The standard container for a {@link Stage}.
  * It blocks touch even when curtain running,
- * requests focus when getting touch event.
+ * requests focus when getting touch event,
+ * disables children view states saving.
  */
 public class StageLayout extends FrameLayout {
 
@@ -81,5 +84,15 @@ public class StageLayout extends FrameLayout {
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     requestStageFocus();
     return hasCurtainRunning() || super.onInterceptTouchEvent(ev);
+  }
+
+  @Override
+  protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
+    dispatchFreezeSelfOnly(container);
+  }
+
+  @Override
+  protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
+    dispatchThawSelfOnly(container);
   }
 }
