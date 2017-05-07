@@ -39,6 +39,13 @@ public abstract class SwipeBackScene extends RefWatcherScene {
 
   private SwipeBackLayout swipeBackLayout;
 
+  private final Runnable popRunnable = new Runnable() {
+    @Override
+    public void run() {
+      pop();
+    }
+  };
+
   @Override
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
@@ -60,7 +67,9 @@ public abstract class SwipeBackScene extends RefWatcherScene {
       public void onSwipeOverThreshold() {}
       @Override
       public void onFinish() {
-        pop();
+        if (swipeBackLayout != null) {
+          swipeBackLayout.post(popRunnable);
+        }
       }
     });
 
