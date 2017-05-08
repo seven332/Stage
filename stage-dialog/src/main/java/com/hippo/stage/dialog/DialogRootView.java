@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import com.hippo.android.resource.AttrResources;
 
 // The root of dialog, shows dim effect, handles cancelled-on-touch-outside,
 // resize dialog width.
@@ -55,7 +56,7 @@ class DialogRootView extends ViewGroup implements DialogRoot {
   private void init(Context context) {
     dialogWidth = context.getResources().getDimensionPixelSize(R.dimen.sd_dialog_width);
 
-    float dimAmount = ResourcesUtils.getAttrFloat(context, android.R.attr.backgroundDimAmount);
+    float dimAmount = AttrResources.getAttrFloat(context, android.R.attr.backgroundDimAmount);
     // Ensure backgroundDimAmount is in range
     dimAmount = clamp(dimAmount, 0.0f, 1.0f);
     final int alpha = (int) (255 * dimAmount);

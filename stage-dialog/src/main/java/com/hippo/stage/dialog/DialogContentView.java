@@ -32,6 +32,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
+import com.hippo.android.resource.AttrResources;
 
 // The actual content of dialog, direct child of DialogRoot.
 class DialogContentView extends FrameLayout {
@@ -73,12 +74,12 @@ class DialogContentView extends FrameLayout {
     }
 
     // Set background
-    Drawable drawable = ResourcesUtils.getAttrDrawable(context, android.R.attr.windowBackground);
+    Drawable drawable = AttrResources.getAttrDrawable(context, android.R.attr.windowBackground);
     setBackgroundDrawable(drawable);
 
     // Set elevation
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float elevation = ResourcesUtils.getAttrDimension(context, android.R.attr.windowElevation);
+      float elevation = AttrResources.getAttrDimension(context, android.R.attr.windowElevation);
       setElevation(elevation);
     }
   }

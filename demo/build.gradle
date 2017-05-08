@@ -40,7 +40,6 @@ android {
 dependencies {
     compile project(':stage')
     compile project(':stage-dialog')
-    compile project(':stage-dialog-support')
     compile project(':stage-pager')
     compile "com.android.support:appcompat-v7:$supportLibrary"
     compile "com.android.support:design:$supportLibrary"

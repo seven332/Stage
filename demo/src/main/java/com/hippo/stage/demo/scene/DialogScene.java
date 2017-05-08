@@ -22,6 +22,7 @@ package com.hippo.stage.demo.scene;
 
 import static junit.framework.Assert.assertNotNull;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -32,10 +33,16 @@ import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
 import com.hippo.stage.curtain.FadeCurtain;
 import com.hippo.stage.demo.App;
-import com.hippo.stage.dialog.AlertDialogScene;
+import com.hippo.stage.demo.R;
 import java.util.List;
 
-public abstract class DialogScene extends AlertDialogScene {
+public abstract class DialogScene extends com.hippo.stage.dialog.DialogScene {
+
+  @Override
+  protected void onCreate(@Nullable Bundle args) {
+    super.onCreate(args);
+    setThemeAttrId(R.attr.alertDialogTheme);
+  }
 
   @Nullable
   @Override
