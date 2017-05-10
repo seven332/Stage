@@ -66,14 +66,15 @@ public final class Stage implements Iterable<Scene> {
       onPushScene(scene);
     }
     @Override
-    public void onPop(@NonNull Scene scene) {
-      onPopScene(scene);
+    public void onPop(@NonNull Scene scene, boolean willRecreate) {
+      onPopScene(scene, willRecreate);
     }
   });
 
   private boolean isStarted;
   private boolean isResumed;
   private boolean isDestroyed;
+  private boolean willRecreate;
 
   private boolean isRunningOperation;
   private boolean isOperatingDelayedOperations;
@@ -281,8 +282,8 @@ public final class Stage implements Iterable<Scene> {
     scene.create(this, id);
   }
 
-  private void onPopScene(@NonNull Scene scene) {
-    scene.finish();
+  private void onPopScene(@NonNull Scene scene, boolean willRecreate) {
+    scene.finish(willRecreate);
   }
 
   @NonNull
@@ -405,6 +406,10 @@ public final class Stage implements Iterable<Scene> {
     }
   }
 
+  void setWillRecreate() {
+    willRecreate = true;
+  }
+
   void detach() {
     if (DEBUG) {
       assertFalse(isStarted);
@@ -432,7 +437,7 @@ public final class Stage implements Iterable<Scene> {
     }
 
     isDestroyed = true;
-    stack.popAll();
+    stack.popAll(willRecreate);
     director = null;
   }
 
@@ -1053,7 +1058,7 @@ public final class Stage implements Iterable<Scene> {
     @Override
     void operateWithViews(@NonNull Scene scene) {
       ArrayList<Scene> oldScenes = getVisibleScenes();
-      stack.popAll();
+      stack.popAll(false);
       stack.push(scene);
 
       scene.attachView(container);
@@ -1093,7 +1098,7 @@ public final class Stage implements Iterable<Scene> {
 
     @Override
     void operateWithoutViews(@NonNull Scene scene) {
-      stack.popAll();
+      stack.popAll(false);
       stack.push(scene);
     }
   }

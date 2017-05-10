@@ -103,6 +103,7 @@ public abstract class Scene {
 
   private int state = STATE_NONE;
   private boolean isFinishing;
+  private boolean willRecreate;
 
   private SceneHostedDirector childDirector;
 
@@ -288,6 +289,13 @@ public abstract class Scene {
   }
 
   /**
+   * Returns {@code true} if this {@code Scene} will be recreated.
+   */
+  public boolean willRecreate() {
+    return willRecreate;
+  }
+
+  /**
    * Returns true if the final {@link #onDestroy()} call has been made
    * on the {@code Scene}, so this instance is now dead.
    */
@@ -373,7 +381,7 @@ public abstract class Scene {
         childDirector.resume();
       }
       if (isFinishing()) {
-        childDirector.finish();
+        childDirector.finish(willRecreate);
       }
     }
 
@@ -616,11 +624,12 @@ public abstract class Scene {
     stage = null;
   }
 
-  void finish() {
-    isFinishing = true;
+  void finish(boolean willRecreate) {
+    this.isFinishing = true;
+    this.willRecreate = willRecreate;
 
     if (childDirector != null) {
-      childDirector.finish();
+      childDirector.finish(willRecreate);
     }
 
     if (state == STATE_CREATED || state == STATE_DETACHED) {

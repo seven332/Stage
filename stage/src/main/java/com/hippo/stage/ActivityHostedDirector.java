@@ -295,7 +295,7 @@ class ActivityHostedDirector extends Director {
 
       // onDetach() will be called soon, let it call director.destroy()
       if (director != null) {
-        director.finish();
+        director.finish(getActivity().isFinishing());
       }
     }
 

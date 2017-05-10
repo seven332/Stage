@@ -72,7 +72,7 @@ class SceneStack implements Iterable<Scene> {
   Scene pop() {
     Scene scene = stack.poll();
     if (scene != null) {
-      callback.onPop(scene);
+      callback.onPop(scene, false);
     }
     return scene;
   }
@@ -87,7 +87,7 @@ class SceneStack implements Iterable<Scene> {
       if (current == scene) {
         // Catch it!
         iterator.remove();
-        callback.onPop(scene);
+        callback.onPop(scene, false);
         return index;
       }
       ++index;
@@ -96,9 +96,9 @@ class SceneStack implements Iterable<Scene> {
     return INVALID_INDEX;
   }
 
-  void popAll() {
+  void popAll(boolean willRecreate) {
     for (Scene scene : stack) {
-      callback.onPop(scene);
+      callback.onPop(scene, willRecreate);
     }
     stack.clear();
   }
@@ -135,6 +135,6 @@ class SceneStack implements Iterable<Scene> {
 
     void onPush(@NonNull Scene scene);
 
-    void onPop(@NonNull Scene scene);
+    void onPop(@NonNull Scene scene, boolean willRecreate);
   }
 }

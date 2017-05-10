@@ -47,7 +47,7 @@ public class SceneStackTest {
         poppedScene = null;
       }
       @Override
-      public void onPop(@NonNull Scene scene) {
+      public void onPop(@NonNull Scene scene, boolean willRecreate) {
         popped++;
         pushedScene = null;
         poppedScene = scene;

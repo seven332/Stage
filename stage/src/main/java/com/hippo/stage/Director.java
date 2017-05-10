@@ -495,15 +495,23 @@ public abstract class Director implements Iterable<Stage> {
     stageMap.clear();
   }
 
-  void finish() {
+  void finish(boolean willRecreate) {
     assertFalse(isFinishing);
-    isFinishing = true;
+    this.isFinishing = true;
+
+    if (willRecreate) {
+      for (int i = 0, n = stageMap.size(); i < n; ++i) {
+        Stage stage = stageMap.valueAt(i);
+        stage.setWillRecreate();
+      }
+    }
   }
 
   boolean isFinishing() {
     return isFinishing;
   }
 
+  // TODO Skip it if isDestroyed() is true
   void saveInstanceState(Bundle outState) {
     ArrayList<Bundle> stageStates = new ArrayList<>(stageMap.size());
     for (int i = 0, n = stageMap.size(); i < n; ++i) {
