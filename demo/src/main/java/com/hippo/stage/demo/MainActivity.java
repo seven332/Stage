@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity implements CurtainSuppler {
 
     ViewGroup container = (ViewGroup) findViewById(R.id.stage_layout);
 
+    boolean needInitialization = !director.contains(container.getId());
     Stage stage = director.direct(container);
-
-    if (stage.getSceneCount() == 0) {
+    if (needInitialization) {
       stage.pushScene(new HomeScene());
     }
   }

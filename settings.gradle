@@ -16,6 +16,7 @@
 
 include ':stage'
 include ':stage-dialog'
+include ':stage-fragment'
 include ':stage-pager'
 include ':stage-lint'
 include ':demo'
