@@ -688,6 +688,10 @@ public final class Stage implements Iterable<Scene> {
     this.curtainSuppler = suppler;
   }
 
+  boolean isActivityDestroyed() {
+    return director == null || director.isActivityDestroyed();
+  }
+
   /**
    * Return the {@link Activity} this {@code Stage} is currently associated with.
    */

@@ -59,6 +59,11 @@ class SceneHostedDirector extends Director {
     return scene.requireSceneId();
   }
 
+  @Override
+  boolean isActivityDestroyed() {
+    return scene == null || scene.isActivityDestroyed();
+  }
+
   @Nullable
   @Override
   Activity getActivity() {

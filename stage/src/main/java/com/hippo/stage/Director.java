@@ -349,6 +349,8 @@ public abstract class Director implements Iterable<Stage> {
     return null;
   }
 
+  abstract boolean isActivityDestroyed();
+
   @Nullable
   abstract Activity getActivity();
 

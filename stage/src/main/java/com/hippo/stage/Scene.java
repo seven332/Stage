@@ -389,6 +389,14 @@ public abstract class Scene {
   }
 
   /**
+   * Returns {@code true} if its host {@link Activity} is destroyed or this {@code Scene}
+   * is not attached to a {@link Stage}.
+   */
+  public boolean isActivityDestroyed() {
+    return stage == null || stage.isActivityDestroyed();
+  }
+
+  /**
    * Return the {@link Activity} this {@code Scene} is currently associated with.
    */
   @Nullable

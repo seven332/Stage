@@ -39,6 +39,8 @@ class ActivityHostedDirector extends Director {
 
   private int currentSceneId = Scene.INVALID_ID;
 
+  private boolean isActivityDestroyed;
+
   private Activity activity;
   private Fragment fragment;
 
@@ -74,6 +76,7 @@ class ActivityHostedDirector extends Director {
   private void setActivity(@Nullable Activity activity) {
     if (this.activity == null) {
       this.activity = activity;
+      this.isActivityDestroyed = false;
     } else if (this.activity != activity) {
       throw new IllegalStateException("Two different activity for one ActivityHostedDirector. "
           + "Maybe the library developer forgot to release old activity reference.");
@@ -161,6 +164,15 @@ class ActivityHostedDirector extends Director {
       id = ++currentSceneId;
     } while (id == Scene.INVALID_ID);
     return id;
+  }
+
+  void setActivityDestroyed() {
+    isActivityDestroyed = true;
+  }
+
+  @Override
+  boolean isActivityDestroyed() {
+    return isActivityDestroyed;
   }
 
   @Override
@@ -304,6 +316,8 @@ class ActivityHostedDirector extends Director {
       super.onDetach();
 
       if (director != null) {
+        // DataFragment can only be detached if Activity is detached
+        director.setActivityDestroyed();
         director.detach();
         if (isFinishing) {
           director.destroy();
