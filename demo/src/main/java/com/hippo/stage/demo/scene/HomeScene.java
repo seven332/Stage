@@ -31,7 +31,7 @@ import com.hippo.stage.Scene;
 import com.hippo.stage.demo.R;
 import com.hippo.stage.demo.Utils;
 
-public class HomeScene extends RefWatcherScene {
+public class HomeScene extends DebugScene {
 
   private static final String[] ITEMS = {
       "Push and Pop",

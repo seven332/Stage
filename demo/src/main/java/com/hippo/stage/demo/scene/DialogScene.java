@@ -20,8 +20,6 @@ package com.hippo.stage.demo.scene;
  * Created by Hippo on 5/3/2017.
  */
 
-import static junit.framework.Assert.assertNotNull;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,7 +30,6 @@ import com.hippo.android.dialog.base.DialogView;
 import com.hippo.stage.Curtain;
 import com.hippo.stage.SceneInfo;
 import com.hippo.stage.curtain.FadeCurtain;
-import com.hippo.stage.demo.App;
 import com.hippo.stage.demo.R;
 import java.util.List;
 
@@ -59,22 +56,6 @@ public abstract class DialogScene extends com.hippo.stage.dialog.DialogScene {
   @NonNull
   protected abstract DialogView onCreateDialogView(@NonNull LayoutInflater inflater,
       @NonNull ViewGroup container);
-
-  @Override
-  protected void onDestroyView(@NonNull View view) {
-    super.onDestroyView(view);
-    App app = (App) getApplication();
-    assertNotNull(app);
-    app.getRefWatcher().watch(view);
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    App app = (App) getApplication();
-    assertNotNull(app);
-    app.getRefWatcher().watch(this);
-  }
 
   @Nullable
   @Override

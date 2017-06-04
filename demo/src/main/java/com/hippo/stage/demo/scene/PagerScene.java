@@ -30,7 +30,7 @@ import com.hippo.stage.Stage;
 import com.hippo.stage.demo.R;
 import com.hippo.stage.pager.StagePagerAdapter;
 
-public class PagerScene extends RefWatcherScene {
+public class PagerScene extends DebugScene {
 
   @NonNull
   @Override

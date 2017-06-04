@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import com.hippo.android.dialog.base.DialogView;
 import com.hippo.android.dialog.base.DialogViewBuilder;
 
-public class SimpleDialogScene extends DialogScene {
+public class SimpleDialogScene extends DebugDialogScene {
 
   private static final String TITLE = "李凭箜篌引";
   private static final String MESSAGE = "吴丝蜀桐张高秋，空白凝云颓不流。\n"

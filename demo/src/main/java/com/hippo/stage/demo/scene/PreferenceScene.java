@@ -25,9 +25,8 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import com.hippo.stage.demo.R;
-import com.hippo.stage.fragment.FragmentScene;
 
-public class PreferenceScene extends FragmentScene {
+public class PreferenceScene extends DebugFragmentScene {
 
   private static int ID = 0x7fff0000;
 

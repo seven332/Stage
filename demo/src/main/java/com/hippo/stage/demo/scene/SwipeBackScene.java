@@ -35,7 +35,7 @@ import com.hippo.stage.demo.R;
 import com.hippo.swipeback.SwipeBackLayout;
 import java.util.List;
 
-public abstract class SwipeBackScene extends RefWatcherScene {
+public abstract class SwipeBackScene extends DebugScene {
 
   private SwipeBackLayout swipeBackLayout;
 

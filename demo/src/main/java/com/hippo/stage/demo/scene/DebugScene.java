@@ -27,7 +27,7 @@ import android.view.View;
 import com.hippo.stage.Scene;
 import com.hippo.stage.demo.App;
 
-public abstract class RefWatcherScene extends Scene {
+public abstract class DebugScene extends Scene {
 
   @Override
   protected void onDestroyView(@NonNull View view) {

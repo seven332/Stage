@@ -30,7 +30,7 @@ import android.widget.TextView;
 import com.hippo.stage.Scene;
 import com.hippo.stage.demo.R;
 
-public class PushPopScene extends RefWatcherScene {
+public class PushPopScene extends DebugScene {
 
   private static final String KEY_INDEX = "PushPopScene:index";
 

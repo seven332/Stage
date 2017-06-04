@@ -30,7 +30,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.hippo.stage.demo.R;
 
-public class StartActivityForResultScene extends RefWatcherScene {
+public class StartActivityForResultScene extends DebugScene {
 
   private static final int REQUEST_CODE = 123;
 

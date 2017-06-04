@@ -28,7 +28,7 @@ import com.hippo.stage.Director;
 import com.hippo.stage.Stage;
 import com.hippo.stage.demo.R;
 
-public class ChildDirectorScene extends RefWatcherScene {
+public class ChildDirectorScene extends DebugScene {
 
   @NonNull
   @Override

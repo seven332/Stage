@@ -27,11 +27,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import com.hippo.stage.Scene;
 import com.hippo.stage.demo.R;
 import com.hippo.stage.dialog.DialogScene;
 
-public class DialogListScene extends Scene {
+public class DialogListScene extends DebugScene {
 
   private static final String[] ITEMS = {
       "Not Cancelled",
