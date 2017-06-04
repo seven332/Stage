@@ -20,13 +20,10 @@ package com.hippo.stage.dialog;
  * Created by Hippo on 5/3/2017.
  */
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.TypedValue;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,16 +34,9 @@ import com.hippo.stage.Scene;
  */
 public class DialogScene extends Scene implements DialogInterface {
 
-  public static final int DEFAULT_THEME = 0;
-
-  private static final String KEY_THEME_ID = "DialogScene:theme_id";
-  private static final String KEY_THEME_ATTR_ID = "DialogScene:theme_attr_id";
   private static final String KEY_CANCELLABLE = "DialogScene:cancellable";
   private static final String KEY_CANCELLED_ON_TOUCH_OUTSIDE =
       "DialogScene:cancelled_on_touch_outside";
-
-  private int themeId = DEFAULT_THEME;
-  private int themeAttrId = android.R.attr.dialogTheme;
 
   private boolean cancellable = true;
   private boolean cancelledOnTouchOutside = true;
@@ -57,28 +47,6 @@ public class DialogScene extends Scene implements DialogInterface {
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
     setOpacity(TRANSPARENT);
-  }
-
-  /**
-   * Sets theme id for this dialog.
-   * {@link #DEFAULT_THEME} for the default theme.
-   * <p>
-   * The value supplied here will be retained across dialog scene destroy and
-   * creation.
-   */
-  public void setThemeId(int themeId) {
-    this.themeId = themeId;
-  }
-
-  /**
-   * Sets theme attribute id for this dialog.
-   * {@link #DEFAULT_THEME} for the default theme.
-   * <p>
-   * The value supplied here will be retained across dialog scene destroy and
-   * creation.
-   */
-  public void setThemeAttrId(int themeAttrId) {
-    this.themeAttrId = themeAttrId;
   }
 
   /**
@@ -120,33 +88,10 @@ public class DialogScene extends Scene implements DialogInterface {
     }
   }
 
-  private int resolveThemeId() {
-    if (themeId != DEFAULT_THEME) {
-      return themeId;
-    } else if (themeAttrId != DEFAULT_THEME) {
-      TypedValue outValue = new TypedValue();
-      getActivity().getTheme().resolveAttribute(themeAttrId, outValue, true);
-      return outValue.resourceId;
-    } else {
-      return 0;
-    }
-  }
-
-  // Apply theme to LayoutInflater
-  private LayoutInflater resolveLayoutInflater(LayoutInflater inflater) {
-    int resolvedThemeId = resolveThemeId();
-    if (resolvedThemeId != 0) {
-      Context contextThemeWrapper = new ContextThemeWrapper(inflater.getContext(), resolvedThemeId);
-      inflater = inflater.cloneInContext(contextThemeWrapper);
-    }
-    return inflater;
-  }
-
   @NonNull
   @Override
   protected final View onCreateView(@NonNull LayoutInflater inflater,
       @NonNull ViewGroup container) {
-    inflater = resolveLayoutInflater(inflater);
     View view = inflater.inflate(R.layout.sd_scene_dialog, container, false);
 
     DialogRootView root = (DialogRootView) view.findViewById(R.id.sd_dialog_root);
@@ -195,8 +140,6 @@ public class DialogScene extends Scene implements DialogInterface {
   @Override
   protected void onSaveInstanceState(@NonNull Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putInt(KEY_THEME_ID, themeId);
-    outState.putInt(KEY_THEME_ATTR_ID, themeAttrId);
     outState.putBoolean(KEY_CANCELLABLE, cancellable);
     outState.putBoolean(KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside);
   }
@@ -204,8 +147,6 @@ public class DialogScene extends Scene implements DialogInterface {
   @Override
   protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
-    setThemeId(savedInstanceState.getInt(KEY_THEME_ID, themeId));
-    setThemeAttrId(savedInstanceState.getInt(KEY_THEME_ATTR_ID, themeAttrId));
     setCancellable(savedInstanceState.getBoolean(KEY_CANCELLABLE, cancellable));
     setCancelledOnTouchOutside(savedInstanceState.getBoolean(
         KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside));
