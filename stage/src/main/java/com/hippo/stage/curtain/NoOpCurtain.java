@@ -34,6 +34,7 @@ public final class NoOpCurtain extends Curtain {
   /**
    * Instance of {@code NoOpCurtain}.
    */
+  @NonNull
   public static final NoOpCurtain INSTANCE = new NoOpCurtain();
 
   // No need to new a instance

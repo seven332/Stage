@@ -70,6 +70,7 @@ public abstract class Director implements Iterable<Stage> {
    *
    * @param savedInstanceState the {@link Bundle} passed in {@link Activity#onCreate(Bundle)}
    */
+  @NonNull
   public static Director hire(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
     return ActivityHostedDirector.getInstance(activity, savedInstanceState);
   }
@@ -222,6 +223,7 @@ public abstract class Director implements Iterable<Stage> {
   /**
    * Returns an unmodified Stage iterator which is a mysterious order.
    */
+  @NonNull
   @Override
   public Iterator<Stage> iterator() {
     return new Iterator<Stage>() {
@@ -257,6 +259,7 @@ public abstract class Director implements Iterable<Stage> {
    * @see Stage#requestFocus()
    * @see #onHandleBack()
    */
+  @Nullable
   public Stage getFocusedStage() {
     return focusedStage;
   }
@@ -265,7 +268,7 @@ public abstract class Director implements Iterable<Stage> {
    * Sets a {@link BackHandler} for this {@code Director}.
    * It overrides the default back action handling method.
    */
-  public void setBackHandler(BackHandler backHandler) {
+  public void setBackHandler(@Nullable BackHandler backHandler) {
     this.backHandler = backHandler;
   }
 
@@ -323,7 +326,7 @@ public abstract class Director implements Iterable<Stage> {
    * Sets the curtain suppler for its all {@link Stage}s.
    * {@link Stage} can override it by calling {@link Stage#setCurtainSuppler(CurtainSuppler)}.
    */
-  public void setCurtainSuppler(CurtainSuppler suppler) {
+  public void setCurtainSuppler(@Nullable CurtainSuppler suppler) {
     this.curtainSuppler = suppler;
   }
 
@@ -558,6 +561,6 @@ public abstract class Director implements Iterable<Stage> {
      * If needing default back action handling, call {@link Director#onHandleBack()}, <b>NOT</b>
      * {@link Director#handleBack()}.
      */
-    boolean handleBack(Director director);
+    boolean handleBack(@NonNull Director director);
   }
 }

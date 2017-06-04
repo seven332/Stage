@@ -22,6 +22,7 @@ package com.hippo.stage.pager;
 
 import android.content.Context;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -107,7 +108,7 @@ public class StagePager extends ViewPager {
 
   private static class PagerBackHandler implements Director.BackHandler {
     @Override
-    public boolean handleBack(Director director) {
+    public boolean handleBack(@NonNull Director director) {
       // Only care the focused Stage, which is the visible Stage for user
       Stage stage = director.getFocusedStage();
       if (stage != null) {

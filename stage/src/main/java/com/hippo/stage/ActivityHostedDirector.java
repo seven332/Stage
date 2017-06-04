@@ -46,6 +46,7 @@ class ActivityHostedDirector extends Director {
 
   private Handler handler = new Handler();
 
+  @NonNull
   static ActivityHostedDirector getInstance(
       @NonNull Activity activity, @Nullable Bundle savedInstanceState) {
     // Get DataFragment

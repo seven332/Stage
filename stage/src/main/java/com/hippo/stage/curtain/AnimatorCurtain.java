@@ -60,7 +60,7 @@ public abstract class AnimatorCurtain extends Curtain {
    * Sets interpolator for the {@link Animator} returned by
    * {@link #getAnimator(ViewGroup, SceneInfo, List)}.
    */
-  public void setInterpolator(TimeInterpolator interpolator) {
+  public void setInterpolator(@Nullable TimeInterpolator interpolator) {
     this.interpolator = interpolator;
   }
 

@@ -776,7 +776,7 @@ public final class Stage implements Iterable<Scene> {
      * If needing default back action handling, call {@link Stage#onHandleBack()}, <b>NOT</b>
      * {@link Stage#handleBack()}.
      */
-    boolean handleBack(Stage stage);
+    boolean handleBack(@NonNull Stage stage);
   }
 
   // A Operation is used for delayed popping or pushing or something like that

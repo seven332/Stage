@@ -162,7 +162,7 @@ public abstract class Scene {
    * @see #getTag()
    * @see Stage#findSceneByTag(String)
    */
-  public void setTag(String tag) {
+  public void setTag(@Nullable String tag) {
     this.tag = tag;
   }
 
@@ -172,6 +172,7 @@ public abstract class Scene {
    * @see #setTag(String)
    * @see Stage#findSceneByTag(String)
    */
+  @Nullable
   public final String getTag() {
     return tag;
   }
@@ -185,7 +186,7 @@ public abstract class Scene {
    *
    * @see #getArgs()
    */
-  public void setArgs(Bundle args) {
+  public void setArgs(@Nullable Bundle args) {
     assertState(STATE_NONE);
     this.args = args;
   }
@@ -195,6 +196,7 @@ public abstract class Scene {
    *
    * @see #setArgs(Bundle)
    */
+  @Nullable
   public final Bundle getArgs() {
     return args;
   }
@@ -394,6 +396,7 @@ public abstract class Scene {
    * Hires a {@link Director} to direct {@link Stage}s
    * on the {@code ViewGroup} of this {@code Scene}.
    */
+  @NonNull
   public Director hireChildDirector() {
     if (isDestroyed()) {
       throw new IllegalStateException("Can't call hireChildDirector() on a destroyed Scene");
