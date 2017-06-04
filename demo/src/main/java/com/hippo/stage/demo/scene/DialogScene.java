@@ -23,6 +23,7 @@ package com.hippo.stage.demo.scene;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,10 @@ public abstract class DialogScene extends com.hippo.stage.dialog.DialogScene {
   @Override
   protected void onCreate(@Nullable Bundle args) {
     super.onCreate(args);
-    setThemeAttrId(R.attr.alertDialogTheme);
+
+    TypedValue outValue = new TypedValue();
+    getActivity().getTheme().resolveAttribute(R.attr.alertDialogTheme, outValue, true);
+    setTheme(outValue.resourceId);
   }
 
   @Nullable
