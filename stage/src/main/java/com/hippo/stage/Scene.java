@@ -428,6 +428,8 @@ public abstract class Scene {
 
   /**
    * Returns the {@link Context} the view of this {@code Scene} is currently associated with.
+   * It's guaranteed that this method returns {@code non-null} between
+   * {@link #onCreateView(LayoutInflater, ViewGroup)} and {@link #onDestroyView(View)}.
    */
   @Nullable
   public final Context getContext() {
@@ -436,6 +438,8 @@ public abstract class Scene {
 
   /**
    * Return the {@link Activity} this {@code Scene} is currently associated with.
+   * It's guaranteed that this method returns {@code non-null} between
+   * {@link #onCreateView(LayoutInflater, ViewGroup)} and {@link #onDestroyView(View)}.
    */
   @Nullable
   public final Activity getActivity() {
@@ -444,6 +448,8 @@ public abstract class Scene {
 
   /**
    * Return the {@link Application} this {@code Scene} is currently associated with.
+   * It's guaranteed that this method returns {@code non-null} between
+   * {@link #onCreateView(LayoutInflater, ViewGroup)} and {@link #onDestroyView(View)}.
    */
   @Nullable
   public final Application getApplication() {
