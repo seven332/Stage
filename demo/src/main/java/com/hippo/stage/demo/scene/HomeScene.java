@@ -41,6 +41,7 @@ public class HomeScene extends RefWatcherScene {
       "Swipe to Finish",
       "ViewPager",
       "Preference",
+      "Themed",
   };
 
   private static final Class[] CLASSES = {
@@ -51,6 +52,7 @@ public class HomeScene extends RefWatcherScene {
       SimpleSwipeBackScene.class,
       PagerScene.class,
       PreferenceScene.class,
+      ThemedScene.class,
   };
 
   @NonNull

@@ -25,6 +25,7 @@ import static junit.framework.Assert.assertNull;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,13 +35,17 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.StyleRes;
 import android.util.SparseArray;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+
+// TODO willRecreate(), isFinishing(), isDestroyed(), isActivityDestroyed(), they are a confusing.
 
 /**
  * A {@code Scene} manages a portion of the UI.
@@ -84,6 +89,7 @@ public abstract class Scene {
   private static final String KEY_ARGS = "Scene:args";
   private static final String KEY_WILL_RETAIN_VIEW = "Scene:will_retain_view";
   private static final String KEY_OPACITY = "Scene:opacity";
+  private static final String KEY_THEME = "Scene:theme";
   private static final String KEY_VIEW_STATE = "Scene:view_state";
   private static final String KEY_VIEW_STATE_HIERARCHY = "Scene:view_state:hierarchy";
   private static final String KEY_VIEW_STATE_BUNDLE = "Scene:view_state:bundle";
@@ -97,7 +103,9 @@ public abstract class Scene {
   private boolean willRetainView;
   @Opacity
   private int opacity = OPAQUE;
+  private int theme;
 
+  private Context context;
   private View view;
   private Bundle viewState;
 
@@ -207,7 +215,7 @@ public abstract class Scene {
    *
    * @see #willRetainView()
    */
-  protected final void setWillRetainView(boolean willRetainView) {
+  public final void setWillRetainView(boolean willRetainView) {
     assertState(STATE_NONE);
     this.willRetainView = willRetainView;
   }
@@ -234,7 +242,7 @@ public abstract class Scene {
    *
    * @see #getOpacity()
    */
-  protected final void setOpacity(@Opacity int opacity) {
+  public final void setOpacity(@Opacity int opacity) {
     assertState(STATE_NONE);
     this.opacity = opacity;
   }
@@ -247,6 +255,28 @@ public abstract class Scene {
   @Opacity
   public final int getOpacity() {
     return opacity;
+  }
+
+  /**
+   * Sets the theme of this {@code Scene}. {@code 0} for the default theme.
+   * It takes affect in next {@link #onCreateView(LayoutInflater, ViewGroup)}.
+   * <p>
+   * The arguments supplied here will be retained across scene destroy and
+   * creation.
+   *
+   * @see #getTheme()
+   */
+  public final void setTheme(int theme) {
+    this.theme = theme;
+  }
+
+  /**
+   * Returns theme of this {@code Scene}. {@code 0} in default.
+   *
+   * @see #setTheme(int)
+   */
+  public final int getTheme() {
+    return theme;
   }
 
   /**
@@ -397,6 +427,14 @@ public abstract class Scene {
   }
 
   /**
+   * Returns the {@link Context} the view of this {@code Scene} is currently associated with.
+   */
+  @Nullable
+  public final Context getContext() {
+    return context;
+  }
+
+  /**
    * Return the {@link Activity} this {@code Scene} is currently associated with.
    */
   @Nullable
@@ -532,7 +570,17 @@ public abstract class Scene {
   @NonNull
   private View inflate(@NonNull ViewGroup parent) {
     if (view == null) {
-      view = onCreateView(LayoutInflater.from(parent.getContext()), parent);
+
+      if (DEBUG) {
+        assertNull(context);
+      }
+
+      context = parent.getContext();
+      if (theme != 0) {
+        context = new ContextThemeWrapper(context, theme);
+      }
+
+      view = onCreateView(LayoutInflater.from(context), parent);
       if (view == parent) {
         throw new IllegalStateException("onCreateView() returned the parent ViewGroup. "
             + "Perhaps you forgot to pass false for "
@@ -606,6 +654,9 @@ public abstract class Scene {
     }
 
     onDestroyView(view);
+
+    view = null;
+    context = null;
   }
 
   private void destroy() {
@@ -619,7 +670,6 @@ public abstract class Scene {
 
     if (view != null) {
       destroyView();
-      view = null;
     }
 
     if (childDirector != null) {
@@ -671,7 +721,6 @@ public abstract class Scene {
 
     if (!willRetainView || forceDestroyView) {
       destroyView();
-      view = null;
     }
 
     if (isFinishing) {
@@ -710,6 +759,7 @@ public abstract class Scene {
     outState.putBundle(KEY_ARGS, getArgs());
     outState.putBoolean(KEY_WILL_RETAIN_VIEW, willRetainView());
     outState.putInt(KEY_OPACITY, getOpacity());
+    outState.putInt(KEY_THEME, getTheme());
 
     if (view != null) {
       saveViewState(view);
@@ -734,6 +784,7 @@ public abstract class Scene {
     setWillRetainView(savedInstanceState.getBoolean(KEY_WILL_RETAIN_VIEW));
     //noinspection WrongConstant
     setOpacity(savedInstanceState.getInt(KEY_OPACITY));
+    setTheme(savedInstanceState.getInt(KEY_THEME));
 
     viewState = savedInstanceState.getBundle(KEY_VIEW_STATE);
     if (viewState != null) {
