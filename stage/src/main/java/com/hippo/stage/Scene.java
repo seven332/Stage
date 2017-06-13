@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 
 // TODO willRecreate(), isFinishing(), isDestroyed(), isActivityDestroyed(), they are a confusing.
@@ -114,6 +115,8 @@ public abstract class Scene {
   private boolean willRecreate;
 
   private SceneHostedDirector childDirector;
+
+  private final List<LifecycleListener> lifecycleListeners = new ArrayList<>();
 
   @NonNull
   static Scene newInstance(String className, @NonNull Bundle bundle) {
@@ -289,6 +292,26 @@ public abstract class Scene {
   @Nullable
   public View getView() {
     return view;
+  }
+
+  /**
+   * Adds a listener for all of this {@code Scene}'s lifecycle events.
+   *
+   * @param lifecycleListener The listener
+   */
+  public void addLifecycleListener(@NonNull LifecycleListener lifecycleListener) {
+    if (!lifecycleListeners.contains(lifecycleListener)) {
+      lifecycleListeners.add(lifecycleListener);
+    }
+  }
+
+  /**
+   * Removes a previously added lifecycle listener.
+   *
+   * @param lifecycleListener The listener to be removed
+   */
+  public void removeLifecycleListener(@NonNull LifecycleListener lifecycleListener) {
+    lifecycleListeners.remove(lifecycleListener);
   }
 
   /**
@@ -572,6 +595,12 @@ public abstract class Scene {
 
     onCreate(args);
 
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onCreate(this);
+      }
+    }
+
     // Update state here to allow getTag() and others can be called in onCreate()
     updateState(STATE_CREATED, STATE_NONE);
   }
@@ -595,6 +624,13 @@ public abstract class Scene {
             + "Perhaps you forgot to pass false for "
             + "LayoutInflater.inflate()'s attachToRoot parameter?");
       }
+
+      if (!lifecycleListeners.isEmpty()) {
+        for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+          listener.onCreateView(this);
+        }
+      }
+
       restoreViewState(view);
     }
     return view;
@@ -615,6 +651,12 @@ public abstract class Scene {
 
     container.addView(view, index);
     onAttachView(view);
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onAttachView(this, view);
+      }
+    }
   }
 
   void start() {
@@ -625,6 +667,12 @@ public abstract class Scene {
     }
 
     onStart();
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onStart(this);
+      }
+    }
   }
 
   void resume() {
@@ -635,6 +683,12 @@ public abstract class Scene {
     }
 
     onResume();
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onResume(this);
+      }
+    }
   }
 
   void pause() {
@@ -645,6 +699,12 @@ public abstract class Scene {
     }
 
     onPause();
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onPause(this);
+      }
+    }
   }
 
   void stop() {
@@ -655,6 +715,12 @@ public abstract class Scene {
     }
 
     onStop();
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onStop(this);
+      }
+    }
   }
 
   private void destroyView() {
@@ -663,6 +729,12 @@ public abstract class Scene {
     }
 
     onDestroyView(view);
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onDestroyView(this, view);
+      }
+    }
 
     view = null;
     context = null;
@@ -687,6 +759,12 @@ public abstract class Scene {
     }
 
     onDestroy();
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onDestroy(this);
+      }
+    }
 
     stage = null;
   }
@@ -728,6 +806,12 @@ public abstract class Scene {
     container.removeView(view);
     onDetachView(view);
 
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onDetachView(this, view);
+      }
+    }
+
     if (!willRetainView || forceDestroyView) {
       destroyView();
     }
@@ -747,6 +831,12 @@ public abstract class Scene {
     Bundle stateBundle = new Bundle(getClass().getClassLoader());
     onSaveViewState(view, stateBundle);
     viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle);
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onSaveViewState(this, viewState);
+      }
+    }
   }
 
   private void restoreViewState(@NonNull View view) {
@@ -757,6 +847,12 @@ public abstract class Scene {
       if (savedViewState != null) {
         savedViewState.setClassLoader(getClass().getClassLoader());
         onRestoreViewState(view, savedViewState);
+      }
+
+      if (!lifecycleListeners.isEmpty()) {
+        for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+          listener.onRestoreViewState(this, viewState);
+        }
       }
     }
   }
@@ -783,6 +879,12 @@ public abstract class Scene {
 
     onSaveInstanceState(outState);
 
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onSaveInstanceState(this, outState);
+      }
+    }
+
     return outState;
   }
 
@@ -808,6 +910,12 @@ public abstract class Scene {
     }
 
     onRestoreInstanceState(savedInstanceState);
+
+    if (!lifecycleListeners.isEmpty()) {
+      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+        listener.onRestoreInstanceState(this, savedInstanceState);
+      }
+    }
   }
 
   /**
@@ -935,5 +1043,25 @@ public abstract class Scene {
         + "hash_code: " + Integer.toHexString(System.identityHashCode(this)) + ", "
         + "opacity: " + opacity + ", "
         + "tag: " + tag + "}";
+  }
+
+  public static abstract class LifecycleListener {
+
+    public void onCreate(@NonNull Scene scene) {}
+    public void onCreateView(@NonNull Scene scene) {}
+    public void onAttachView(@NonNull Scene scene, @NonNull View view) {}
+    public void onStart(@NonNull Scene scene) {}
+    public void onResume(@NonNull Scene scene) {}
+    public void onPause(@NonNull Scene scene) {}
+    public void onStop(@NonNull Scene scene) {}
+    public void onDetachView(@NonNull Scene scene, @NonNull View view) {}
+    public void onDestroyView(@NonNull Scene scene, @NonNull View view) {}
+    public void onDestroy(@NonNull Scene scene) {}
+
+    public void onSaveInstanceState(@NonNull Scene scene, @NonNull Bundle outState) { }
+    public void onRestoreInstanceState(@NonNull Scene scene, @NonNull Bundle savedInstanceState) { }
+
+    public void onSaveViewState(@NonNull Scene scene, @NonNull Bundle outState) { }
+    public void onRestoreViewState(@NonNull Scene scene, @NonNull Bundle savedViewState) { }
   }
 }
