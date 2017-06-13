@@ -30,27 +30,27 @@ import io.reactivex.plugins.RxJavaPlugins;
 import java.util.ArrayList;
 import java.util.List;
 
-class StageLifecycleListener extends Scene.LifecycleListener {
+class SceneLifecycleListener extends Scene.LifecycleListener {
 
   private List<ObservableEmitter<Integer>> emitterList = new ArrayList<>();
 
   private int lifecycle;
 
-  public StageLifecycleListener(@NonNull Scene scene) {
+  public SceneLifecycleListener(@NonNull Scene scene) {
     scene.addLifecycleListener(this);
 
     if (scene.isResumed()) {
-      lifecycle = StageLifecycle.RESUME;
+      lifecycle = SceneLifecycle.RESUME;
     } else if (scene.isStarted()) {
-      lifecycle = StageLifecycle.START;
+      lifecycle = SceneLifecycle.START;
     } else if (scene.isViewAttached()) {
-      lifecycle = StageLifecycle.ATTACH_VIEW;
+      lifecycle = SceneLifecycle.ATTACH_VIEW;
     } else if (scene.getView() != null) {
-      lifecycle = StageLifecycle.CREATE_VIEW;
+      lifecycle = SceneLifecycle.CREATE_VIEW;
     } else if (!scene.isDestroyed()) {
-      lifecycle = StageLifecycle.CREATE;
+      lifecycle = SceneLifecycle.CREATE;
     } else {
-      lifecycle = StageLifecycle.INIT;
+      lifecycle = SceneLifecycle.INIT;
     }
   }
 
@@ -66,20 +66,20 @@ class StageLifecycleListener extends Scene.LifecycleListener {
   }
 
   private void emitMissingLifecycle(ObservableEmitter<Integer> emitter) {
-    if (lifecycle >= StageLifecycle.CREATE && lifecycle < StageLifecycle.DESTROY) {
-      emit(emitter, StageLifecycle.CREATE);
+    if (lifecycle >= SceneLifecycle.CREATE && lifecycle < SceneLifecycle.DESTROY) {
+      emit(emitter, SceneLifecycle.CREATE);
     }
-    if (lifecycle >= StageLifecycle.CREATE_VIEW && lifecycle < StageLifecycle.DESTROY_VIEW) {
-      emit(emitter, StageLifecycle.CREATE_VIEW);
+    if (lifecycle >= SceneLifecycle.CREATE_VIEW && lifecycle < SceneLifecycle.DESTROY_VIEW) {
+      emit(emitter, SceneLifecycle.CREATE_VIEW);
     }
-    if (lifecycle >= StageLifecycle.ATTACH_VIEW && lifecycle < StageLifecycle.DETACH_VIEW) {
-      emit(emitter, StageLifecycle.ATTACH_VIEW);
+    if (lifecycle >= SceneLifecycle.ATTACH_VIEW && lifecycle < SceneLifecycle.DETACH_VIEW) {
+      emit(emitter, SceneLifecycle.ATTACH_VIEW);
     }
-    if (lifecycle >= StageLifecycle.START && lifecycle < StageLifecycle.STOP) {
-      emit(emitter, StageLifecycle.START);
+    if (lifecycle >= SceneLifecycle.START && lifecycle < SceneLifecycle.STOP) {
+      emit(emitter, SceneLifecycle.START);
     }
-    if (lifecycle >= StageLifecycle.RESUME && lifecycle < StageLifecycle.PAUSE) {
-      emit(emitter, StageLifecycle.RESUME);
+    if (lifecycle >= SceneLifecycle.RESUME && lifecycle < SceneLifecycle.PAUSE) {
+      emit(emitter, SceneLifecycle.RESUME);
     }
   }
 
@@ -106,51 +106,51 @@ class StageLifecycleListener extends Scene.LifecycleListener {
 
   @Override
   public void onCreate(@NonNull Scene scene) {
-    emit(StageLifecycle.CREATE);
+    emit(SceneLifecycle.CREATE);
   }
 
   @Override
   public void onCreateView(@NonNull Scene scene) {
-    emit(StageLifecycle.CREATE_VIEW);
+    emit(SceneLifecycle.CREATE_VIEW);
   }
 
   @Override
   public void onAttachView(@NonNull Scene scene, @NonNull View view) {
-    emit(StageLifecycle.ATTACH_VIEW);
+    emit(SceneLifecycle.ATTACH_VIEW);
   }
 
   @Override
   public void onStart(@NonNull Scene scene) {
-    emit(StageLifecycle.START);
+    emit(SceneLifecycle.START);
   }
 
   @Override
   public void onResume(@NonNull Scene scene) {
-    emit(StageLifecycle.RESUME);
+    emit(SceneLifecycle.RESUME);
   }
 
   @Override
   public void onPause(@NonNull Scene scene) {
-    emit(StageLifecycle.PAUSE);
+    emit(SceneLifecycle.PAUSE);
   }
 
   @Override
   public void onStop(@NonNull Scene scene) {
-    emit(StageLifecycle.STOP);
+    emit(SceneLifecycle.STOP);
   }
 
   @Override
   public void onDetachView(@NonNull Scene scene, @NonNull View view) {
-    emit(StageLifecycle.DETACH_VIEW);
+    emit(SceneLifecycle.DETACH_VIEW);
   }
 
   @Override
   public void onDestroyView(@NonNull Scene scene, @NonNull View view) {
-    emit(StageLifecycle.DESTROY_VIEW);
+    emit(SceneLifecycle.DESTROY_VIEW);
   }
 
   @Override
   public void onDestroy(@NonNull Scene scene) {
-    emit(StageLifecycle.DESTROY);
+    emit(SceneLifecycle.DESTROY);
   }
 }

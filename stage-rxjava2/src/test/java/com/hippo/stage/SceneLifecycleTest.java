@@ -28,7 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.hippo.stage.rxjava2.StageLifecycle;
+import com.hippo.stage.rxjava2.SceneLifecycle;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import org.junit.Before;
@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class StageLifecycleTest {
+public class SceneLifecycleTest {
 
   private Stage stage;
 
@@ -51,13 +51,13 @@ public class StageLifecycleTest {
   }
 
   @Test
-  public void testStageLifecycle() throws Exception {
+  public void testSceneLifecycle() throws Exception {
     stage.start();
 
     Scene scene = new DumpScene();
     stage.pushScene(scene);
     RecordConsumer consumer = new RecordConsumer();
-    Disposable disposable = StageLifecycle.create(scene).subscribe(consumer);
+    Disposable disposable = SceneLifecycle.create(scene).subscribe(consumer);
     SceneCalling calling = new SceneCalling();
 
     calling.onCreate++;
@@ -78,12 +78,12 @@ public class StageLifecycleTest {
   }
 
   @Test
-  public void testStageLifecycleMultiObserver() throws Exception {
+  public void testSceneLifecycleMultiObserver() throws Exception {
     stage.start();
 
     Scene scene = new DumpScene();
     stage.pushScene(scene);
-    Observable<Integer> lifecycle = StageLifecycle.create(scene);
+    Observable<Integer> lifecycle = SceneLifecycle.create(scene);
 
     RecordConsumer consumer1 = new RecordConsumer();
     Disposable disposable1 = lifecycle.subscribe(consumer1);

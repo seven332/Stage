@@ -26,7 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 
-public final class StageLifecycle {
+public final class SceneLifecycle {
 
   static final int INIT = 0;
   public static final int CREATE = 1;
@@ -48,7 +48,7 @@ public final class StageLifecycle {
    */
   @NonNull
   public static Observable<Integer> create(@NonNull Scene scene) {
-    final StageLifecycleListener listener = new StageLifecycleListener(scene);
+    final SceneLifecycleListener listener = new SceneLifecycleListener(scene);
     return Observable.create(new ObservableOnSubscribe<Integer>() {
       @Override
       public void subscribe(@NonNull ObservableEmitter<Integer> emitter)

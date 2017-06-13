@@ -22,7 +22,7 @@ package com.hippo.stage;
 
 import static org.junit.Assert.assertEquals;
 
-import com.hippo.stage.rxjava2.StageLifecycle;
+import com.hippo.stage.rxjava2.SceneLifecycle;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
@@ -41,34 +41,34 @@ public class RecordConsumer implements Consumer<Integer> {
   @Override
   public void accept(@NonNull Integer integer) throws Exception {
     switch (integer) {
-      case StageLifecycle.CREATE:
+      case SceneLifecycle.CREATE:
         calling.onCreate++;
         break;
-      case StageLifecycle.CREATE_VIEW:
+      case SceneLifecycle.CREATE_VIEW:
         calling.onCreateView++;
         break;
-      case StageLifecycle.ATTACH_VIEW:
+      case SceneLifecycle.ATTACH_VIEW:
         calling.onAttachView++;
         break;
-      case StageLifecycle.START:
+      case SceneLifecycle.START:
         calling.onStart++;
         break;
-      case StageLifecycle.RESUME:
+      case SceneLifecycle.RESUME:
         calling.onResume++;
         break;
-      case StageLifecycle.PAUSE:
+      case SceneLifecycle.PAUSE:
         calling.onPause++;
         break;
-      case StageLifecycle.STOP:
+      case SceneLifecycle.STOP:
         calling.onStop++;
         break;
-      case StageLifecycle.DETACH_VIEW:
+      case SceneLifecycle.DETACH_VIEW:
         calling.onDetachView++;
         break;
-      case StageLifecycle.DESTROY_VIEW:
+      case SceneLifecycle.DESTROY_VIEW:
         calling.onDestroyView++;
         break;
-      case StageLifecycle.DESTROY:
+      case SceneLifecycle.DESTROY:
         calling.onDestroy++;
         break;
     }
