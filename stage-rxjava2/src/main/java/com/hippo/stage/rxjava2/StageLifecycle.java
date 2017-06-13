@@ -20,20 +20,13 @@ package com.hippo.stage.rxjava2;
  * Created by Hippo on 6/12/2017.
  */
 
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import com.hippo.stage.Scene;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 public final class StageLifecycle {
-
-  @IntDef({INIT, CREATE, CREATE_VIEW, ATTACH_VIEW, START, RESUME, PAUSE, STOP, DETACH_VIEW, DESTROY_VIEW, DESTROY})
-  @Retention(RetentionPolicy.SOURCE)
-  public @interface Lifecycle {}
 
   static final int INIT = 0;
   public static final int CREATE = 1;
