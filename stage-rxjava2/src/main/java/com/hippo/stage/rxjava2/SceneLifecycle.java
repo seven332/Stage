@@ -45,6 +45,10 @@ public final class SceneLifecycle {
    * <p>
    * All missing steps are emitted to newly subscribed observer. For example, if the scene
    * has already created view, {@link #CREATE} and {@link #CREATE_VIEW} will be emitted.
+   * <p>
+   * {@code onError()} and {@code onComplete()} will never be called.
+   * <p>
+   * Don't subscribe or subscribe the observable in non-UI thread.
    */
   @NonNull
   public static Observable<Integer> create(@NonNull Scene scene) {
