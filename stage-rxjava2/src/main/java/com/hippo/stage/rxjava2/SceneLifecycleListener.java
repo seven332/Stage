@@ -85,7 +85,12 @@ class SceneLifecycleListener extends Scene.LifecycleListener {
 
   private void emit(ObservableEmitter<Integer> emitter, int lifecycle) {
     if (!emitter.isDisposed()) {
-      emitter.onNext(lifecycle);
+      try {
+        emitter.onNext(lifecycle);
+      } catch (Throwable t) {
+        Exceptions.throwIfFatal(t);
+        RxJavaPlugins.onError(t);
+      }
     }
   }
 
@@ -94,12 +99,7 @@ class SceneLifecycleListener extends Scene.LifecycleListener {
 
     if (!emitterList.isEmpty()) {
       for (ObservableEmitter<Integer> emitter : new ArrayList<>(emitterList)) {
-        try {
-          emit(emitter, lifecycle);
-        } catch (Throwable t) {
-          Exceptions.throwIfFatal(t);
-          RxJavaPlugins.onError(t);
-        }
+        emit(emitter, lifecycle);
       }
     }
   }
