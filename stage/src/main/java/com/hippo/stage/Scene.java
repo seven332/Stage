@@ -35,7 +35,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -91,6 +90,7 @@ public abstract class Scene {
   private static final String KEY_WILL_RETAIN_VIEW = "Scene:will_retain_view";
   private static final String KEY_OPACITY = "Scene:opacity";
   private static final String KEY_THEME = "Scene:theme";
+  private static final String KEY_TARGET = "Scene:target";
   private static final String KEY_VIEW_STATE = "Scene:view_state";
   private static final String KEY_VIEW_STATE_HIERARCHY = "Scene:view_state:hierarchy";
   private static final String KEY_VIEW_STATE_BUNDLE = "Scene:view_state:bundle";
@@ -105,6 +105,7 @@ public abstract class Scene {
   @Opacity
   private int opacity = OPAQUE;
   private int theme;
+  private int target = INVALID_ID;
 
   private Context context;
   private View view;
@@ -282,6 +283,58 @@ public abstract class Scene {
    */
   public final int getTheme() {
     return theme;
+  }
+
+  /**
+   * Sets the target scene. {@code null} to clear target.
+   * The target scene should be stage before it called.
+   *
+   * @see #getTarget()
+   */
+  public final void setTarget(Scene scene) {
+    if (scene != null) {
+      target = scene.id;
+    } else {
+      target = INVALID_ID;
+    }
+  }
+
+  /**
+   * Gets the target scene.
+   *
+   * @see #setTarget(Scene)
+   */
+  @Nullable
+  public final Scene getTarget() {
+    if (target == INVALID_ID) {
+      return null;
+    }
+
+    // Get root director
+    Scene scene = this;
+    Director root = null;
+    for (;;) {
+      if (scene == null) {
+        break;
+      }
+      Stage stage = scene.getStage();
+      if (stage == null) {
+        break;
+      }
+      Director director = stage.getDirector();
+      if (director instanceof SceneHostedDirector) {
+        scene = ((SceneHostedDirector) director).getScene();
+      } else {
+        root = director;
+        break;
+      }
+    }
+
+    if (root != null) {
+      return root.findSceneById(target);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -865,6 +918,7 @@ public abstract class Scene {
     outState.putBoolean(KEY_WILL_RETAIN_VIEW, willRetainView());
     outState.putInt(KEY_OPACITY, getOpacity());
     outState.putInt(KEY_THEME, getTheme());
+    outState.putInt(KEY_TARGET, target);
 
     if (view != null) {
       saveViewState(view);
@@ -896,6 +950,7 @@ public abstract class Scene {
     //noinspection WrongConstant
     setOpacity(savedInstanceState.getInt(KEY_OPACITY));
     setTheme(savedInstanceState.getInt(KEY_THEME));
+    target = savedInstanceState.getInt(KEY_TARGET, INVALID_ID);
 
     viewState = savedInstanceState.getBundle(KEY_VIEW_STATE);
     if (viewState != null) {

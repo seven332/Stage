@@ -94,6 +94,10 @@ public final class Stage implements Iterable<Scene> {
     this.director = director;
   }
 
+  Director getDirector() {
+    return director;
+  }
+
   void setId(int id) {
     this.id = id;
   }

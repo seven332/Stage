@@ -87,6 +87,42 @@ public class DirectorTest {
   }
 
   @Test
+  public void testTarget() {
+    ViewGroup container1 = new TestContainer(RuntimeEnvironment.application);
+    ViewGroup container2 = new TestContainer(RuntimeEnvironment.application);
+    @IdRes int containerId1 = 1;
+    @IdRes int containerId2 = 2;
+    container1.setId(containerId1);
+    container2.setId(containerId2);
+
+    Stage stage1 = director.direct(container1);
+    Stage stage2 = director.direct(container2);
+
+    Scene scene1 = new TestScene();
+    Scene scene2 = new TestScene();
+    stage1.pushScene(scene1);
+    stage1.pushScene(scene2);
+
+    Scene scene3 = new TestScene();
+    Scene scene4 = new TestScene();
+    stage2.pushScene(scene3);
+    stage2.pushScene(scene4);
+
+    Director director2 = scene2.hireChildDirector();
+    Stage stage3 = director2.direct(new TestContainer(RuntimeEnvironment.application));
+    Scene scene5 = new TestScene();
+    stage3.pushScene(scene5);
+
+    Director director3 = scene3.hireChildDirector();
+    Stage stage4 = director3.direct(new TestContainer(RuntimeEnvironment.application));
+    Scene scene6 = new TestScene();
+    stage4.pushScene(scene6);
+
+    scene5.setTarget(scene6);
+    assertEquals(scene6, scene5.getTarget());
+  }
+
+  @Test
   public void testCloseStage() {
     ViewGroup container = new TestContainer(RuntimeEnvironment.application);
     Stage stage = director.direct(container);
