@@ -243,17 +243,17 @@ public class StageTest {
     stage.pushScene(scene3);
 
     assertFalse(container.getChildCount() == 0);
-    assertTrue(scene3.isResumed());
-    assertTrue(scene3.isStarted());
+    assertTrue(scene3.getLifecycleState().isResumed());
+    assertTrue(scene3.getLifecycleState().isStarted());
 
     stage.suspend();
     assertTrue(container.getChildCount() == 0);
-    assertFalse(scene3.isResumed());
-    assertFalse(scene3.isStarted());
+    assertFalse(scene3.getLifecycleState().isResumed());
+    assertFalse(scene3.getLifecycleState().isStarted());
 
     stage.restore(container);
     assertFalse(container.getChildCount() == 0);
-    assertTrue(scene3.isResumed());
-    assertTrue(scene3.isStarted());
+    assertTrue(scene3.getLifecycleState().isResumed());
+    assertTrue(scene3.getLifecycleState().isStarted());
   }
 }

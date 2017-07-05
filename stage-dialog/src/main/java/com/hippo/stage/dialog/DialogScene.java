@@ -129,7 +129,7 @@ public class DialogScene extends Scene implements DialogInterface {
     result = !cancellable || result;
     if (!result) {
       // This dialog will be cancelled
-      if (!cancelled && !isDestroyed()) {
+      if (!cancelled && !getLifecycleState().hasDestroyed()) {
         cancelled = true;
         onCancel();
       }
@@ -158,7 +158,7 @@ public class DialogScene extends Scene implements DialogInterface {
    */
   @Override
   public void cancel() {
-    if (!cancelled && !isDestroyed()) {
+    if (!cancelled && !getLifecycleState().hasDestroyed()) {
       cancelled = true;
       onCancel();
       pop();

@@ -99,9 +99,9 @@ public class StageActivityTest {
     proxy.finish();
 
     assertEquals(0, stage.getSceneCount());
-    assertEquals(true, scene1.isDestroyed());
-    assertEquals(true, scene2.isDestroyed());
-    assertEquals(true, scene3.isDestroyed());
+    assertEquals(true, scene1.getLifecycleState().hasDestroyed());
+    assertEquals(true, scene2.getLifecycleState().hasDestroyed());
+    assertEquals(true, scene3.getLifecycleState().hasDestroyed());
   }
 
   @Test
@@ -121,7 +121,7 @@ public class StageActivityTest {
     stage = proxy.get().installStage(0);
     TestScene newScene = (TestScene) stage.getTopScene();
     assertNotNull(newScene);
-    assertEquals(true, newScene.isViewAttached());
+    assertEquals(true, newScene.getLifecycleState().isViewAttached());
     assertEquals(scene.getArgs(), newScene.getArgs());
     assertEquals(scene.willRetainView(), newScene.willRetainView());
     assertEquals(scene.getTag(), newScene.getTag());

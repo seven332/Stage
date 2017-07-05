@@ -39,15 +39,16 @@ class SceneLifecycleListener extends Scene.LifecycleListener {
   public SceneLifecycleListener(@NonNull Scene scene) {
     scene.addLifecycleListener(this);
 
-    if (scene.isResumed()) {
+    Scene.LifecycleState state = scene.getLifecycleState();
+    if (state.isResumed()) {
       lifecycle = SceneLifecycle.RESUME;
-    } else if (scene.isStarted()) {
+    } else if (state.isStarted()) {
       lifecycle = SceneLifecycle.START;
-    } else if (scene.isViewAttached()) {
+    } else if (state.isViewAttached()) {
       lifecycle = SceneLifecycle.ATTACH_VIEW;
-    } else if (scene.getView() != null) {
+    } else if (state.isViewCreated()) {
       lifecycle = SceneLifecycle.CREATE_VIEW;
-    } else if (!scene.isDestroyed()) {
+    } else if (state.isCreated()) {
       lifecycle = SceneLifecycle.CREATE;
     } else {
       lifecycle = SceneLifecycle.INIT;

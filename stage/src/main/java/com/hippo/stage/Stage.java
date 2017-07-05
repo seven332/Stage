@@ -828,7 +828,7 @@ public final class Stage implements Iterable<Scene> {
     @Override
     boolean withViews(@NonNull Scene scene) {
       // If this Scene isn't view attached, popping it can't affect other attached Scenes
-      return container != null && scene.isViewAttached();
+      return container != null && scene.getLifecycleState().isViewAttached();
     }
 
     @Override

@@ -74,16 +74,6 @@ public abstract class Scene {
    */
   public static final int OPAQUE = 2;
 
-  private static final int STATE_NONE = 0;
-  private static final int STATE_CREATED = 1;
-  private static final int STATE_ATTACHED = 2;
-  private static final int STATE_STARTED = 3;
-  private static final int STATE_RESUMED = 4;
-  private static final int STATE_PAUSED = 5;
-  private static final int STATE_STOPPED = 6;
-  private static final int STATE_DETACHED = 7;
-  private static final int STATE_DESTROYED = 8;
-
   private static final String KEY_ID = "Scene:id";
   private static final String KEY_TAG = "Scene:tag";
   private static final String KEY_ARGS = "Scene:args";
@@ -111,7 +101,7 @@ public abstract class Scene {
   private View view;
   private Bundle viewState;
 
-  private int state = STATE_NONE;
+  private LifecycleState lifecycleState = new LifecycleState();
   private boolean isFinishing;
   private boolean willRecreate;
 
@@ -134,6 +124,14 @@ public abstract class Scene {
   @Nullable
   public final Stage getStage() {
     return stage;
+  }
+
+  /**
+   * Returns the lifecycle state of this scene.
+   */
+  @NonNull
+  public final LifecycleState getLifecycleState() {
+    return lifecycleState;
   }
 
   // The id from saveInstanceState Bundle
@@ -183,7 +181,7 @@ public abstract class Scene {
 
   /**
    * Supply the construction arguments for this scene. It can only
-   * be called before the scene has been pushed to a stage.
+   * be called before being pushed to a stage.
    * <p>
    * The arguments supplied here will be retained across scene destroy and
    * creation.
@@ -191,7 +189,7 @@ public abstract class Scene {
    * @see #getArgs()
    */
   public void setArgs(@Nullable Bundle args) {
-    assertState(STATE_NONE);
+    lifecycleState.assertState(LifecycleState.STATE_NONE);
     this.args = args;
   }
 
@@ -222,7 +220,7 @@ public abstract class Scene {
    * @see #willRetainView()
    */
   public final void setWillRetainView(boolean willRetainView) {
-    assertState(STATE_NONE);
+    lifecycleState.assertState(LifecycleState.STATE_NONE);
     this.willRetainView = willRetainView;
   }
 
@@ -249,7 +247,7 @@ public abstract class Scene {
    * @see #getOpacity()
    */
   public final void setOpacity(@Opacity int opacity) {
-    assertState(STATE_NONE);
+    lifecycleState.assertState(LifecycleState.STATE_NONE);
     this.opacity = opacity;
   }
 
@@ -368,27 +366,6 @@ public abstract class Scene {
   }
 
   /**
-   * Returns {@code true} if the view is visible for user.
-   */
-  public boolean isStarted() {
-    return state >= STATE_STARTED && state < STATE_STOPPED;
-  }
-
-  /**
-   * Returns {@code true} if the view is in the foreground.
-   */
-  public boolean isResumed() {
-    return state == STATE_RESUMED;
-  }
-
-  /**
-   * Returns {@code true} if the view is attached.
-   */
-  public boolean isViewAttached() {
-    return state >= STATE_ATTACHED && state < STATE_DETACHED;
-  }
-
-  /**
    * Check to see whether this {@code Scene} is in the process of finishing.
    * It starts returning {@code true} from this {@code Scene} popped from the stack.
    */
@@ -401,14 +378,6 @@ public abstract class Scene {
    */
   public boolean willRecreate() {
     return willRecreate;
-  }
-
-  /**
-   * Returns true if the final {@link #onDestroy()} call has been made
-   * on the {@code Scene}, so this instance is now dead.
-   */
-  public boolean isDestroyed() {
-    return state == STATE_DESTROYED;
   }
 
   /**
@@ -474,7 +443,7 @@ public abstract class Scene {
    */
   @NonNull
   public Director hireChildDirector() {
-    if (isDestroyed()) {
+    if (lifecycleState.hasDestroyed()) {
       throw new IllegalStateException("Can't call hireChildDirector() on a destroyed Scene");
     }
 
@@ -483,10 +452,10 @@ public abstract class Scene {
       childDirector.setScene(this);
 
       // Restore child director lifecycle
-      if (isStarted()) {
+      if (lifecycleState.isStarted()) {
         childDirector.start();
       }
-      if (isResumed()) {
+      if (lifecycleState.isResumed()) {
         childDirector.resume();
       }
       if (isFinishing()) {
@@ -609,30 +578,6 @@ public abstract class Scene {
     }
   }
 
-  private void assertState(int state) {
-    if (this.state != state) {
-      throw new IllegalStateException("State should be " + state + ", but it's " + this.state);
-    }
-  }
-
-  private void updateState(int newState, int currentState) {
-    if (DEBUG) {
-      assertState(currentState);
-    }
-    state = newState;
-  }
-
-  private void updateState(int newState, int currentState1, int currentState2) {
-    if (DEBUG) {
-      if (state != currentState1 && state != currentState2) {
-        throw new IllegalStateException(
-            "State should be " + currentState1 + " or " + currentState2 +
-                ", but it's " + state);
-      }
-    }
-    state = newState;
-  }
-
   void create(@NonNull Stage stage, int id) {
     if (this.stage != null) {
       throw new IllegalStateException("This Scene has been performed, can't perform is twice: "
@@ -640,7 +585,7 @@ public abstract class Scene {
     }
     this.stage = stage;
 
-    if (state == STATE_DESTROYED) {
+    if (lifecycleState.hasDestroyed()) {
       throw new IllegalStateException("This scene has been destroyed: " + getClass().getName());
     }
 
@@ -648,14 +593,13 @@ public abstract class Scene {
 
     onCreate(args);
 
+    lifecycleState.updateState(LifecycleState.STATE_CREATED);
+
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
         listener.onCreate(this);
       }
     }
-
-    // Update state here to allow getTag() and others can be called in onCreate()
-    updateState(STATE_CREATED, STATE_NONE);
   }
 
   @NonNull
@@ -678,6 +622,8 @@ public abstract class Scene {
             + "LayoutInflater.inflate()'s attachToRoot parameter?");
       }
 
+      lifecycleState.updateState(LifecycleState.STATE_VIEW_CREATED);
+
       if (!lifecycleListeners.isEmpty()) {
         for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
           listener.onCreateView(this);
@@ -694,8 +640,6 @@ public abstract class Scene {
   }
 
   void attachView(ViewGroup container, int index) {
-    updateState(STATE_ATTACHED, STATE_CREATED, STATE_DETACHED);
-
     View view = inflate(container);
 
     if (DEBUG) {
@@ -703,7 +647,10 @@ public abstract class Scene {
     }
 
     container.addView(view, index);
+
     onAttachView(view);
+
+    lifecycleState.updateState(LifecycleState.STATE_VIEW_ATTACHED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -713,13 +660,13 @@ public abstract class Scene {
   }
 
   void start() {
-    updateState(STATE_STARTED, STATE_ATTACHED, STATE_STOPPED);
-
     if (childDirector != null) {
       childDirector.start();
     }
 
     onStart();
+
+    lifecycleState.updateState(LifecycleState.STATE_STARTED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -729,13 +676,13 @@ public abstract class Scene {
   }
 
   void resume() {
-    updateState(STATE_RESUMED, STATE_STARTED, STATE_PAUSED);
-
     if (childDirector != null) {
       childDirector.resume();
     }
 
     onResume();
+
+    lifecycleState.updateState(LifecycleState.STATE_RESUMED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -745,13 +692,13 @@ public abstract class Scene {
   }
 
   void pause() {
-    updateState(STATE_PAUSED, STATE_RESUMED);
-
     if (childDirector != null) {
       childDirector.pause();
     }
 
     onPause();
+
+    lifecycleState.updateState(LifecycleState.STATE_PAUSED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -761,13 +708,13 @@ public abstract class Scene {
   }
 
   void stop() {
-    updateState(STATE_STOPPED, STATE_STARTED, STATE_PAUSED);
-
     if (childDirector != null) {
       childDirector.stop();
     }
 
     onStop();
+
+    lifecycleState.updateState(LifecycleState.STATE_STOPPED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -783,6 +730,8 @@ public abstract class Scene {
 
     onDestroyView(view);
 
+    lifecycleState.updateState(LifecycleState.STATE_VIEW_DESTROYED);
+
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
         listener.onDestroyView(this, view);
@@ -794,8 +743,6 @@ public abstract class Scene {
   }
 
   private void destroy() {
-    updateState(STATE_DESTROYED, STATE_CREATED, STATE_DETACHED);
-
     if (DEBUG) {
       if (!willRetainView) {
         assertNull(view);
@@ -812,6 +759,8 @@ public abstract class Scene {
     }
 
     onDestroy();
+
+    lifecycleState.updateState(LifecycleState.STATE_DESTROYED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -830,7 +779,7 @@ public abstract class Scene {
       childDirector.finish(willRecreate);
     }
 
-    if (state == STATE_CREATED || state == STATE_DETACHED) {
+    if (!lifecycleState.isViewAttached()) {
       // No need to wait view detach, call destroy() now
       destroy();
     }
@@ -841,8 +790,6 @@ public abstract class Scene {
   }
 
   void detachView(@NonNull ViewGroup container, boolean forceDestroyView) {
-    updateState(STATE_DETACHED, STATE_ATTACHED, STATE_STOPPED);
-
     if (DEBUG) {
       assertNotNull(view);
     }
@@ -857,7 +804,10 @@ public abstract class Scene {
       throw new IllegalStateException("Don't detach view by yourself");
     }
     container.removeView(view);
+
     onDetachView(view);
+
+    lifecycleState.updateState(LifecycleState.STATE_VIEW_DETACHED);
 
     if (!lifecycleListeners.isEmpty()) {
       for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
@@ -1118,5 +1068,139 @@ public abstract class Scene {
 
     public void onSaveViewState(@NonNull Scene scene, @NonNull Bundle outState) { }
     public void onRestoreViewState(@NonNull Scene scene, @NonNull Bundle savedViewState) { }
+  }
+
+  public static class LifecycleState {
+
+    @IntDef({
+        STATE_NONE,
+        STATE_CREATED,
+        STATE_VIEW_CREATED,
+        STATE_VIEW_ATTACHED,
+        STATE_STARTED,
+        STATE_RESUMED,
+        STATE_PAUSED,
+        STATE_STOPPED,
+        STATE_VIEW_DETACHED,
+        STATE_VIEW_DESTROYED,
+        STATE_DESTROYED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface State {}
+
+    private static final int STATE_NONE = 0;
+    private static final int STATE_CREATED = 1;
+    private static final int STATE_VIEW_CREATED = 2;
+    private static final int STATE_VIEW_ATTACHED = 3;
+    private static final int STATE_STARTED = 4;
+    private static final int STATE_RESUMED = 5;
+    private static final int STATE_PAUSED = 6;
+    private static final int STATE_STOPPED = 7;
+    private static final int STATE_VIEW_DETACHED = 8;
+    private static final int STATE_VIEW_DESTROYED = 9;
+    private static final int STATE_DESTROYED = 10;
+
+    @State
+    private int state = STATE_NONE;
+
+    private void assertState(@State int state) {
+      if (this.state != state) {
+        throw new IllegalStateException("State should be " + state + ", but it's " + this.state);
+      }
+    }
+
+    private void assertState(@State int state1, @State int state2) {
+      if (this.state != state1 && this.state != state2) {
+        throw new IllegalStateException("State should be " + state1 + " or " + state2
+            + ", but it's " + this.state);
+      }
+    }
+
+    private void updateState(@State int state) {
+      switch (state) {
+        case STATE_CREATED:
+          assertState(STATE_NONE);
+          break;
+        case STATE_VIEW_CREATED:
+          assertState(STATE_CREATED, STATE_VIEW_DESTROYED);
+          break;
+        case STATE_VIEW_ATTACHED:
+          assertState(STATE_VIEW_CREATED, STATE_VIEW_DETACHED);
+          break;
+        case STATE_STARTED:
+          assertState(STATE_VIEW_ATTACHED, STATE_STOPPED);
+          break;
+        case STATE_RESUMED:
+          assertState(STATE_STARTED, STATE_PAUSED);
+          break;
+        case STATE_PAUSED:
+          assertState(STATE_RESUMED);
+          break;
+        case STATE_STOPPED:
+          assertState(STATE_STARTED, STATE_PAUSED);
+          break;
+        case STATE_VIEW_DETACHED:
+          assertState(STATE_VIEW_ATTACHED, STATE_STOPPED);
+          break;
+        case STATE_VIEW_DESTROYED:
+          assertState(STATE_VIEW_CREATED, STATE_VIEW_DETACHED);
+          break;
+        case STATE_DESTROYED:
+          assertState(STATE_CREATED, STATE_VIEW_DESTROYED);
+          break;
+        default:
+          throw new IllegalStateException("Can't change state to " + state);
+      }
+      this.state = state;
+    }
+
+    /**
+     * Returns {@code true} if the scene has been created.
+     */
+    public boolean hasCreated() {
+      return state >= STATE_CREATED;
+    }
+
+    /**
+     * Returns {@code true} if the scene has been destroyed.
+     */
+    public boolean hasDestroyed() {
+      return state >= STATE_DESTROYED;
+    }
+
+    /**
+     * Returns {@code true} if the scene is created.
+     */
+    public boolean isCreated() {
+      return state >= STATE_CREATED && state < STATE_DESTROYED;
+    }
+
+    /**
+     * Returns {@code true} if the view is created.
+     */
+    public boolean isViewCreated() {
+      return state >= STATE_VIEW_CREATED && state < STATE_VIEW_DESTROYED;
+    }
+
+    /**
+     * Returns {@code true} if the view is attached to parent.
+     */
+    public boolean isViewAttached() {
+      return state >= STATE_VIEW_ATTACHED && state < STATE_VIEW_DETACHED;
+    }
+
+    /**
+     * Returns {@code true} if the view is visible for user.
+     */
+    public boolean isStarted() {
+      return state >= STATE_STARTED && state < STATE_STOPPED;
+    }
+
+    /**
+     * Returns {@code true} if the view is in the foreground.
+     */
+    public boolean isResumed() {
+      return state >= STATE_RESUMED && state < STATE_PAUSED;
+    }
   }
 }

@@ -133,14 +133,14 @@ public class DirectorTest {
     stage.pushScene(scene1);
     stage.pushScene(scene2);
 
-    assertEquals(false, scene1.isDestroyed());
-    assertEquals(false, scene2.isDestroyed());
+    assertEquals(false, scene1.getLifecycleState().hasDestroyed());
+    assertEquals(false, scene2.getLifecycleState().hasDestroyed());
     assertEquals(1, container.getChildCount());
 
     stage.close();
 
-    assertEquals(true, scene1.isDestroyed());
-    assertEquals(true, scene2.isDestroyed());
+    assertEquals(true, scene1.getLifecycleState().hasDestroyed());
+    assertEquals(true, scene2.getLifecycleState().hasDestroyed());
     assertEquals(0, container.getChildCount());
   }
 
@@ -157,10 +157,10 @@ public class DirectorTest {
     stage.pushScene(scene1);
     stage.pushScene(scene2);
 
-    assertFalse(scene2.isViewAttached());
+    assertFalse(scene2.getLifecycleState().isViewAttached());
 
     stage.restore(new TestContainer(RuntimeEnvironment.application));
 
-    assertTrue(scene2.isViewAttached());
+    assertTrue(scene2.getLifecycleState().isViewAttached());
   }
 }

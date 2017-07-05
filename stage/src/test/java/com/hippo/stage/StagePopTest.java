@@ -216,7 +216,7 @@ public class StagePopTest {
         poppedCalling.onPause++;
       }
 
-      boolean isPoppedViewAttached = poppedScene.isViewAttached();
+      boolean isPoppedViewAttached = poppedScene.getLifecycleState().isViewAttached();
 
       if (isPoppedViewAttached) {
         // If the popped scene can't be seen through, the visible scenes under it is newly attached
