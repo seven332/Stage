@@ -65,13 +65,13 @@ public class SceneDetector extends Detector implements Detector.JavaPsiScanner {
 
     if (!evaluator.isPublic(declaration)) {
       context.report(ISSUE, declaration, context.getLocation(declaration),
-          "This Scene class should be public");
+          "Non-abstract Scene class must be public");
       return;
     }
 
     if (declaration.getContainingClass() != null && !evaluator.isStatic(declaration)) {
       context.report(ISSUE, declaration, context.getLocation(declaration),
-          "This Scene inner class should be static");
+          "Inner Scene class must be static");
       return;
     }
 
@@ -93,7 +93,7 @@ public class SceneDetector extends Detector implements Detector.JavaPsiScanner {
 
     if (!hasNoParametersConstructor) {
       context.report(ISSUE, declaration, context.getLocation(declaration),
-          "This Scene needs to have a no-parameters constructor");
+          "Scene class must have a no-parameter constructor");
     }
   }
 }
