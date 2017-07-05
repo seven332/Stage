@@ -39,7 +39,7 @@ class ActivityHostedDirector extends Director {
 
   private int currentSceneId = Scene.INVALID_ID;
 
-  private boolean isActivityDestroyed;
+  private boolean willDestroyActivity;
 
   private Activity activity;
   private Fragment fragment;
@@ -77,7 +77,7 @@ class ActivityHostedDirector extends Director {
   private void setActivity(@Nullable Activity activity) {
     if (this.activity == null) {
       this.activity = activity;
-      this.isActivityDestroyed = false;
+      this.willDestroyActivity = false;
     } else if (this.activity != activity) {
       throw new IllegalStateException("Two different activity for one ActivityHostedDirector. "
           + "Maybe the library developer forgot to release old activity reference.");
@@ -168,12 +168,12 @@ class ActivityHostedDirector extends Director {
   }
 
   void setActivityDestroyed() {
-    isActivityDestroyed = true;
+    willDestroyActivity = true;
   }
 
   @Override
-  boolean isActivityDestroyed() {
-    return isActivityDestroyed;
+  boolean willDestroyActivity() {
+    return willDestroyActivity;
   }
 
   @Override

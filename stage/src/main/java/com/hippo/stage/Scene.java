@@ -45,8 +45,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO willRecreate(), isFinishing(), isDestroyed(), isActivityDestroyed(), they are a confusing.
-
 /**
  * A {@code Scene} manages a portion of the UI.
  * It is similar to an Activity or Fragment in that it manages its own lifecycle and
@@ -102,7 +100,7 @@ public abstract class Scene {
   private Bundle viewState;
 
   private LifecycleState lifecycleState = new LifecycleState();
-  private boolean isFinishing;
+  private boolean willDestroy;
   private boolean willRecreate;
 
   private SceneHostedDirector childDirector;
@@ -366,11 +364,11 @@ public abstract class Scene {
   }
 
   /**
-   * Check to see whether this {@code Scene} is in the process of finishing.
+   * Check to see whether this {@code Scene} will be destroyed.
    * It starts returning {@code true} from this {@code Scene} popped from the stack.
    */
-  public boolean isFinishing() {
-    return isFinishing;
+  public boolean willDestroy() {
+    return willDestroy;
   }
 
   /**
@@ -386,7 +384,7 @@ public abstract class Scene {
    */
   public void pop() {
     // No need to pop a finishing scene
-    if (!isFinishing && stage != null) {
+    if (!willDestroy && stage != null) {
       stage.popScene(this);
     }
   }
@@ -458,7 +456,7 @@ public abstract class Scene {
       if (lifecycleState.isResumed()) {
         childDirector.resume();
       }
-      if (isFinishing()) {
+      if (willDestroy()) {
         childDirector.finish(willRecreate);
       }
     }
@@ -470,8 +468,8 @@ public abstract class Scene {
    * Returns {@code true} if its host {@link Activity} is destroyed or this {@code Scene}
    * is not attached to a {@link Stage}.
    */
-  public boolean isActivityDestroyed() {
-    return stage == null || stage.isActivityDestroyed();
+  public boolean willDestroyActivity() {
+    return stage == null || stage.willDestroyActivity();
   }
 
   /**
@@ -772,7 +770,7 @@ public abstract class Scene {
   }
 
   void finish(boolean willRecreate) {
-    this.isFinishing = true;
+    this.willDestroy = true;
     this.willRecreate = willRecreate;
 
     if (childDirector != null) {
@@ -819,7 +817,7 @@ public abstract class Scene {
       destroyView();
     }
 
-    if (isFinishing) {
+    if (willDestroy) {
       destroy();
     }
   }

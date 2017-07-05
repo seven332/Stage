@@ -138,7 +138,7 @@ public class SceneLifecycleTest {
     @Override
     int requireSceneId() { return 0; }
     @Override
-    boolean isActivityDestroyed() { return false; }
+    boolean willDestroyActivity() { return false; }
     @Nullable
     @Override
     Activity getActivity() { return null; }

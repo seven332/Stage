@@ -105,7 +105,7 @@ public abstract class FragmentScene extends Scene {
     super.onDetachView(view);
 
     // FragmentTransaction is not allowed if Activity is destroyed
-    if (!isActivityDestroyed()) {
+    if (!willDestroyActivity()) {
       //noinspection ConstantConditions
       FragmentManager fm = getActivity().getFragmentManager();
       Fragment fragment = fm.findFragmentByTag(getFragmentTag());
@@ -121,7 +121,7 @@ public abstract class FragmentScene extends Scene {
     super.onDestroy();
 
     // FragmentTransaction is not allowed if Activity is destroyed
-    if (!isActivityDestroyed() && (!willRecreate())) {
+    if (!willDestroyActivity() && (!willRecreate())) {
       //noinspection ConstantConditions
       FragmentManager fm = getActivity().getFragmentManager();
       Fragment fragment = fm.findFragmentByTag(getFragmentTag());

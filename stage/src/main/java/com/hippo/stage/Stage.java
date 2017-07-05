@@ -692,8 +692,8 @@ public final class Stage implements Iterable<Scene> {
     this.curtainSuppler = suppler;
   }
 
-  boolean isActivityDestroyed() {
-    return director == null || director.isActivityDestroyed();
+  boolean willDestroyActivity() {
+    return director == null || director.willDestroyActivity();
   }
 
   /**

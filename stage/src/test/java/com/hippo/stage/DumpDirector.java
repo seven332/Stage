@@ -45,7 +45,7 @@ public class DumpDirector extends Director {
   }
 
   @Override
-  boolean isActivityDestroyed() {
+  boolean willDestroyActivity() {
     return false;
   }
 

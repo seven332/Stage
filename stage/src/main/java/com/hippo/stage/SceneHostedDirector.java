@@ -64,8 +64,8 @@ class SceneHostedDirector extends Director {
   }
 
   @Override
-  boolean isActivityDestroyed() {
-    return scene == null || scene.isActivityDestroyed();
+  boolean willDestroyActivity() {
+    return scene == null || scene.willDestroyActivity();
   }
 
   @Nullable
