@@ -98,6 +98,7 @@ public abstract class Scene {
   private Context context;
   private View view;
   private Bundle viewState;
+  private Bundle savedState;
 
   private LifecycleState lifecycleState = new LifecycleState();
   private boolean willDestroy;
@@ -600,6 +601,22 @@ public abstract class Scene {
     }
   }
 
+  void postCreate() {
+    if (savedState != null) {
+      onRestoreInstanceState(savedState);
+
+      if (!lifecycleListeners.isEmpty()) {
+        for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
+          listener.onRestoreInstanceState(this, savedState);
+        }
+      }
+
+      savedState = null;
+    }
+
+    onPostCreate();
+  }
+
   @NonNull
   private View inflate(@NonNull ViewGroup parent) {
     if (view == null) {
@@ -912,13 +929,7 @@ public abstract class Scene {
       childDirector.restoreInstanceState(childDirectorState);
     }
 
-    onRestoreInstanceState(savedInstanceState);
-
-    if (!lifecycleListeners.isEmpty()) {
-      for (LifecycleListener listener : new ArrayList<>(lifecycleListeners)) {
-        listener.onRestoreInstanceState(this, savedInstanceState);
-      }
-    }
+    savedState = savedInstanceState;
   }
 
   /**
@@ -927,6 +938,13 @@ public abstract class Scene {
    */
   @CallSuper
   protected void onCreate(@Nullable Bundle args) {}
+
+  /**
+   * Called when the scene start-up is complete
+   * (after {@link #onCreate(Bundle)} and {@link #onRestoreInstanceState(Bundle)} have been called).
+   */
+  @CallSuper
+  protected void onPostCreate() {}
 
   /**
    * Called when the {@code Scene} is ready to display its view.
@@ -1021,6 +1039,7 @@ public abstract class Scene {
 
   /**
    * Restores state to this {@code Scene} that was saved in {@link #onSaveInstanceState(Bundle)}.
+   * Called after {@link #onCreate(Bundle)} before {@link #onPostCreate()}.
    */
   @CallSuper
   protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
