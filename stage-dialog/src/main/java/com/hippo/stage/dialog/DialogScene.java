@@ -44,9 +44,12 @@ public class DialogScene extends Scene implements DialogInterface {
   private boolean cancelled;
 
   @Override
-  protected void onCreate(@Nullable Bundle args) {
+  protected void onCreate(@NonNull Bundle args) {
     super.onCreate(args);
     setOpacity(TRANSPARENT);
+    setCancellable(args.getBoolean(KEY_CANCELLABLE, cancellable));
+    setCancelledOnTouchOutside(
+        args.getBoolean(KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside));
   }
 
   /**
@@ -138,18 +141,10 @@ public class DialogScene extends Scene implements DialogInterface {
   }
 
   @Override
-  protected void onSaveInstanceState(@NonNull Bundle outState) {
-    super.onSaveInstanceState(outState);
-    outState.putBoolean(KEY_CANCELLABLE, cancellable);
-    outState.putBoolean(KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside);
-  }
-
-  @Override
-  protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-    super.onRestoreInstanceState(savedInstanceState);
-    setCancellable(savedInstanceState.getBoolean(KEY_CANCELLABLE, cancellable));
-    setCancelledOnTouchOutside(savedInstanceState.getBoolean(
-        KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside));
+  protected void onUpdateArgs(@NonNull Bundle args) {
+    super.onUpdateArgs(args);
+    args.putBoolean(KEY_CANCELLABLE, cancellable);
+    args.putBoolean(KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside);
   }
 
   /**

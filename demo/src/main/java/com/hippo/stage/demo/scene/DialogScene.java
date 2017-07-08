@@ -37,7 +37,7 @@ import java.util.List;
 public abstract class DialogScene extends com.hippo.stage.dialog.DialogScene {
 
   @Override
-  protected void onCreate(@Nullable Bundle args) {
+  protected void onCreate(@NonNull Bundle args) {
     super.onCreate(args);
 
     TypedValue outValue = new TypedValue();

@@ -47,7 +47,7 @@ public abstract class SwipeBackScene extends DebugScene {
   };
 
   @Override
-  protected void onCreate(@Nullable Bundle args) {
+  protected void onCreate(@NonNull Bundle args) {
     super.onCreate(args);
     setOpacity(TRANSLUCENT);
   }

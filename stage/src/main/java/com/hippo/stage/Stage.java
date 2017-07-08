@@ -284,7 +284,6 @@ public final class Stage implements Iterable<Scene> {
       id = requireSceneId();
     }
     scene.create(this, id);
-    scene.postCreate();
   }
 
   private void onPopScene(@NonNull Scene scene, boolean willRecreate) {

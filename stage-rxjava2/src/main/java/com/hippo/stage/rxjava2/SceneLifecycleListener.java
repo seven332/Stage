@@ -20,6 +20,7 @@ package com.hippo.stage.rxjava2;
  * Created by Hippo on 6/13/2017.
  */
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import com.hippo.stage.Scene;
@@ -106,7 +107,7 @@ class SceneLifecycleListener extends Scene.LifecycleListener {
   }
 
   @Override
-  public void onCreate(@NonNull Scene scene) {
+  public void onCreate(@NonNull Scene scene, @NonNull Bundle args) {
     emit(SceneLifecycle.CREATE);
   }
 

@@ -122,7 +122,6 @@ public class StageActivityTest {
     TestScene newScene = (TestScene) stage.getTopScene();
     assertNotNull(newScene);
     assertEquals(true, newScene.getLifecycleState().isViewAttached());
-    assertEquals(scene.getArgs(), newScene.getArgs());
     assertEquals(scene.willRetainView(), newScene.willRetainView());
     assertEquals(scene.getTag(), newScene.getTag());
     assertEquals(sceneSavedKey, newScene.getSavedKey());
