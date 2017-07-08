@@ -87,8 +87,8 @@ public abstract class Scene {
   private Stage stage;
   private int savedId = INVALID_ID;
   private int id = INVALID_ID;
-  private String tag;
   private Bundle args;
+  private String tag;
   private boolean willRetainView;
   @Opacity
   private int opacity = OPAQUE;
@@ -154,6 +154,32 @@ public abstract class Scene {
   }
 
   /**
+   * Supply the construction arguments for this scene. It can only
+   * be called before being pushed to a stage, namely, before {@link #onCreate(Bundle)}.
+   * <p>
+   * The arguments supplied here will be retained across scene destruction and
+   * recreation.
+   *
+   * @see #getArgs()
+   */
+  public void setArgs(@Nullable Bundle args) {
+    if (stage != null) {
+      throw new IllegalStateException("Can't set args after being pushed to a stage");
+    }
+    this.args = args;
+  }
+
+  /**
+   * Returns the arguments passed in {@link #setArgs(Bundle)}.
+   *
+   * @see #setArgs(Bundle)
+   */
+  @Nullable
+  public final Bundle getArgs() {
+    return args;
+  }
+
+  /**
    * Sets a tag for this {@code Scene}.
    * The tag could be used for {@link Stage#findSceneByTag(String)}.
    * <p>
@@ -176,30 +202,6 @@ public abstract class Scene {
   @Nullable
   public final String getTag() {
     return tag;
-  }
-
-  /**
-   * Supply the construction arguments for this scene. It can only
-   * be called before being pushed to a stage.
-   * <p>
-   * The arguments supplied here will be retained across scene destroy and
-   * creation.
-   *
-   * @see #getArgs()
-   */
-  public void setArgs(@Nullable Bundle args) {
-    lifecycleState.assertState(LifecycleState.STATE_NONE);
-    this.args = args;
-  }
-
-  /**
-   * Returns the arguments passed in {@link #setArgs(Bundle)}.
-   *
-   * @see #setArgs(Bundle)
-   */
-  @Nullable
-  public final Bundle getArgs() {
-    return args;
   }
 
   /**
@@ -1080,11 +1082,11 @@ public abstract class Scene {
     public void onDestroyView(@NonNull Scene scene, @NonNull View view) {}
     public void onDestroy(@NonNull Scene scene) {}
 
-    public void onSaveInstanceState(@NonNull Scene scene, @NonNull Bundle outState) { }
-    public void onRestoreInstanceState(@NonNull Scene scene, @NonNull Bundle savedInstanceState) { }
+    public void onSaveInstanceState(@NonNull Scene scene, @NonNull Bundle outState) {}
+    public void onRestoreInstanceState(@NonNull Scene scene, @NonNull Bundle savedInstanceState) {}
 
-    public void onSaveViewState(@NonNull Scene scene, @NonNull Bundle outState) { }
-    public void onRestoreViewState(@NonNull Scene scene, @NonNull Bundle savedViewState) { }
+    public void onSaveViewState(@NonNull Scene scene, @NonNull Bundle outState) {}
+    public void onRestoreViewState(@NonNull Scene scene, @NonNull Bundle savedViewState) {}
   }
 
   public static class LifecycleState {
