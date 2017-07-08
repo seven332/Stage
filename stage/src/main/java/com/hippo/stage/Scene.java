@@ -144,8 +144,10 @@ public abstract class Scene {
 
   /**
    * Returns the id of this {@code Scene}.
-   * It only returns a valid id after the {@code Scene} pushed to a {@link Stage},
-   * or {@link #INVALID_ID}.
+   * It only returns a valid id after the {@code Scene} pushed to a {@link Stage}, namely,
+   * in and after {@link #onCreate(Bundle)}, or {@link #INVALID_ID}.
+   * <p>
+   * The id will be retained across scene destruction and recreation.
    * <p>
    * Each {@code Scene} in the same Activity has a different id.
    */
