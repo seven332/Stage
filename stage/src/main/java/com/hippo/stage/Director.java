@@ -58,7 +58,7 @@ public abstract class Director implements Iterable<Stage> {
 
   private CurtainSuppler curtainSuppler;
 
-  private BackHandler backHandler;
+  private BackHandler<Director> backHandler;
 
   private Stage focusedStage;
 
@@ -268,7 +268,7 @@ public abstract class Director implements Iterable<Stage> {
    * Sets a {@link BackHandler} for this {@code Director}.
    * It overrides the default back action handling method.
    */
-  public void setBackHandler(@Nullable BackHandler backHandler) {
+  public void setBackHandler(@Nullable BackHandler<Director> backHandler) {
     this.backHandler = backHandler;
   }
 
@@ -547,20 +547,5 @@ public abstract class Director implements Iterable<Stage> {
         stageMap.put(id, stage);
       }
     }
-  }
-
-  /**
-   * Handles back action.
-   */
-  public interface BackHandler {
-
-    /**
-     * Overrides default back action handling method of {@link Director}.
-     * Returns {@code true} if the back action is consumed.
-     * <p>
-     * If needing default back action handling, call {@link Director#onHandleBack()}, <b>NOT</b>
-     * {@link Director#handleBack()}.
-     */
-    boolean handleBack(@NonNull Director director);
   }
 }

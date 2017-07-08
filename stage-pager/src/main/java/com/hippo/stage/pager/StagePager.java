@@ -28,6 +28,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
+import com.hippo.stage.BackHandler;
 import com.hippo.stage.Director;
 import com.hippo.stage.Stage;
 
@@ -106,7 +107,7 @@ public class StagePager extends ViewPager {
     dispatchThawSelfOnly(container);
   }
 
-  private static class PagerBackHandler implements Director.BackHandler {
+  private static class PagerBackHandler implements BackHandler<Director> {
     @Override
     public boolean handleBack(@NonNull Director director) {
       // Only care the focused Stage, which is the visible Stage for user

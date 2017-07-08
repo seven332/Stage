@@ -88,7 +88,7 @@ public final class Stage implements Iterable<Scene> {
   private final SparseIntArray permissionRequestCodeMap = new SparseIntArray();
 
   private boolean willPopTheLastScene;
-  private BackHandler backHandler;
+  private BackHandler<Stage> backHandler;
 
   Stage(Director director) {
     this.director = director;
@@ -567,7 +567,7 @@ public final class Stage implements Iterable<Scene> {
    * Sets a {@link BackHandler} for this {@code Stage}.
    * It overrides the default back action handling method.
    */
-  public void setBackHandler(BackHandler backHandler) {
+  public void setBackHandler(BackHandler<Stage> backHandler) {
     this.backHandler = backHandler;
   }
 
@@ -765,22 +765,6 @@ public final class Stage implements Iterable<Scene> {
         scene.onRequestPermissionsResult(requestCode, permissions, grantResults);
       }
     }
-  }
-
-  // TODO How to merge it to Director.BackHandler?
-  /**
-   * Handles back action.
-   */
-  public interface BackHandler {
-
-    /**
-     * Overrides default back action handling method of {@link Stage}.
-     * Returns {@code true} if the back action is consumed.
-     * <p>
-     * If needing default back action handling, call {@link Stage#onHandleBack()}, <b>NOT</b>
-     * {@link Stage#handleBack()}.
-     */
-    boolean handleBack(@NonNull Stage stage);
   }
 
   // A Operation is used for delayed popping or pushing or something like that
