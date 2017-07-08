@@ -70,12 +70,12 @@ public class TestScene extends Scene {
   @Override
   protected void onCreate(@NonNull Bundle args) {
     super.onCreate(args);
-    id = args != null ? args.getInt(KEY_ID) : 0;
+    id = args.getInt(KEY_ID, 0);
     setTag(Integer.toString(id));
     //noinspection SimplifiableConditionalExpression
-    setWillRetainView(args != null ? args.getBoolean(KEY_RETAIN_VIEW) : false);
+    setWillRetainView(args.getBoolean(KEY_RETAIN_VIEW, false));
     //noinspection WrongConstant
-    setOpacity(args != null ? args.getInt(KEY_OPACITY) : OPAQUE);
+    setOpacity(args.getInt(KEY_OPACITY, OPAQUE));
     calling.onCreate++;
   }
 
