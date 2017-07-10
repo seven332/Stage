@@ -360,6 +360,9 @@ public abstract class Scene {
 
   /**
    * Returns {@code true} if this {@code Scene} will be recreated.
+   * It works like {@link Activity#isFinishing()}, but is opposite.
+   * <p>
+   * The value is valid in {@link #onDestroy()}.
    */
   public boolean willRecreate() {
     return willRecreate;
