@@ -351,14 +351,6 @@ public abstract class Scene {
   }
 
   /**
-   * Check to see whether this {@code Scene} will be destroyed.
-   * It starts returning {@code true} from this {@code Scene} popped from the stack.
-   */
-  public boolean willDestroy() {
-    return willDestroy;
-  }
-
-  /**
    * Returns {@code true} if this {@code Scene} will be recreated.
    * It works like {@link Activity#isFinishing()}, but is opposite.
    * <p>
@@ -446,7 +438,7 @@ public abstract class Scene {
       if (lifecycleState.isResumed()) {
         childDirector.resume();
       }
-      if (willDestroy()) {
+      if (willDestroy) {
         childDirector.finish(willRecreate);
       }
     }
