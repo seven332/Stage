@@ -595,6 +595,8 @@ public abstract class Scene {
         assertNull(context);
       }
 
+      onPreCreateView(parent.getContext());
+
       context = parent.getContext();
       if (theme != 0) {
         context = new ContextThemeWrapper(context, theme);
@@ -606,6 +608,8 @@ public abstract class Scene {
             + "Perhaps you forgot to pass false for "
             + "LayoutInflater.inflate()'s attachToRoot parameter?");
       }
+
+      onPostCreateView(view);
 
       lifecycleState.updateState(LifecycleState.STATE_VIEW_CREATED);
 
@@ -908,11 +912,27 @@ public abstract class Scene {
   protected void onCreate(@NonNull Bundle args) {}
 
   /**
+   * Called before {@link #onCreateView(LayoutInflater, ViewGroup)}.
+   *
+   * @param context the parent context
+   */
+  @CallSuper
+  protected void onPreCreateView(@NonNull Context context) {}
+
+  /**
    * Called when the {@code Scene} is ready to display its view.
    * A valid view must be returned. It's where most view binding should go.
    */
   @NonNull
   protected abstract View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container);
+
+  /**
+   * Called after {@link #onCreateView(LayoutInflater, ViewGroup)}.
+   *
+   * @param view the view created by {@link #onCreateView(LayoutInflater, ViewGroup)}
+   */
+  @CallSuper
+  protected void onPostCreateView(@NonNull View view) {}
 
   /**
    * Called when the {@code Scene} view is attached to its container ViewGroup.
