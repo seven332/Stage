@@ -247,17 +247,17 @@ public final class Stage implements Iterable<Scene> {
         @Override
         public void onComplete() {
           runningCurtain = null;
-          detachView(upper);
-          detachViews(lower);
+          detachViewIfNecessary(upper);
+          detachViewsIfNecessary(lower);
         }
       });
     } else {
-      detachView(upper);
-      detachViews(lower);
+      detachViewIfNecessary(upper);
+      detachViewsIfNecessary(lower);
     }
   }
 
-  private void detachView(@NonNull SceneInfo info) {
+  private void detachViewIfNecessary(@NonNull SceneInfo info) {
     if (info.viewState == SceneInfo.WILL_BE_DETACHED) {
       Scene scene = info.scene;
       if (info.isStarted) {
@@ -267,10 +267,10 @@ public final class Stage implements Iterable<Scene> {
     }
   }
 
-  private void detachViews(
+  private void detachViewsIfNecessary(
       @NonNull final List<SceneInfo> infos) {
     for (SceneInfo info : infos) {
-      detachView(info);
+      detachViewIfNecessary(info);
     }
   }
 
