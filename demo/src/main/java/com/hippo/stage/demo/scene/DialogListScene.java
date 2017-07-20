@@ -36,6 +36,7 @@ public class DialogListScene extends DebugScene {
       "Not Cancelled",
       "Cancelled",
       "Cancelled on Touch Outside",
+      "No dim",
   };
 
   @NonNull
@@ -52,14 +53,22 @@ public class DialogListScene extends DebugScene {
           case 0:
             scene.setCancellable(false);
             scene.setCancelledOnTouchOutside(false);
+            scene.setShowBackgroundDim(true);
             break;
           case 1:
             scene.setCancellable(true);
             scene.setCancelledOnTouchOutside(false);
+            scene.setShowBackgroundDim(true);
             break;
           case 2:
             scene.setCancellable(true);
             scene.setCancelledOnTouchOutside(true);
+            scene.setShowBackgroundDim(true);
+            break;
+          case 3:
+            scene.setCancellable(true);
+            scene.setCancelledOnTouchOutside(true);
+            scene.setShowBackgroundDim(false);
             break;
         }
         getStage().pushScene(scene);

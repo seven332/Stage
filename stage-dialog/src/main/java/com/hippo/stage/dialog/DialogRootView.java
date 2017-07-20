@@ -34,9 +34,11 @@ import com.hippo.android.resource.AttrResources;
 class DialogRootView extends ViewGroup implements DialogRoot {
 
   private int dialogWidth;
+  private int backgroundDimColor;
   private View content;
   private DialogScene dialog;
   private boolean cancelledOnTouchOutside;
+  private boolean showBackgroundDim;
 
   public DialogRootView(Context context) {
     super(context);
@@ -60,7 +62,7 @@ class DialogRootView extends ViewGroup implements DialogRoot {
     // Ensure backgroundDimAmount is in range
     dimAmount = clamp(dimAmount, 0.0f, 1.0f);
     final int alpha = (int) (255 * dimAmount);
-    setBackgroundColor(Color.argb(alpha, 0, 0, 0));
+    backgroundDimColor = Color.argb(alpha, 0, 0, 0);
   }
 
   public static float clamp(float x, float bound1, float bound2) {
@@ -76,6 +78,16 @@ class DialogRootView extends ViewGroup implements DialogRoot {
 
   public void setCancelledOnTouchOutside(boolean cancel) {
     cancelledOnTouchOutside = cancel;
+  }
+
+  @SuppressWarnings("deprecation")
+  public void setShowBackgroundDim(boolean show) {
+    showBackgroundDim = show;
+    if (show) {
+      setBackgroundColor(backgroundDimColor);
+    } else {
+      setBackgroundDrawable(null);
+    }
   }
 
   void setDialog(DialogScene dialog) {

@@ -37,9 +37,11 @@ public class DialogScene extends Scene implements DialogInterface {
   private static final String KEY_CANCELLABLE = "DialogScene:cancellable";
   private static final String KEY_CANCELLED_ON_TOUCH_OUTSIDE =
       "DialogScene:cancelled_on_touch_outside";
+  private static final String KEY_SHOW_BACKGROUND_DIM = "DialogScene:show_background_dim";
 
   private boolean cancellable = true;
   private boolean cancelledOnTouchOutside = true;
+  private boolean showBackgroundDim = true;
 
   private boolean cancelled;
 
@@ -50,6 +52,7 @@ public class DialogScene extends Scene implements DialogInterface {
     setCancellable(args.getBoolean(KEY_CANCELLABLE, cancellable));
     setCancelledOnTouchOutside(
         args.getBoolean(KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside));
+    setShowBackgroundDim(args.getBoolean(KEY_SHOW_BACKGROUND_DIM, showBackgroundDim));
   }
 
   /**
@@ -91,6 +94,29 @@ public class DialogScene extends Scene implements DialogInterface {
     }
   }
 
+  /**
+   * Sets whether the dialog shows background dim.
+   * <p>
+   * Multiple {@code DialogScene} makes background darker. No background dim might be better.
+   * <p>
+   * The value supplied here will be retained across dialog scene destroy and
+   * creation.
+   *
+   * @param show Whether the dialog shows background dim.
+   */
+  public void setShowBackgroundDim(boolean show) {
+    if (showBackgroundDim != show) {
+      showBackgroundDim = show;
+      View view = getView();
+      if (view != null) {
+        DialogRootView root = (DialogRootView) view.findViewById(R.id.sd_dialog_root);
+        if (root != null) {
+          root.setShowBackgroundDim(show);
+        }
+      }
+    }
+  }
+
   @NonNull
   @Override
   protected final View onCreateView(@NonNull LayoutInflater inflater,
@@ -100,6 +126,7 @@ public class DialogScene extends Scene implements DialogInterface {
     DialogRootView root = (DialogRootView) view.findViewById(R.id.sd_dialog_root);
     root.setDialog(this);
     root.setCancelledOnTouchOutside(cancelledOnTouchOutside);
+    root.setShowBackgroundDim(showBackgroundDim);
 
     ViewGroup content = (ViewGroup) view.findViewById(R.id.sd_dialog_content);
     View dialogContent = onCreateContentView(inflater, content);
@@ -145,6 +172,7 @@ public class DialogScene extends Scene implements DialogInterface {
     super.onUpdateArgs(args);
     args.putBoolean(KEY_CANCELLABLE, cancellable);
     args.putBoolean(KEY_CANCELLED_ON_TOUCH_OUTSIDE, cancelledOnTouchOutside);
+    args.putBoolean(KEY_SHOW_BACKGROUND_DIM, showBackgroundDim);
   }
 
   /**
