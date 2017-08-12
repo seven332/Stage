@@ -20,6 +20,7 @@ package com.hippo.stage;
  * Created by Hippo on 4/20/2017.
  */
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
@@ -555,6 +556,48 @@ public abstract class Scene {
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (childDirector != null) {
       childDirector.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
+
+  /**
+   * Recreate view. It's useful to apply new theme.
+   * <p>
+   * Don't call it in {@code onXXX()}, like {@link #onResume()}.
+   */
+  public void recreateView() {
+    if (view == null) {
+      return;
+    }
+
+    boolean resumed = false;
+    boolean started = false;
+    int index = -1;
+
+    if (lifecycleState.isResumed()) {
+      resumed = true;
+      pause();
+    }
+    if (lifecycleState.isStarted()) {
+      started = true;
+      stop();
+    }
+    if (lifecycleState.isViewAttached()) {
+      index = stage.getContainer().indexOfChild(view);
+      assertEquals(true, index != -1);
+      detachView(stage.getContainer(), true);
+    } else {
+      destroyView();
+    }
+
+    inflate(stage.getContainer());
+    if (index != -1) {
+      attachView(stage.getContainer(), index);
+    }
+    if (started) {
+      start();
+    }
+    if (resumed) {
+      resume();
     }
   }
 
