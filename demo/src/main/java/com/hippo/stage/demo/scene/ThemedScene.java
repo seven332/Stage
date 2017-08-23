@@ -20,7 +20,6 @@ package com.hippo.stage.demo.scene;
  * Created by Hippo on 6/4/2017.
  */
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,15 +28,23 @@ import com.hippo.stage.demo.R;
 
 public class ThemedScene extends DebugScene {
 
-  @Override
-  protected void onCreate(@NonNull Bundle args) {
-    super.onCreate(args);
-    setTheme(R.style.AppTheme2);
-  }
-
   @NonNull
   @Override
   protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
-    return inflater.inflate(R.layout.scene_themed, container, false);
+    View view = inflater.inflate(R.layout.scene_themed, container, false);
+
+    view.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (getTheme() == 0) {
+          setTheme(R.style.AppTheme2);
+        } else {
+          setTheme(0);
+        }
+        recreateView();
+      }
+    });
+
+    return view;
   }
 }

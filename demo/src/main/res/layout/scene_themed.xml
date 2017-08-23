@@ -15,8 +15,42 @@
   ~ limitations under the License.
   -->
 
-<View
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="?attr/colorPrimary"/>
+  android:orientation="vertical"
+  android:layout_margin="16dp">
+
+  <android.support.v7.widget.SwitchCompat
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:checked="true"
+    android:text="Switch"/>
+
+  <CheckBox
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_gravity="center_horizontal"
+    android:checked="true"
+    android:text="CheckBox"/>
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_gravity="center_horizontal"
+    android:textColor="?attr/colorPrimary"
+    android:text="I'm a TextView"/>
+
+  <Button
+    android:id="@+id/button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:layout_gravity="center_horizontal"
+    android:text="Change Theme"/>
+
+</LinearLayout>
