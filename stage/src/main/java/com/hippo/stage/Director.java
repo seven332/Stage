@@ -62,6 +62,8 @@ public abstract class Director implements Iterable<Stage> {
 
   private Stage focusedStage;
 
+  private boolean saveEnabled = true;
+
   // Hide Director constructor
   Director() {}
 
@@ -240,6 +242,23 @@ public abstract class Director implements Iterable<Stage> {
         return stageMap.valueAt(index++);
       }
     };
+  }
+
+  /**
+   * Controls whether the saving of this director's state is
+   * enabled. The state includes stages of the director and
+   * scene stack of each stage. Setting the flag to {@code null}
+   * is similar to {@code Director.hire(activity, null)}.
+   */
+  public void setSaveEnabled(boolean enabled) {
+    saveEnabled = enabled;
+  }
+
+  /**
+   * Indicates whether this director will save its state.
+   */
+  public boolean isSaveEnabled() {
+    return saveEnabled;
   }
 
   /**
@@ -516,7 +535,6 @@ public abstract class Director implements Iterable<Stage> {
     return isFinishing;
   }
 
-  // TODO Skip it if isDestroyed() is true
   void saveInstanceState(Bundle outState) {
     ArrayList<Bundle> stageStates = new ArrayList<>(stageMap.size());
     for (int i = 0, n = stageMap.size(); i < n; ++i) {

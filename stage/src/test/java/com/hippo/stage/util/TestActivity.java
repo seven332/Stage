@@ -44,6 +44,10 @@ public class TestActivity extends Activity {
     setContentView(root);
   }
 
+  public Director getDirector() {
+    return director;
+  }
+
   public Stage installStage(int id) {
     ViewGroup container = null;
     for (int i = 0; i < root.getChildCount(); ++i) {

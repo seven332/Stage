@@ -333,7 +333,7 @@ class ActivityHostedDirector extends Director {
     }
 
     private void saveInstanceState(Bundle outState) {
-      if (director != null) {
+      if (director != null && director.isSaveEnabled()) {
         director.saveInstanceState(outState);
       }
     }

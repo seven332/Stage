@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.support.annotation.IdRes;
 import android.view.ViewGroup;
+import com.hippo.stage.util.ActivityProxy;
 import com.hippo.stage.util.TestContainer;
 import org.junit.Before;
 import org.junit.Test;
@@ -162,5 +163,21 @@ public class DirectorTest {
     stage.restore(new TestContainer(RuntimeEnvironment.application));
 
     assertTrue(scene2.getLifecycleState().isViewAttached());
+  }
+
+  @Test
+  public void testSaveDisabled() {
+    ActivityProxy proxy = new ActivityProxy();
+
+    proxy.create().start().resume();
+    proxy.get().installStage(0);
+    assertTrue(proxy.get().getDirector().contains(0));
+
+    proxy.restoreFromSavedState().start().resume();
+    assertTrue(proxy.get().getDirector().contains(0));
+
+    proxy.get().getDirector().setSaveEnabled(false);
+    proxy.restoreFromSavedState().start().resume();
+    assertFalse(proxy.get().getDirector().contains(0));
   }
 }
