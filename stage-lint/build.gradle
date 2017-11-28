@@ -24,8 +24,8 @@ configurations {
 }
 
 dependencies {
-    compile "com.android.tools.lint:lint-api:$lintLibrary"
-    compile "com.android.tools.lint:lint-checks:$lintLibrary"
+    implementation "com.android.tools.lint:lint-api:$lint_library"
+    implementation "com.android.tools.lint:lint-checks:$lint_library"
     lintChecks files(jar)
 }
 

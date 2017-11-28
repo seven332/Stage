@@ -17,14 +17,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "$buildTools"
+    compileSdkVersion "$target_sdk_version".toInteger()
+    buildToolsVersion "$build_tools_version"
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 25
+        minSdkVersion "$mini_sdk_version"
+        targetSdkVersion "$target_sdk_version"
         versionCode 1
-        versionName "$libraryVersion"
+        versionName "$library_version"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,12 +37,9 @@ android {
 }
 
 dependencies {
-    compile project(':stage')
-    compile 'com.github.seven332:android-resource:0.1.0'
-    testCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    implementation project(':stage')
+    implementation 'com.github.seven332:android-resource:0.1.0'
+    testImplementation 'junit:junit:4.12'
 }
 
 apply from: rootProject.file('android-maven-gradle.gradle')
