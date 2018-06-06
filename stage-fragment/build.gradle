@@ -18,7 +18,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion "$target_sdk_version".toInteger()
-    buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         minSdkVersion "$mini_sdk_version"
