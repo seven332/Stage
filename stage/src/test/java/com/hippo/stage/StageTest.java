@@ -255,4 +255,31 @@ public class StageTest {
     assertTrue(scene3.getLifecycleState().isResumed());
     assertTrue(scene3.getLifecycleState().isStarted());
   }
+
+  @Test
+  public void testDelayedPopAfterPop() {
+    ViewGroup container = new TestContainer(RuntimeEnvironment.application);
+
+    Stage stage = new Stage(new DumpDirector());
+    stage.start();
+    stage.resume();
+
+    stage.setContainer(container);
+
+    Scene scene = new Scene() {
+      @Override
+      protected void onCreate(@NonNull Bundle args) {
+        super.onCreate(args);
+        pop();
+        pop();
+      }
+      @NonNull
+      @Override
+      protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
+        return new TestView(inflater.getContext());
+      }
+    };
+
+    stage.pushScene(scene);
+  }
 }

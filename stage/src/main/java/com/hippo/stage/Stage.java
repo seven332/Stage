@@ -818,11 +818,9 @@ public final class Stage implements Iterable<Scene> {
     @Override
     void operateWithViews(@NonNull Scene scene) {
       int index = stack.pop(scene);
-
-      if (DEBUG) {
-        if (index == SceneStack.INVALID_INDEX) {
-          throw new IllegalStateException("Popped index must not be INVALID_INDEX");
-        }
+      if (index == SceneStack.INVALID_INDEX) {
+        // Delayed pop operation might be operated after the scene has been popped
+        return;
       }
 
       // Calculate the visible scenes below popped scene
