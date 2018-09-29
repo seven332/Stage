@@ -35,7 +35,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Collections;
 import java.util.List;
 
-public class BackHandlerDetector extends Detector implements Detector.JavaPsiScanner {
+public class BackHandlerDetector extends Detector implements Detector.UastScanner {
 
   private static final String CLASS_DIRECTOR = "com.hippo.stage.Director";
   private static final String CLASS_DIRECTOR_BACK_HANDLER = CLASS_DIRECTOR + ".BackHandler";

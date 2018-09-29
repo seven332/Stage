@@ -34,7 +34,7 @@ import com.intellij.psi.PsiParameter;
 import java.util.Collections;
 import java.util.List;
 
-public class SceneDetector extends Detector implements Detector.JavaPsiScanner {
+public class SceneDetector extends Detector implements Detector.UastScanner {
 
   private static final String CLASS_SCENE = "com.hippo.stage.Scene";
 
