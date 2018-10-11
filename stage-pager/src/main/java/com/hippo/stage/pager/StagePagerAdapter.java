@@ -82,6 +82,7 @@ public abstract class StagePagerAdapter extends PagerAdapter {
     if (savedStateMap != null) {
       Bundle savedState = savedStateMap.get(position);
       if (savedState != null) {
+        savedStateMap.remove(position);
         stage = director.direct(container, savedState);
       }
     }
