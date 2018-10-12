@@ -501,7 +501,6 @@ public abstract class Director implements Iterable<Stage> {
     }
   }
 
-  // Called before detach(), just like Fragment
   void destroy() {
     if (DEBUG) {
       assertFalse(isStarted);
