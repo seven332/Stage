@@ -263,7 +263,7 @@ public final class Stage implements Iterable<Scene> {
       if (info.isStarted) {
         scene.stop();
       }
-      scene.detachView(container);
+      scene.detachView(container, false, true);
     }
   }
 
@@ -414,7 +414,7 @@ public final class Stage implements Iterable<Scene> {
     willRecreate = true;
   }
 
-  void detach() {
+  void detach(boolean saveViewStateIfNecessary) {
     if (DEBUG) {
       assertFalse(isStarted);
       assertFalse(isResumed);
@@ -424,7 +424,7 @@ public final class Stage implements Iterable<Scene> {
 
     if (container != null) {
       for (Scene scene : getVisibleScenes()) {
-        scene.detachView(container, true);
+        scene.detachView(container, true, saveViewStateIfNecessary);
       }
 
       // The activity is destroyed, can't attach views to this container
@@ -502,7 +502,7 @@ public final class Stage implements Iterable<Scene> {
       if (isStarted) {
         scene.stop();
       }
-      scene.detachView(container, true);
+      scene.detachView(container, true, true);
     }
 
     // Detach from the container

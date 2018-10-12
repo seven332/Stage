@@ -177,8 +177,8 @@ class ActivityHostedDirector extends Director {
   }
 
   @Override
-  void detach() {
-    super.detach();
+  void detach(boolean saveViewStateIfNecessary) {
+    super.detach(saveViewStateIfNecessary);
 
     // If the director is finishing, let destroy() clear activity reference
     if (!isFinishing()) {
@@ -319,7 +319,7 @@ class ActivityHostedDirector extends Director {
       if (director != null) {
         // DataFragment can only be detached if Activity is detached
         director.setActivityDestroyed();
-        director.detach();
+        director.detach(false);
         if (isFinishing) {
           director.destroy();
         }

@@ -163,7 +163,7 @@ public class StageTest {
 
   @Test
   public void testPopPushAfterDestroyed() {
-    stage.detach();
+    stage.detach(false);
     stage.destroy();
     assertEquals(0, stage.getSceneCount());
 

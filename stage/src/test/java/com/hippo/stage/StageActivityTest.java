@@ -157,4 +157,43 @@ public class StageActivityTest {
     assertNotEquals(id2, scene3.getId());
     assertNotEquals(Scene.INVALID_ID, scene3.getId());
   }
+
+  @Test
+  public void testChildDirectorStateSaving() {
+    TestScene scene1 = new TestScene();
+    TestScene scene2 = new TestScene();
+    TestScene childScene = new TestScene();
+
+    proxy.create();
+    Stage rootStage = proxy.get().installStage(0);
+
+    rootStage.pushScene(scene1);
+    Stage childStage = scene1.installStage(0);
+    childStage.pushScene(childScene);
+
+    int viewSavedKey = childScene.getView().getSavedKey();
+
+    rootStage.pushScene(scene2);
+
+    rootStage.popScene(scene2);
+    scene1.installStage(0);
+
+    assertEquals(viewSavedKey, childScene.getView().getSavedKey());
+  }
+
+  @Test
+  public void testRecreateViewStateSaving() {
+    TestScene scene1 = new TestScene();
+
+    proxy.create();
+    Stage rootStage = proxy.get().installStage(0);
+
+    rootStage.pushScene(scene1);
+
+    int viewSavedKey = scene1.getView().getSavedKey();
+
+    scene1.recreateView();
+
+    assertEquals(viewSavedKey, scene1.getView().getSavedKey());
+  }
 }

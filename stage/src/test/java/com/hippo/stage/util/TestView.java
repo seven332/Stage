@@ -25,9 +25,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.View;
+import android.widget.FrameLayout;
 
-public class TestView extends View {
+public class TestView extends FrameLayout {
 
   private static int SAVED_KEY;
 

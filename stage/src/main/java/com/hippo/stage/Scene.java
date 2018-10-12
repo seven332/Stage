@@ -584,9 +584,9 @@ public abstract class Scene {
     if (lifecycleState.isViewAttached()) {
       index = stage.getContainer().indexOfChild(view);
       assertEquals(true, index != -1);
-      detachView(stage.getContainer(), true);
+      detachView(stage.getContainer(), true, true);
     } else {
-      destroyView();
+      destroyView(true);
     }
 
     inflate(stage.getContainer());
@@ -755,9 +755,9 @@ public abstract class Scene {
     }
   }
 
-  private void destroyView() {
+  private void destroyView(boolean saveViewStateIfNecessary) {
     if (childDirector != null) {
-      childDirector.detach();
+      childDirector.detach(saveViewStateIfNecessary);
     }
 
     onDestroyView(view);
@@ -782,7 +782,7 @@ public abstract class Scene {
     }
 
     if (view != null) {
-      destroyView();
+      destroyView(false);
     }
 
     if (childDirector != null) {
@@ -817,18 +817,14 @@ public abstract class Scene {
     }
   }
 
-  void detachView(@NonNull ViewGroup container) {
-    detachView(container, false);
-  }
-
-  void detachView(@NonNull ViewGroup container, boolean forceDestroyView) {
+  void detachView(@NonNull ViewGroup container, boolean forceDestroyView, boolean saveViewStateIfNecessary) {
     if (DEBUG) {
       assertNotNull(view);
     }
 
     // If retaining view, no need to recreate view before saveViewState() called,
-    // no need to restore view state, no need to save view state
-    if (!willRetainView) {
+    // no need to restore view state, no need to save view state.
+    if (!willRetainView && saveViewStateIfNecessary) {
       saveViewState(view);
     }
 
@@ -848,7 +844,7 @@ public abstract class Scene {
     }
 
     if (!willRetainView || forceDestroyView) {
-      destroyView();
+      destroyView(saveViewStateIfNecessary);
     }
 
     if (willDestroy) {

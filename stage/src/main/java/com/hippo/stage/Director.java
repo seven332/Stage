@@ -216,7 +216,7 @@ public abstract class Director implements Iterable<Stage> {
     if (isStarted) {
       stage.stop();
     }
-    stage.detach();
+    stage.detach(false);
     stage.destroy();
 
     stageMap.remove(stage.getId());
@@ -488,7 +488,7 @@ public abstract class Director implements Iterable<Stage> {
     }
   }
 
-  void detach() {
+  void detach(boolean saveViewStateIfNecessary) {
     if (DEBUG) {
       assertFalse(isStarted);
       assertFalse(isResumed);
@@ -497,7 +497,7 @@ public abstract class Director implements Iterable<Stage> {
 
     for (int i = 0, n = stageMap.size(); i < n; ++i) {
       Stage stage = stageMap.valueAt(i);
-      stage.detach();
+      stage.detach(saveViewStateIfNecessary);
     }
   }
 

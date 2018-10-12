@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.hippo.stage.util.SceneCalling;
+import com.hippo.stage.util.TestContainer;
 import com.hippo.stage.util.TestView;
 
 public class TestScene extends Scene {
@@ -60,6 +61,25 @@ public class TestScene extends Scene {
 
   public void assertPair() {
     assertTrue("calling = " + calling, calling.isPair());
+  }
+
+  public Stage installStage(int id) {
+    ViewGroup root = getView();
+    ViewGroup container = null;
+    for (int i = 0; i < root.getChildCount(); ++i) {
+      View child = root.getChildAt(i);
+      if (child.getId() == id) {
+        container = (ViewGroup) child;
+        break;
+      }
+    }
+    if (container == null) {
+      container = new TestContainer(getContext());
+      container.setId(id);
+      root.addView(container);
+    }
+
+    return hireChildDirector().direct(container);
   }
 
   @Override
