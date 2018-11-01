@@ -20,7 +20,9 @@ package com.hippo.stage.demo;
  * Created by Hippo on 5/2/2017.
  */
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public class Utils {
   private Utils() {}
@@ -33,5 +35,10 @@ public class Utils {
     } catch (Throwable e) {
       throw new RuntimeException("Can't create a new instance of " + clazz, e);
     }
+  }
+
+  public static Bundle putBoolean(Bundle bundle, @Nullable String key, boolean value) {
+    bundle.putBoolean(key, value);
+    return bundle;
   }
 }

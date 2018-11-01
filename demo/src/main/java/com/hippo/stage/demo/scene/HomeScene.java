@@ -20,6 +20,7 @@ package com.hippo.stage.demo.scene;
  * Created by Hippo on 4/25/2017.
  */
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ public class HomeScene extends DebugScene {
       "Dialog",
       "Swipe to Finish",
       "ViewPager",
+      "ViewPager (retain stage)",
       "Preference",
       "Themed",
   };
@@ -51,20 +53,37 @@ public class HomeScene extends DebugScene {
       DialogListScene.class,
       SimpleSwipeBackScene.class,
       PagerScene.class,
+      PagerScene.class,
       PreferenceScene.class,
       ThemedScene.class,
+  };
+
+  private static final Bundle[] ARGS = {
+      null,
+      null,
+      null,
+      null,
+      null,
+      Utils.putBoolean(new Bundle(), PagerScene.KEY_RETAIN_STAGE, false),
+      Utils.putBoolean(new Bundle(), PagerScene.KEY_RETAIN_STAGE, true),
+      null,
+      null,
   };
 
   @NonNull
   @Override
   protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
     View view = inflater.inflate(R.layout.scene_list, container, false);
-    ListView listView = (ListView) view.findViewById(R.id.list);
+    ListView listView = view.findViewById(R.id.list);
     listView.setAdapter(new ArrayAdapter<>(inflater.getContext(), android.R.layout.simple_list_item_1, ITEMS));
     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Scene scene = Utils.newInstance(CLASSES[position]);
+        Bundle args = ARGS[position];
+        if (args != null) {
+          scene.setArgs(args);
+        }
         getStage().pushScene(scene);
       }
     });

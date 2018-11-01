@@ -20,6 +20,7 @@ package com.hippo.stage.demo.scene;
  * Created by Hippo on 5/5/2017.
  */
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -32,13 +33,23 @@ import com.hippo.stage.pager.StagePagerAdapter;
 
 public class PagerScene extends DebugScene {
 
+  public static final String KEY_RETAIN_STAGE = "com.hippo.stage.demo.scene.PagerScene.RETAIN_STAGE";
+
+  private boolean retainStage;
+
+  @Override
+  protected void onCreate(@NonNull Bundle args) {
+    super.onCreate(args);
+    retainStage = args.getBoolean(KEY_RETAIN_STAGE);
+  }
+
   @NonNull
   @Override
   protected View onCreateView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
     View view = inflater.inflate(R.layout.scene_pager, container, false);
-    TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-    ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-    viewPager.setAdapter(new StagePagerAdapter(this, true) {
+    TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+    ViewPager viewPager = view.findViewById(R.id.view_pager);
+    viewPager.setAdapter(new StagePagerAdapter(this, retainStage) {
       @Override
       public void bindStage(@NonNull Stage stage, int position) {
         stage.pushScene(new HomeScene());
