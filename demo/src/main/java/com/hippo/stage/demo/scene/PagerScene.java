@@ -61,6 +61,11 @@ public class PagerScene extends DebugScene {
       }
 
       @Override
+      public int getStageId(int position) {
+        return position;
+      }
+
+      @Override
       public CharSequence getPageTitle(int position) {
         return "Page " + position;
       }

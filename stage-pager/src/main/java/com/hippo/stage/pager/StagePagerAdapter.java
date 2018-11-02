@@ -68,29 +68,38 @@ public abstract class StagePagerAdapter extends PagerAdapter {
    */
   public abstract void bindStage(@NonNull Stage stage, int position);
 
+  /**
+   * Return the stable ID for the stage at position.
+   * In {@link #MODE_NONE}, id must be unique for each attached stage.
+   * In {@link #MODE_SAVE} and {@link #MODE_RETAIN}, id must be unique for any stage.
+   */
+  public abstract int getStageId(int position);
+
   @NonNull
   @Override
   public Object instantiateItem(@NonNull ViewGroup container, int position) {
     Director director = host.hireChildDirector();
 
-    if (director.contains(position)) {
+    int id = getStageId(position);
+
+    if (director.contains(id)) {
       // Contains the stage, just return it
-      return director.direct(container, position);
+      return director.direct(container, id);
     }
 
     // Try to restore saved state
     Stage stage = null;
     if (savedStateMap != null) {
-      Bundle savedState = savedStateMap.get(position);
+      Bundle savedState = savedStateMap.get(id);
       if (savedState != null) {
-        savedStateMap.remove(position);
+        savedStateMap.remove(id);
         stage = director.direct(container, savedState);
       }
     }
 
     // Create a new Stage
     if (stage == null) {
-      stage = director.direct(container, position);
+      stage = director.direct(container, id);
       bindStage(stage, position);
     }
 
@@ -108,7 +117,8 @@ public abstract class StagePagerAdapter extends PagerAdapter {
       // Save state
       Bundle savedState = new Bundle();
       stage.saveInstanceState(savedState);
-      savedStateMap.put(position, savedState);
+      int id = getStageId(position);
+      savedStateMap.put(id, savedState);
       // Close Stage
       stage.close();
     }
