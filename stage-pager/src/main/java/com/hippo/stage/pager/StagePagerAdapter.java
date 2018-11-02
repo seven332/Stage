@@ -68,8 +68,9 @@ public abstract class StagePagerAdapter extends PagerAdapter {
    */
   public abstract void bindStage(@NonNull Stage stage, int position);
 
+  @NonNull
   @Override
-  public Object instantiateItem(ViewGroup container, int position) {
+  public Object instantiateItem(@NonNull ViewGroup container, int position) {
     Director director = host.hireChildDirector();
 
     if (director.contains(position)) {
@@ -97,7 +98,7 @@ public abstract class StagePagerAdapter extends PagerAdapter {
   }
 
   @Override
-  public void destroyItem(ViewGroup container, int position, Object object) {
+  public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
     Stage stage = (Stage) object;
 
     if (savedStateMap == null) {
@@ -114,7 +115,7 @@ public abstract class StagePagerAdapter extends PagerAdapter {
   }
 
   @Override
-  public boolean isViewFromObject(View view, Object object) {
+  public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
     Stage stage = (Stage) object;
 
     for (Scene scene : stage) {
