@@ -41,4 +41,9 @@ public class Utils {
     bundle.putBoolean(key, value);
     return bundle;
   }
+
+  public static Bundle putInt(Bundle bundle, @Nullable String key, int value) {
+    bundle.putInt(key, value);
+    return bundle;
+  }
 }

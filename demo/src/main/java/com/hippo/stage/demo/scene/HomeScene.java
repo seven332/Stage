@@ -31,6 +31,7 @@ import android.widget.ListView;
 import com.hippo.stage.Scene;
 import com.hippo.stage.demo.R;
 import com.hippo.stage.demo.Utils;
+import com.hippo.stage.pager.StagePagerAdapter;
 
 public class HomeScene extends DebugScene {
 
@@ -40,8 +41,9 @@ public class HomeScene extends DebugScene {
       "Child Director",
       "Dialog",
       "Swipe to Finish",
-      "ViewPager",
-      "ViewPager (retain stage)",
+      "ViewPager (MODE_NONE)",
+      "ViewPager (MODE_SAVE)",
+      "ViewPager (MODE_RETAIN)",
       "Preference",
       "Themed",
   };
@@ -54,6 +56,7 @@ public class HomeScene extends DebugScene {
       SimpleSwipeBackScene.class,
       PagerScene.class,
       PagerScene.class,
+      PagerScene.class,
       PreferenceScene.class,
       ThemedScene.class,
   };
@@ -64,8 +67,9 @@ public class HomeScene extends DebugScene {
       null,
       null,
       null,
-      Utils.putBoolean(new Bundle(), PagerScene.KEY_RETAIN_STAGE, false),
-      Utils.putBoolean(new Bundle(), PagerScene.KEY_RETAIN_STAGE, true),
+      Utils.putInt(new Bundle(), PagerScene.KEY_MODE, StagePagerAdapter.MODE_NONE),
+      Utils.putInt(new Bundle(), PagerScene.KEY_MODE, StagePagerAdapter.MODE_SAVE),
+      Utils.putInt(new Bundle(), PagerScene.KEY_MODE, StagePagerAdapter.MODE_RETAIN),
       null,
       null,
   };

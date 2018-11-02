@@ -22,6 +22,7 @@ package com.hippo.stage.pager;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -31,6 +32,8 @@ import android.view.ViewGroup;
 import com.hippo.stage.Director;
 import com.hippo.stage.Scene;
 import com.hippo.stage.Stage;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * An adapter for {@link android.support.v4.view.ViewPager} that uses Routers as pages.
@@ -40,21 +43,38 @@ public abstract class StagePagerAdapter extends PagerAdapter {
 
   private static final String KEY_SAVED_STATE_MAP = "StagePagerAdapter:saved_state_map";
 
+  /**
+   * Nothing is kept.
+   */
+  public static final int MODE_NONE = 0;
+  /**
+   * Like {@code FragmentStatePagerSupport}, all stage states are kept.
+   */
+  public static final int MODE_SAVE = 1;
+  /**
+   * Like {@code FragmentPagerAdapter}, all stages are kept.
+   */
+  public static final int MODE_RETAIN = 2;
+
+  @IntDef({MODE_NONE, MODE_SAVE, MODE_RETAIN})
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface Mode {}
+
   private Scene host;
+  @Mode
+  private int mode;
   @Nullable
   private SparseArray<Bundle> savedStateMap;
 
   /**
    * Creates a new StagePagerAdapter using the passed host.
    *
-   * @param retainStage whether retain {@link Stage} when page detached, or save their states.
-   *                    If it is {@code true}, this class works like {@code FragmentPagerAdapter}.
-   *                    If it is {@code false}, this class works like
-   *                    {@code FragmentStatePagerAdapter}.
+   * @param mode Describes how to handle stage lifecycle.
    */
-  public StagePagerAdapter(@NonNull Scene host, boolean retainStage) {
+  public StagePagerAdapter(@NonNull Scene host, @Mode int mode) {
     this.host = host;
-    if (!retainStage) {
+    this.mode = mode;
+    if (mode == MODE_SAVE) {
       savedStateMap = new SparseArray<>();
     }
   }
@@ -111,8 +131,11 @@ public abstract class StagePagerAdapter extends PagerAdapter {
     Stage stage = (Stage) object;
 
     if (savedStateMap == null) {
-      // Stage should be retained
-      stage.suspend();
+      if (mode == MODE_RETAIN) {
+        stage.suspend();
+      } else {
+        stage.close();
+      }
     } else {
       // Save state
       Bundle savedState = new Bundle();

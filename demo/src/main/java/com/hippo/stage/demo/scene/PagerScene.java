@@ -33,14 +33,14 @@ import com.hippo.stage.pager.StagePagerAdapter;
 
 public class PagerScene extends DebugScene {
 
-  public static final String KEY_RETAIN_STAGE = "com.hippo.stage.demo.scene.PagerScene.RETAIN_STAGE";
+  public static final String KEY_MODE = "com.hippo.stage.demo.scene.PagerScene.MODE";
 
-  private boolean retainStage;
+  private int mode;
 
   @Override
   protected void onCreate(@NonNull Bundle args) {
     super.onCreate(args);
-    retainStage = args.getBoolean(KEY_RETAIN_STAGE);
+    mode = args.getInt(KEY_MODE);
   }
 
   @NonNull
@@ -49,7 +49,7 @@ public class PagerScene extends DebugScene {
     View view = inflater.inflate(R.layout.scene_pager, container, false);
     TabLayout tabLayout = view.findViewById(R.id.tab_layout);
     ViewPager viewPager = view.findViewById(R.id.view_pager);
-    viewPager.setAdapter(new StagePagerAdapter(this, retainStage) {
+    viewPager.setAdapter(new StagePagerAdapter(this, mode) {
       @Override
       public void bindStage(@NonNull Stage stage, int position) {
         stage.pushScene(new HomeScene());
