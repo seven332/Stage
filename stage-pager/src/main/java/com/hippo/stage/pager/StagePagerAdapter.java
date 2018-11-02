@@ -89,6 +89,13 @@ public abstract class StagePagerAdapter extends PagerAdapter {
   public abstract void bindStage(@NonNull Stage stage, int position);
 
   /**
+   * Restore the stage. Only called if the mode is {@link #MODE_SAVE}.
+   * Sometimes it's not enough to restore stage with bundle only.
+   * This method is always used to make up it.
+   */
+  public abstract void restoreStage(@NonNull Stage stage, int position);
+
+  /**
    * Return the stable ID for the stage at position.
    * In {@link #MODE_NONE}, id must be unique for each attached stage.
    * In {@link #MODE_SAVE} and {@link #MODE_RETAIN}, id must be unique for any stage.
@@ -114,6 +121,9 @@ public abstract class StagePagerAdapter extends PagerAdapter {
       if (savedState != null) {
         savedStateMap.remove(id);
         stage = director.direct(container, savedState);
+        if (stage != null) {
+          restoreStage(stage, position);
+        }
       }
     }
 
