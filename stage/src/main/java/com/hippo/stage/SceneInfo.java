@@ -20,8 +20,6 @@ package com.hippo.stage;
  * Created by Hippo on 4/21/2017.
  */
 
-import static junit.framework.Assert.assertNotNull;
-
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -90,7 +88,9 @@ public final class SceneInfo {
       this.view = scene.getView();
 
       if (DEBUG) {
-        assertNotNull("View of the scene is null: " + scene, scene.getView());
+        if (scene.getView() == null) {
+          throw new IllegalStateException("View of the scene is null: " + scene);
+        }
       }
 
       return this;

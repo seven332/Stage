@@ -20,12 +20,6 @@ package com.hippo.stage;
  * Created by Hippo on 4/20/2017.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -316,9 +310,12 @@ public final class Stage implements Iterable<Scene> {
 
   void setContainer(@NonNull ViewGroup container) {
     if (DEBUG) {
-      assertNull(this.container);
-      assertNotNull(container);
-      assertFalse(isDestroyed);
+      if (this.container != null) {
+        throw new IllegalStateException("Already has a container");
+      }
+      if (isDestroyed) {
+        throw new IllegalStateException("This stage is destroyed");
+      }
     }
 
     this.container = container;
@@ -346,8 +343,12 @@ public final class Stage implements Iterable<Scene> {
 
   void start() {
     if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
+      if (isStarted) {
+        throw new IllegalStateException("This stage is started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This stage is resumed");
+      }
     }
 
     isStarted = true;
@@ -362,8 +363,12 @@ public final class Stage implements Iterable<Scene> {
 
   void resume() {
     if (DEBUG) {
-      assertTrue(isStarted);
-      assertFalse(isResumed);
+      if (!isStarted) {
+        throw new IllegalStateException("This stage is not started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This stage is resumed");
+      }
     }
 
     isResumed = true;
@@ -379,8 +384,12 @@ public final class Stage implements Iterable<Scene> {
 
   void pause() {
     if (DEBUG) {
-      assertTrue(isStarted);
-      assertTrue(isResumed);
+      if (!isStarted) {
+        throw new IllegalStateException("This stage is not started");
+      }
+      if (!isResumed) {
+        throw new IllegalStateException("This stage is not resumed");
+      }
     }
 
     isResumed = false;
@@ -396,8 +405,12 @@ public final class Stage implements Iterable<Scene> {
 
   void stop() {
     if (DEBUG) {
-      assertTrue(isStarted);
-      assertFalse(isResumed);
+      if (!isStarted) {
+        throw new IllegalStateException("This stage is not started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This stage is resumed");
+      }
     }
 
     isStarted = false;
@@ -416,8 +429,12 @@ public final class Stage implements Iterable<Scene> {
 
   void detach(boolean saveViewStateIfNecessary) {
     if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
+      if (isStarted) {
+        throw new IllegalStateException("This stage is started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This stage is resumed");
+      }
     }
 
     completeRunningCurtain();
@@ -437,7 +454,9 @@ public final class Stage implements Iterable<Scene> {
 
   void destroy() {
     if (DEBUG) {
-      assertNull(container);
+      if (container != null) {
+        throw new IllegalStateException("Still has a container");
+      }
     }
 
     isDestroyed = true;
@@ -950,9 +969,13 @@ public final class Stage implements Iterable<Scene> {
 
       if (DEBUG) {
         if (oldTopScene == null) {
-          assertEquals(0, oldScenes.size());
+          if (oldScenes.size() != 0) {
+            throw new IllegalStateException("No top scene but has visible scenes");
+          }
         }
-        assertTrue(newScenes.size() > 0);
+        if (newScenes.size() <= 0) {
+          throw new IllegalStateException("No new visible scenes");
+        }
       }
 
       scene.attachView(container);

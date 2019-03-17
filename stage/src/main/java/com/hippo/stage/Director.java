@@ -20,10 +20,6 @@ package com.hippo.stage;
  * Created by Hippo on 4/22/2017.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -207,7 +203,10 @@ public abstract class Director implements Iterable<Stage> {
 
   void close(Stage stage) {
     if (DEBUG) {
-      assertEquals(stage, stageMap.get(stage.getId()));
+      Stage actual = stageMap.get(stage.getId());
+      if (stage != actual) {
+        throw new IllegalStateException("The stage is not in this director");
+      }
     }
 
     if (isResumed) {
@@ -434,8 +433,12 @@ public abstract class Director implements Iterable<Stage> {
 
   void start() {
     if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
+      if (isStarted) {
+        throw new IllegalStateException("This director is started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This director is resumed");
+      }
     }
 
     isStarted = true;
@@ -448,8 +451,12 @@ public abstract class Director implements Iterable<Stage> {
 
   void resume() {
     if (DEBUG) {
-      assertTrue(isStarted);
-      assertFalse(isResumed);
+      if (!isStarted) {
+        throw new IllegalStateException("This director is not started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This director is resumed");
+      }
     }
 
     isResumed = true;
@@ -462,8 +469,12 @@ public abstract class Director implements Iterable<Stage> {
 
   void pause() {
     if (DEBUG) {
-      assertTrue(isStarted);
-      assertTrue(isResumed);
+      if (!isStarted) {
+        throw new IllegalStateException("This director is not started");
+      }
+      if (!isResumed) {
+        throw new IllegalStateException("This director is not resumed");
+      }
     }
 
     isResumed = false;
@@ -476,8 +487,12 @@ public abstract class Director implements Iterable<Stage> {
 
   void stop() {
     if (DEBUG) {
-      assertTrue(isStarted);
-      assertFalse(isResumed);
+      if (!isStarted) {
+        throw new IllegalStateException("This director is not started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This director is resumed");
+      }
     }
 
     isStarted = false;
@@ -490,9 +505,15 @@ public abstract class Director implements Iterable<Stage> {
 
   void detach(boolean saveViewStateIfNecessary) {
     if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
-      assertFalse(isDestroyed);
+      if (isStarted) {
+        throw new IllegalStateException("This director is started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This director is resumed");
+      }
+      if (isDestroyed) {
+        throw new IllegalStateException("This director is destroyed");
+      }
     }
 
     for (int i = 0, n = stageMap.size(); i < n; ++i) {
@@ -503,10 +524,18 @@ public abstract class Director implements Iterable<Stage> {
 
   void destroy() {
     if (DEBUG) {
-      assertFalse(isStarted);
-      assertFalse(isResumed);
-      assertTrue(isFinishing);
-      assertFalse(isDestroyed);
+      if (isStarted) {
+        throw new IllegalStateException("This director is started");
+      }
+      if (isResumed) {
+        throw new IllegalStateException("This director is resumed");
+      }
+      if (!isFinishing) {
+        throw new IllegalStateException("This director is not finishing");
+      }
+      if (isDestroyed) {
+        throw new IllegalStateException("This director is destroyed");
+      }
     }
 
     isDestroyed = true;
@@ -519,7 +548,12 @@ public abstract class Director implements Iterable<Stage> {
   }
 
   void finish(boolean willRecreate) {
-    assertFalse(isFinishing);
+    if (DEBUG) {
+      if (isFinishing) {
+        throw new IllegalStateException("This director is finishing");
+      }
+    }
+
     this.isFinishing = true;
 
     if (willRecreate) {

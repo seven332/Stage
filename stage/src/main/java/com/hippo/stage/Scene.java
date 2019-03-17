@@ -20,10 +20,6 @@ package com.hippo.stage;
  * Created by Hippo on 4/20/2017.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -583,7 +579,11 @@ public abstract class Scene {
     }
     if (lifecycleState.isViewAttached()) {
       index = stage.getContainer().indexOfChild(view);
-      assertEquals(true, index != -1);
+      if (DEBUG) {
+        if (index == -1) {
+          throw new IllegalStateException("The view is not attached");
+        }
+      }
       detachView(stage.getContainer(), true, true);
     } else {
       destroyView(true);
@@ -635,7 +635,9 @@ public abstract class Scene {
     if (view == null) {
 
       if (DEBUG) {
-        assertNull(context);
+        if (context != null) {
+          throw new IllegalStateException("Already has context");
+        }
       }
 
       onPreCreateView(parent.getContext());
@@ -675,7 +677,9 @@ public abstract class Scene {
     View view = inflate(container);
 
     if (DEBUG) {
-      assertNull(view.getParent());
+      if (view.getParent() != null) {
+        throw new IllegalStateException("Don't set parent for the view in inflate()");
+      }
     }
 
     container.addView(view, index);
@@ -777,7 +781,9 @@ public abstract class Scene {
   private void destroy() {
     if (DEBUG) {
       if (!willRetainView) {
-        assertNull(view);
+        if (view != null) {
+          throw new IllegalStateException("view != null");
+        }
       }
     }
 
@@ -819,7 +825,9 @@ public abstract class Scene {
 
   void detachView(@NonNull ViewGroup container, boolean forceDestroyView, boolean saveViewStateIfNecessary) {
     if (DEBUG) {
-      assertNotNull(view);
+      if (view == null) {
+        throw new IllegalStateException("view == null");
+      }
     }
 
     // If retaining view, no need to recreate view before saveViewState() called,
