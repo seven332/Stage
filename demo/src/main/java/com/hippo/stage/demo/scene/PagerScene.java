@@ -56,6 +56,9 @@ public class PagerScene extends DebugScene {
       }
 
       @Override
+      public void restoreStage(@NonNull Stage stage, int position) { }
+
+      @Override
       public int getCount() {
         return 5;
       }
